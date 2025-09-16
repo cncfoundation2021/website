@@ -52,7 +52,7 @@ class CNCFoundationApp {
             const icon = this.getIconForSlug(item.slug);
             return `
                 <li>
-                    <a href="/left-pane/${item.slug}.html" class="nav-link" data-section="${item.slug}">
+                    <a href="${item.route}" class="nav-link" data-section="${item.slug}">
                         <i class="${icon}" aria-hidden="true"></i>
                         <span>${item.title}</span>
                     </a>
@@ -111,7 +111,7 @@ class CNCFoundationApp {
 
     createSimpleNavItem(item) {
         const icon = this.getIconForSlug(item.slug);
-        const href = item.slug === 'home' ? '/' : `/offerings/${item.slug}.html`;
+        const href = item.slug === 'home' ? '/' : item.route || `/offerings/${item.slug}.html`;
         return `
             <a href="${href}" class="nav-item" data-section="${item.slug}">
                 <i class="${icon}" aria-hidden="true"></i>
