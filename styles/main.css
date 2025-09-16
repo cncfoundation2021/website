@@ -472,10 +472,6 @@ body {
 .nav-links {
     display: flex;
     gap: var(--space-1);
-    overflow-x: auto;
-    overflow-y: visible;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
     padding: var(--space-2) 0;
     width: 100%;
     white-space: nowrap;
@@ -484,108 +480,54 @@ body {
     position: relative;
 }
 
-.nav-links::-webkit-scrollbar {
-    display: none;
-}
 
 /* Scroll Indicators */
 .nav-container {
     position: relative;
 }
 
-.nav-container::before,
-.nav-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 30px;
-    z-index: 10;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+/* Custom scrollbar for navigation */
+.nav-links {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
 }
 
-.nav-container::before {
-    left: 0;
-    background: linear-gradient(to right, var(--primary), transparent);
-    opacity: 0;
+.nav-links::-webkit-scrollbar {
+    display: none; /* WebKit */
 }
 
-.nav-container::after {
-    right: 0;
-    background: linear-gradient(to left, var(--primary), transparent);
-    opacity: 0;
+/* Show scrollbar on hover */
+.nav-container:hover .nav-links {
+    scrollbar-width: thin; /* Firefox */
+    -ms-overflow-style: auto; /* Internet Explorer 10+ */
 }
 
-.nav-container.scroll-left::before {
-    opacity: 1;
+.nav-container:hover .nav-links::-webkit-scrollbar {
+    display: block; /* WebKit */
+    height: 6px;
 }
 
-.nav-container.scroll-right::after {
-    opacity: 1;
+.nav-container:hover .nav-links::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
 }
 
-.nav-container.scroll-both::before,
-.nav-container.scroll-both::after {
-    opacity: 1;
-}
-
-/* Scroll Arrow Buttons */
-.nav-scroll-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+.nav-container:hover .nav-links::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    color: white;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 15;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    opacity: 0;
-    pointer-events: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    transition: background 0.3s ease;
 }
 
-.nav-scroll-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-50%) scale(1.1);
-}
-
-.nav-scroll-btn.show {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.nav-scroll-btn-left {
-    left: 5px;
-}
-
-.nav-scroll-btn-right {
-    right: 5px;
-}
-
-.nav-scroll-btn i {
-    font-size: 14px;
-}
-
-/* Temporary: Force scroll indicators to show for testing */
-.nav-container .nav-scroll-btn {
-    opacity: 1 !important;
-    pointer-events: all !important;
-    display: flex !important;
+.nav-container:hover .nav-links::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .nav-item {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    min-width: 150px;
     white-space: nowrap;
     padding: var(--space-2) var(--space-4);
     background: rgba(255, 255, 255, 0.1);

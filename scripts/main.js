@@ -629,86 +629,17 @@ class CNCFoundationApp {
     initializeScrollIndicators() {
         const navContainer = document.getElementById('nav-container');
         const navLinks = document.getElementById('top-nav-links');
-        const scrollLeftBtn = document.getElementById('scroll-left-btn');
-        const scrollRightBtn = document.getElementById('scroll-right-btn');
 
-        console.log('Scroll indicators initialization:', {
-            navContainer: !!navContainer,
-            navLinks: !!navLinks,
-            scrollLeftBtn: !!scrollLeftBtn,
-            scrollRightBtn: !!scrollRightBtn
-        });
-
-        if (!navContainer || !navLinks || !scrollLeftBtn || !scrollRightBtn) {
+        if (!navContainer || !navLinks) {
             console.log('Missing elements for scroll indicators');
             return;
         }
 
-        // Check if scrolling is needed
-        const checkScrollability = () => {
-            const isScrollable = navLinks.scrollWidth > navLinks.clientWidth;
-            console.log('Scrollability check:', {
-                scrollWidth: navLinks.scrollWidth,
-                clientWidth: navLinks.clientWidth,
-                isScrollable: isScrollable
-            });
-            
-            if (!isScrollable) {
-                console.log('Not scrollable, hiding buttons');
-                scrollLeftBtn.style.display = 'none';
-                scrollRightBtn.style.display = 'none';
-                return;
-            }
-
-            scrollLeftBtn.style.display = 'flex';
-            scrollRightBtn.style.display = 'flex';
-
-            // Check scroll position
-            const scrollLeft = navLinks.scrollLeft;
-            const maxScrollLeft = navLinks.scrollWidth - navLinks.clientWidth;
-
-            // Update button visibility and container classes
-            if (scrollLeft <= 0) {
-                navContainer.classList.remove('scroll-left', 'scroll-both');
-                navContainer.classList.add('scroll-right');
-                scrollLeftBtn.classList.remove('show');
-                scrollRightBtn.classList.add('show');
-            } else if (scrollLeft >= maxScrollLeft) {
-                navContainer.classList.remove('scroll-right', 'scroll-both');
-                navContainer.classList.add('scroll-left');
-                scrollLeftBtn.classList.add('show');
-                scrollRightBtn.classList.remove('show');
-            } else {
-                navContainer.classList.remove('scroll-left', 'scroll-right');
-                navContainer.classList.add('scroll-both');
-                scrollLeftBtn.classList.add('show');
-                scrollRightBtn.classList.add('show');
-            }
-        };
-
-        // Scroll event listener
-        navLinks.addEventListener('scroll', checkScrollability);
-
-        // Resize event listener
-        window.addEventListener('resize', checkScrollability);
-
-        // Button click handlers
-        scrollLeftBtn.addEventListener('click', () => {
-            navLinks.scrollBy({
-                left: -200,
-                behavior: 'smooth'
-            });
-        });
-
-        scrollRightBtn.addEventListener('click', () => {
-            navLinks.scrollBy({
-                left: 200,
-                behavior: 'smooth'
-            });
-        });
-
-        // Initial check
-        setTimeout(checkScrollability, 100);
+        // Enable horizontal scrolling
+        navLinks.style.overflowX = 'auto';
+        navLinks.style.overflowY = 'hidden';
+        
+        console.log('Scroll indicators initialized - hover to see scrollbar');
     }
 }
 
