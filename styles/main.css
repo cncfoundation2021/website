@@ -252,29 +252,6 @@ body {
     position: relative;
 }
 
-.title-section::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2px;
-    height: 60px;
-    background: linear-gradient(to bottom, var(--accent), var(--accent-light));
-    border-radius: 1px;
-}
-
-.title-section::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2px;
-    height: 60px;
-    background: linear-gradient(to bottom, var(--accent), var(--accent-light));
-    border-radius: 1px;
-}
 
 .logo {
     width: 180px;
