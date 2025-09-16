@@ -111,7 +111,7 @@ class CNCFoundationApp {
 
     createSimpleNavItem(item) {
         const icon = this.getIconForSlug(item.slug);
-        const href = item.slug === 'home' ? '/' : `/offerings/${item.slug}/`;
+        const href = item.slug === 'home' ? '/' : `/offerings/${item.slug}.html`;
         return `
             <a href="${href}" class="nav-item" data-section="${item.slug}">
                 <i class="${icon}" aria-hidden="true"></i>
@@ -128,7 +128,7 @@ class CNCFoundationApp {
         
         // Add Home breadcrumb if not present
         if (breadcrumbs.length === 0 || breadcrumbs[0].title !== 'Home') {
-            breadcrumbs.unshift({ title: 'Home', route: '../' });
+            breadcrumbs.unshift({ title: 'Home', route: '/' });
         }
         
         breadcrumbList.innerHTML = breadcrumbs.map((crumb, index) => {
