@@ -111,7 +111,7 @@ class CNCFoundationApp {
 
     createSimpleNavItem(item) {
         const icon = this.getIconForSlug(item.slug);
-        const href = item.slug === 'home' ? '/' : item.route || `/offerings/${item.slug}.html`;
+        const href = item.slug === 'home' ? '/' : item.route || `/offerings/${item.slug}`;
         return `
             <a href="${href}" class="nav-item" data-section="${item.slug}">
                 <i class="${icon}" aria-hidden="true"></i>
