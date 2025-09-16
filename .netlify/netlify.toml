@@ -1,0 +1,53 @@
+redirectsOrigin = "config"
+plugins = []
+functionsDirectory = "C:\\Users\\wasim\\Desktop\\CNC Assam Website\\netlify\\functions"
+functionsDirectoryOrigin = "config-v1"
+headers = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "C:\\Users\\wasim\\Desktop\\CNC Assam Website"
+publishOrigin = "config"
+base = "C:\\Users\\wasim\\Desktop\\CNC Assam Website"
+functions = "C:\\Users\\wasim\\Desktop\\CNC Assam Website\\netlify\\functions"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[redirects]]
+from = "http://cncassam.com/*"
+to = "https://cncassam.com/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "http://www.cncassam.com/*"
+to = "https://www.cncassam.com/:splat"
+status = 301.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

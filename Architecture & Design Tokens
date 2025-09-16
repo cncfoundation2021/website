@@ -1,0 +1,74 @@
+Project architecture (example for React/Next.js—adapt if different)
+
+/app or /src
+  /components        // dumb/presentational components
+  /features          // feature slices: pages + logic + subcomponents
+  /hooks
+  /lib               // utilities, API clients, domain logic
+  /styles
+  /types
+  /tests
+  /stories
+
+
+Design tokens (tailor to your brand)
+
+// spacing (rem)
+0, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8
+
+// font sizes
+xs, sm, base, lg, xl, 2xl, 3xl, 4xl
+
+// radii
+none, sm, md, lg, xl, 2xl
+
+// color roles
+--bg, --bg-muted, --text, --text-muted, --primary, --primary-foreground,
+--success, --warning, --danger, --border, --ring
+
+
+Accessibility baseline
+
+Every interactive element has a visible focus state.
+
+All form inputs have labels.
+
+Use aria-live for async states (loading/success/error).
+
+Provide skip to content and meaningful landmarks (<header>, <main>, <nav>, <footer>).
+
+Responsive breakpoints (example)
+
+sm: 640px, md: 768px, lg: 1024px, xl: 1280px, 2xl: 1536px
+
+4) Workflow & Git Discipline (paste in README_DEV.md)
+
+Branching
+
+main → protected. Use feature branches: feat/<scope>, fix/<ticket>, refactor/<area>.
+
+Commits (Conventional Commits)
+
+feat:, fix:, docs:, refactor:, chore:, test:, perf:, build:
+
+One logical change per commit; keep messages clear.
+
+PR checklist
+
+Scope kept small and isolated.
+
+Lint/Type check passing.
+
+Tests added/updated and passing.
+
+Stories updated.
+
+Accessibility pass done.
+
+Manual test plan
+
+Steps to reproduce & verify.
+
+Edge cases checked (empty states, loading, failures).
+
+Mobile & desktop verified.

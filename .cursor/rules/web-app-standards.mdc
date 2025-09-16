@@ -1,0 +1,84 @@
+---
+alwaysApply: true
+---
+
+# Web App Standards (Government UX – Assam.gov.in inspired)
+
+## Goals
+- Build a bilingual (English + local language ready) public-sector website with a **left informational pane** and **top tabbed offerings**, mirroring the information architecture in `sitemap.json`.
+- Follow a clean, official look similar to **assam.gov.in**: high contrast, generous spacing, simple shapes, and clear hierarchy.
+- **Do not** break existing features; keep changes **scoped** and **backward compatible**.
+
+## Hard Constraints
+- Keep public contracts stable: routes, component props, HTML ids used by scripts/analytics.
+- No renaming/removal of existing CSS class hooks or `data-*` attributes without approval.
+- Scope edits to explicitly listed files; if other files are required, list them and wait for confirmation.
+- Preserve analytics, SEO meta tags, and language-switcher behavior if present.
+
+## Accessibility
+- **WCAG 2.2 AA** minimum. Keyboard focus visible, logical tab order, ARIA labels, skip-links.
+- High-contrast palette and >= 16px base font. Line-height 1.6 for body.
+- Respect `prefers-reduced-motion`.
+- All icons and images have accessible names/alt text.
+
+## UI System
+- Use Tailwind with design tokens from `ui-tokens.md`. Avoid magic numbers.
+- Layout:
+  - **Left Pane**: collapsible accordion with deep-linkable items (routes `/info/[slug]`).
+  - **Top Tabs**: primary nav with dropdown/mega-menu per tab (routes `/offerings/[tab]/[child?]`).
+  - Sticky topbar, breadcrumb under header, footer with contact & grievance links.
+- Components: Header, LanguageSwitcher, LeftPane, TopTabs, Breadcrumbs, Card, Table, CTA Button, NoticeBanner, ContactCard.
+
+## Performance
+- Static rendering where possible; route-level code-splitting.
+- Defer non-critical JS, lazy-load media, responsive images.
+- Lighthouse targets: Performance 90+, A11y 95+, SEO 100.
+
+## Testing
+- Unit tests for routing helpers and menu generation from `sitemap.json`.
+- Component tests for LeftPane, TopTabs, Breadcrumbs (empty/loading/active states).
+- Visual stories in Storybook for major pages.
+
+## Output Format for Any Change
+- List files changed and why; show diffs or full file replacements.
+- Provide a manual test plan and any outstanding questions.
+# Web App Standards (Government UX – Assam.gov.in inspired)
+
+## Goals
+- Build a bilingual (English + local language ready) public-sector website with a **left informational pane** and **top tabbed offerings**, mirroring the information architecture in `sitemap.json`.
+- Follow a clean, official look similar to **assam.gov.in**: high contrast, generous spacing, simple shapes, and clear hierarchy.
+- **Do not** break existing features; keep changes **scoped** and **backward compatible**.
+
+## Hard Constraints
+- Keep public contracts stable: routes, component props, HTML ids used by scripts/analytics.
+- No renaming/removal of existing CSS class hooks or `data-*` attributes without approval.
+- Scope edits to explicitly listed files; if other files are required, list them and wait for confirmation.
+- Preserve analytics, SEO meta tags, and language-switcher behavior if present.
+
+## Accessibility
+- **WCAG 2.2 AA** minimum. Keyboard focus visible, logical tab order, ARIA labels, skip-links.
+- High-contrast palette and >= 16px base font. Line-height 1.6 for body.
+- Respect `prefers-reduced-motion`.
+- All icons and images have accessible names/alt text.
+
+## UI System
+- Use Tailwind with design tokens from `ui-tokens.md`. Avoid magic numbers.
+- Layout:
+  - **Left Pane**: collapsible accordion with deep-linkable items (routes `/info/[slug]`).
+  - **Top Tabs**: primary nav with dropdown/mega-menu per tab (routes `/offerings/[tab]/[child?]`).
+  - Sticky topbar, breadcrumb under header, footer with contact & grievance links.
+- Components: Header, LanguageSwitcher, LeftPane, TopTabs, Breadcrumbs, Card, Table, CTA Button, NoticeBanner, ContactCard.
+
+## Performance
+- Static rendering where possible; route-level code-splitting.
+- Defer non-critical JS, lazy-load media, responsive images.
+- Lighthouse targets: Performance 90+, A11y 95+, SEO 100.
+
+## Testing
+- Unit tests for routing helpers and menu generation from `sitemap.json`.
+- Component tests for LeftPane, TopTabs, Breadcrumbs (empty/loading/active states).
+- Visual stories in Storybook for major pages.
+
+## Output Format for Any Change
+- List files changed and why; show diffs or full file replacements.
+- Provide a manual test plan and any outstanding questions.
