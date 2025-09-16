@@ -108,13 +108,32 @@ directories.forEach(dirPath => {
         fs.mkdirSync(fullDirPath, { recursive: true });
     }
     
-    // Generate the HTML content
-    const htmlContent = baseTemplate
-        .replace(/\{\{title\}\}/g, title)
-        .replace(/\{\{description\}\}/g, description)
-        .replace(/\{\{pageTitle\}\}/g, title)
-        .replace(/\{\{pageDescription\}\}/g, description)
-        .replace(/\{\{content\}\}/g, `
+    // Try to read the actual content from the existing .html file
+    let actualContent = '';
+    const originalHtmlFile = path.join(process.cwd(), dirPath + '.html');
+    
+    if (fs.existsSync(originalHtmlFile)) {
+        try {
+            const originalContent = fs.readFileSync(originalHtmlFile, 'utf8');
+            // Extract the main content from the original file
+            const contentMatch = originalContent.match(/<main[^>]*>([\s\S]*?)<\/main>/);
+            if (contentMatch) {
+                actualContent = contentMatch[1];
+                // Update relative paths in the content
+                actualContent = actualContent
+                    .replace(/href="\.\.\/\.\.\//g, `href="${relativePath}`)
+                    .replace(/src="\.\.\/\.\.\//g, `src="${relativePath}`)
+                    .replace(/href="\.\.\//g, `href="${relativePath}`)
+                    .replace(/src="\.\.\//g, `src="${relativePath}`);
+            }
+        } catch (error) {
+            console.log(`Could not read original content for ${dirPath}: ${error.message}`);
+        }
+    }
+    
+    // If no original content found, use generic content
+    if (!actualContent) {
+        actualContent = `
             <div class="page-header">
                 <h1>${title}</h1>
                 <p class="page-description">${description}</p>
@@ -150,7 +169,16 @@ directories.forEach(dirPath => {
                     </div>
                 </div>
             </div>
-        `)
+        `;
+    }
+
+    // Generate the HTML content
+    const htmlContent = baseTemplate
+        .replace(/\{\{title\}\}/g, title)
+        .replace(/\{\{description\}\}/g, description)
+        .replace(/\{\{pageTitle\}\}/g, title)
+        .replace(/\{\{pageDescription\}\}/g, description)
+        .replace(/\{\{content\}\}/g, actualContent)
         .replace(/href="Assets\//g, `href="${relativePath}Assets/`)
         .replace(/href="styles\//g, `href="${relativePath}styles/`)
         .replace(/href="scripts\//g, `href="${relativePath}scripts/`)
@@ -159,8 +187,8 @@ directories.forEach(dirPath => {
         .replace(/src="styles\//g, `src="${relativePath}styles/`)
         .replace(/src="scripts\//g, `src="${relativePath}scripts/`)
         .replace(/src="lib\//g, `src="${relativePath}lib/`)
-        .replace(/src="\.\.\/lib\/menu\.js"/g, `src="${relativePath}lib/menu.js?v=4"`)
-        .replace(/src="\.\.\/scripts\/main\.js"/g, `src="${relativePath}scripts/main.js?v=4"`);
+        .replace(/src="\.\.\/lib\/menu\.js"/g, `src="${relativePath}lib/menu.js?v=5"`)
+        .replace(/src="\.\.\/scripts\/main\.js"/g, `src="${relativePath}scripts/main.js?v=5"`);
     
     // Write the index.html file
     const indexPath = path.join(fullDirPath, 'index.html');
