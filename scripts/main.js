@@ -632,12 +632,29 @@ class CNCFoundationApp {
         const scrollLeftBtn = document.getElementById('scroll-left-btn');
         const scrollRightBtn = document.getElementById('scroll-right-btn');
 
-        if (!navContainer || !navLinks || !scrollLeftBtn || !scrollRightBtn) return;
+        console.log('Scroll indicators initialization:', {
+            navContainer: !!navContainer,
+            navLinks: !!navLinks,
+            scrollLeftBtn: !!scrollLeftBtn,
+            scrollRightBtn: !!scrollRightBtn
+        });
+
+        if (!navContainer || !navLinks || !scrollLeftBtn || !scrollRightBtn) {
+            console.log('Missing elements for scroll indicators');
+            return;
+        }
 
         // Check if scrolling is needed
         const checkScrollability = () => {
             const isScrollable = navLinks.scrollWidth > navLinks.clientWidth;
+            console.log('Scrollability check:', {
+                scrollWidth: navLinks.scrollWidth,
+                clientWidth: navLinks.clientWidth,
+                isScrollable: isScrollable
+            });
+            
             if (!isScrollable) {
+                console.log('Not scrollable, hiding buttons');
                 scrollLeftBtn.style.display = 'none';
                 scrollRightBtn.style.display = 'none';
                 return;
