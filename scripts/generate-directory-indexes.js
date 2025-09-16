@@ -159,8 +159,8 @@ directories.forEach(dirPath => {
         .replace(/src="styles\//g, `src="${relativePath}styles/`)
         .replace(/src="scripts\//g, `src="${relativePath}scripts/`)
         .replace(/src="lib\//g, `src="${relativePath}lib/`)
-        .replace(/src="\.\.\/lib\/menu\.js"/g, `src="${relativePath}lib/menu.js?v=2"`)
-        .replace(/src="\.\.\/scripts\/main\.js"/g, `src="${relativePath}scripts/main.js?v=2"`);
+        .replace(/src="\.\.\/lib\/menu\.js"/g, `src="${relativePath}lib/menu.js?v=3"`)
+        .replace(/src="\.\.\/scripts\/main\.js"/g, `src="${relativePath}scripts/main.js?v=3"`);
     
     // Write the index.html file
     const indexPath = path.join(fullDirPath, 'index.html');
