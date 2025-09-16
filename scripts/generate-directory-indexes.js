@@ -45,7 +45,31 @@ const directories = [
     'left-pane/gallery-publications',
     'left-pane/announcements',
     'left-pane/search',
-    'left-pane/contact-us'
+    'left-pane/contact-us',
+    // Subdirectories for dropdown items
+    'offerings/manufacturing-of-products/sweets',
+    'offerings/manufacturing-of-products/nimkin',
+    'offerings/manufacturing-of-products/puffed-rice',
+    'offerings/manufacturing-of-products/flattened-rice',
+    'offerings/services/vehicle-services',
+    'offerings/services/manpower-services',
+    'offerings/services/event-organizing',
+    'offerings/services/catering-services',
+    'offerings/services/photography',
+    'offerings/services/videography',
+    'offerings/services/web-development',
+    'offerings/services/graphic-design',
+    'offerings/services/email-marketing',
+    'offerings/services/paid-advertizing',
+    'offerings/services/online-apply-services',
+    'offerings/e-bussiness/govt-e-marketplace',
+    'offerings/construction-repairing/civil',
+    'offerings/construction-repairing/electrical',
+    'offerings/construction-repairing/maintenance',
+    'offerings/donation/csr',
+    'offerings/donation/relief-fund',
+    'offerings/donation/zakat',
+    'offerings/donation/charity-fund'
 ];
 
 // Function to get page title from directory path

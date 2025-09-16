@@ -90,7 +90,7 @@ class CNCFoundationApp {
     createDropdownNavItem(item) {
         const icon = this.getIconForSlug(item.slug);
         const children = item.children.map(child => `
-            <a href="/offerings/${item.slug}/${child.slug}.html" class="nav-dropdown-item">
+            <a href="/offerings/${item.slug}/${child.slug}" class="nav-dropdown-item">
                 ${child.title}
             </a>
         `).join('');
