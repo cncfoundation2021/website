@@ -164,7 +164,7 @@ function getServicesContent(slug) {
         'event-organizing': 'Event Organizing',
         'catering-services': 'Catering Services',
         'photography': 'Photography Services',
-        'vediography': 'Videography Services',
+        'videography': 'Videography Services',
         'web-development': 'Web Development',
         'graphic-design': 'Graphic Design',
         'email-marketing': 'Email Marketing',

@@ -170,8 +170,8 @@
             "slug": "photography"
           },
           {
-            "title": "Vediography",
-            "slug": "vediography"
+            "title": "Videography",
+            "slug": "videography"
           },
           {
             "title": "Web Development",
@@ -378,8 +378,8 @@
             "slug": "electrical"
           },
           {
-            "title": "Maintainance",
-            "slug": "maintainance"
+            "title": "Maintenance",
+            "slug": "maintenance"
           }
         ]
       },
@@ -439,7 +439,7 @@
     "/offerings/services/event-organizing",
     "/offerings/services/catering-services",
     "/offerings/services/photography",
-    "/offerings/services/vediography",
+    "/offerings/services/videography",
     "/offerings/services/web-development",
     "/offerings/services/graphic-design",
     "/offerings/services/email-marketing",
@@ -488,7 +488,7 @@
     "/offerings/construction-repairing",
     "/offerings/construction-repairing/civil",
     "/offerings/construction-repairing/electrical",
-    "/offerings/construction-repairing/maintainance",
+    "/offerings/construction-repairing/maintenance",
     "/offerings/donation",
     "/offerings/donation/csr",
     "/offerings/donation/relief-fund",

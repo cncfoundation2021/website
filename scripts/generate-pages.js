@@ -146,7 +146,7 @@ class PageGenerator {
             'event-organizing': 'Event Organizing',
             'catering-services': 'Catering Services',
             'photography': 'Photography Services',
-            'vediography': 'Videography Services',
+            'videography': 'Videography Services',
             'web-development': 'Web Development',
             'graphic-design': 'Graphic Design',
             'email-marketing': 'Email Marketing',
@@ -371,7 +371,7 @@ class PageGenerator {
         const constructionTypes = {
             'civil': 'Civil Construction',
             'electrical': 'Electrical Work',
-            'maintainance': 'Maintenance Services'
+            'maintenance': 'Maintenance Services'
         };
 
         const type = constructionTypes[slug] || 'Construction & Repairing';

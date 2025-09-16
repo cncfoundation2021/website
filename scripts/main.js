@@ -11,6 +11,7 @@ class CNCFoundationApp {
         this.initializeNavigation();
         this.initializeSearch();
         this.initializeLanguageSwitcher();
+        this.initializeScrollIndicators();
         this.updateLastUpdated();
         console.log('CNC Foundation App initialized');
     }
@@ -623,6 +624,74 @@ class CNCFoundationApp {
             const now = new Date();
             lastUpdatedElement.textContent = now.toLocaleDateString();
         }
+    }
+
+    initializeScrollIndicators() {
+        const navContainer = document.getElementById('nav-container');
+        const navLinks = document.getElementById('top-nav-links');
+        const scrollLeftBtn = document.getElementById('scroll-left-btn');
+        const scrollRightBtn = document.getElementById('scroll-right-btn');
+
+        if (!navContainer || !navLinks || !scrollLeftBtn || !scrollRightBtn) return;
+
+        // Check if scrolling is needed
+        const checkScrollability = () => {
+            const isScrollable = navLinks.scrollWidth > navLinks.clientWidth;
+            if (!isScrollable) {
+                scrollLeftBtn.style.display = 'none';
+                scrollRightBtn.style.display = 'none';
+                return;
+            }
+
+            scrollLeftBtn.style.display = 'flex';
+            scrollRightBtn.style.display = 'flex';
+
+            // Check scroll position
+            const scrollLeft = navLinks.scrollLeft;
+            const maxScrollLeft = navLinks.scrollWidth - navLinks.clientWidth;
+
+            // Update button visibility and container classes
+            if (scrollLeft <= 0) {
+                navContainer.classList.remove('scroll-left', 'scroll-both');
+                navContainer.classList.add('scroll-right');
+                scrollLeftBtn.classList.remove('show');
+                scrollRightBtn.classList.add('show');
+            } else if (scrollLeft >= maxScrollLeft) {
+                navContainer.classList.remove('scroll-right', 'scroll-both');
+                navContainer.classList.add('scroll-left');
+                scrollLeftBtn.classList.add('show');
+                scrollRightBtn.classList.remove('show');
+            } else {
+                navContainer.classList.remove('scroll-left', 'scroll-right');
+                navContainer.classList.add('scroll-both');
+                scrollLeftBtn.classList.add('show');
+                scrollRightBtn.classList.add('show');
+            }
+        };
+
+        // Scroll event listener
+        navLinks.addEventListener('scroll', checkScrollability);
+
+        // Resize event listener
+        window.addEventListener('resize', checkScrollability);
+
+        // Button click handlers
+        scrollLeftBtn.addEventListener('click', () => {
+            navLinks.scrollBy({
+                left: -200,
+                behavior: 'smooth'
+            });
+        });
+
+        scrollRightBtn.addEventListener('click', () => {
+            navLinks.scrollBy({
+                left: 200,
+                behavior: 'smooth'
+            });
+        });
+
+        // Initial check
+        setTimeout(checkScrollability, 100);
     }
 }
 
