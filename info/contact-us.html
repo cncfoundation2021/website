@@ -40,17 +40,12 @@
                 </div>
                 
                 <div class="logo-section">
-                <div class="logo-left">
-                    <img src="../Assets/1000126838.png" alt="CNC Foundation Logo" class="logo">
+                    <div class="logo">
+                        <h1>CARE & CURE FOUNDATION</h1>
+                        <p class="tagline">Manufacturing Excellence Across Assam</p>
+                    </div>
                 </div>
-                <div class="title-section">
-                    <h1>CARE & CURE FOUNDATION (CnC Foundation), ASSAM</h1>
-                    <p class="tagline">Manufacturing Excellence Across Assam</p>
-                </div>
-                <div class="logo-right">
-                    <img src="../Assets/1000126838.png" alt="CNC Foundation Logo" class="logo">
-                </div>
-        </header>
+            </header>
 
             <!-- Top Navigation -->
             <nav class="top-navigation" role="navigation" aria-label="Main navigation">
@@ -144,22 +139,5 @@
     <!-- Scripts -->
     <script src="../lib/menu.js"></script>
     <script src="../scripts/main.js"></script>
-    <script src="../../scripts/visual-effects.js"></script>
-
-    <script>
-    // Logo fallback script
-    document.addEventListener('DOMContentLoaded', function() {
-        const logos = document.querySelectorAll('.logo');
-        logos.forEach(logo => {
-            logo.addEventListener('error', function() {
-                // If local logo fails, try CDN version
-                const originalSrc = this.src;
-                if (originalSrc.includes('Assets/1000126838.png')) {
-                    this.src = 'https://cncassam.com/Assets/1000126838.png';
-                }
-            });
-        });
-    });
-    </script>
 </body>
 </html>
