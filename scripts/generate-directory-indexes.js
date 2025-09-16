@@ -146,7 +146,7 @@ directories.forEach(dirPath => {
                     <div class="cta-section">
                         <h3>Get Started Today</h3>
                         <p>Contact us to learn more about our ${title.toLowerCase()} services.</p>
-                        <a href="${relativePath}info/contact-us.html" class="cta-button">Contact Us</a>
+                        <a href="${relativePath}info/contact-us" class="cta-button">Contact Us</a>
                     </div>
                 </div>
             </div>
@@ -159,8 +159,8 @@ directories.forEach(dirPath => {
         .replace(/src="styles\//g, `src="${relativePath}styles/`)
         .replace(/src="scripts\//g, `src="${relativePath}scripts/`)
         .replace(/src="lib\//g, `src="${relativePath}lib/`)
-        .replace(/src="\.\.\/lib\/menu\.js"/g, `src="${relativePath}lib/menu.js?v=3"`)
-        .replace(/src="\.\.\/scripts\/main\.js"/g, `src="${relativePath}scripts/main.js?v=3"`);
+        .replace(/src="\.\.\/lib\/menu\.js"/g, `src="${relativePath}lib/menu.js?v=4"`)
+        .replace(/src="\.\.\/scripts\/main\.js"/g, `src="${relativePath}scripts/main.js?v=4"`);
     
     // Write the index.html file
     const indexPath = path.join(fullDirPath, 'index.html');

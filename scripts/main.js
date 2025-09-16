@@ -230,7 +230,7 @@ class CNCFoundationApp {
             // Create links for children if they exist
             const childrenLinks = item.children && item.children.length > 0 
                 ? item.children.slice(0, 3).map(child => `
-                    <a href="/offerings/${item.slug}/${child.slug}.html" class="offering-link">
+                    <a href="/offerings/${item.slug}/${child.slug}" class="offering-link">
                         <i class="fas fa-arrow-right"></i>
                         ${child.title}
                     </a>
@@ -380,7 +380,7 @@ class CNCFoundationApp {
             this.showContentSection(section);
         } else {
             // On other pages: navigate to the left pane page
-            window.location.href = `/left-pane/${section}.html`;
+            window.location.href = `/left-pane/${section}`;
         }
     }
 
