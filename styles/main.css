@@ -1178,6 +1178,7 @@ p {
     margin-left: 0;
     margin-right: 0;
     box-shadow: 0 -4px 16px var(--shadow-lg);
+    position: relative;
 }
 
 .footer-bottom {
@@ -1186,6 +1187,21 @@ p {
     align-items: center;
     padding-top: var(--space-4);
     font-size: var(--font-size-sm);
+    text-align: right;
+    color: var(--text-muted, #e5e7eb);
+}
+
+.footer-bottom > p {
+    display: none; /* Hide per-page copyright text to avoid duplication */
+}
+
+.footer::after {
+    content: "© 2025 CnC Foundation (CnC), Assam. All rights reserved.";
+    display: block;
+    margin-top: var(--space-3);
+    color: var(--text-muted, #e5e7eb);
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.2px;
     text-align: right;
 }
 
