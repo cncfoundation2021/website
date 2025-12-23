@@ -25,3 +25,7 @@ alwaysApply: true
    - Use `vercel --prod` or `npm run deploy` for production deployments
    - Do not use alternative deployment platforms unless explicitly requested
    - Ensure Vercel configuration (vercel.json) is properly maintained
+
+5. **Git Push on Deployment**
+   - After successful deployment, push all committed changes to the existing `cncfoundation2021` repository (use the established default branch)
+   - Keep deployment and git push steps in sync so production and repository stay aligned

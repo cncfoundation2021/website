@@ -1061,6 +1061,85 @@ class CNCFoundationApp {
                 </div>
             </div>
             `;
+        } else if (sectionSlug === 'social-media') {
+            contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary">Connect with us on social platforms. Links will be added soon.</p>
+            </div>
+            <div class="content-body">
+                <div class="social-grid" style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 0.9rem;">
+                        <i class="fab fa-facebook" aria-hidden="true" style="font-size: 28px; color: #1877f2;"></i>
+                        <div>
+                            <p style="margin: 0; font-weight: 700;">Facebook</p>
+                        </div>
+                    </div>
+                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 0.9rem;">
+                        <i class="fab fa-instagram" aria-hidden="true" style="font-size: 28px; color: #e4405f;"></i>
+                        <div>
+                            <p style="margin: 0; font-weight: 700;">Instagram</p>
+                        </div>
+                    </div>
+                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 0.9rem;">
+                        <i class="fab fa-twitter" aria-hidden="true" style="font-size: 28px; color: #1da1f2;"></i>
+                        <div>
+                            <p style="margin: 0; font-weight: 700;">Twitter</p>
+                        </div>
+                    </div>
+                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 0.9rem;">
+                        <i class="fab fa-whatsapp" aria-hidden="true" style="font-size: 28px; color: #25d366;"></i>
+                        <div>
+                            <p style="margin: 0; font-weight: 700;">WhatsApp</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        } else if (sectionSlug === 'contact-us') {
+            contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary">We are here to help—reach us any time during working hours</p>
+            </div>
+            <div class="content-body">
+                <div class="contact-cards" style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.5rem;">
+                        <div class="contact-item" style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem;">
+                            <i class="fab fa-whatsapp" aria-hidden="true" style="color: #25D366; font-size: 1.2rem;"></i>
+                            <div>
+                                <p style="margin: 0; font-weight: 700;">Talk to us (WhatsApp)</p>
+                                <a href="https://wa.me/9387102011" style="color: inherit; text-decoration: none;">9387102011</a>
+                            </div>
+                        </div>
+                        <div class="contact-item" style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem;">
+                            <i class="fas fa-phone" aria-hidden="true" style="color: #0ea5e9; font-size: 1.1rem;"></i>
+                            <div>
+                                <p style="margin: 0; font-weight: 700;">Contact number</p>
+                                <p style="margin: 0;">9101759991 / 6002610858</p>
+                            </div>
+                        </div>
+                        <div class="contact-item" style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.5rem;">
+                            <i class="fas fa-envelope" aria-hidden="true" style="color: #f59e0b; font-size: 1.1rem;"></i>
+                            <div>
+                                <p style="margin: 0; font-weight: 700;">Email</p>
+                                <a href="mailto:cncfoundation2021@gmail.com" style="color: inherit; text-decoration: none;">cncfoundation2021@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.5rem;">
+                        <div class="contact-item" style="display: flex; gap: 0.75rem; align-items: center;">
+                            <i class="fas fa-clock" aria-hidden="true" style="color: #10b981; font-size: 1.1rem;"></i>
+                            <div>
+                                <p style="margin: 0; font-weight: 700;">Working Hours</p>
+                                <p style="margin: 0;">Mon-Sat: 10 am - 6 pm</p>
+                                <p style="margin: 0;">Sunday: Closed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
         } else {
             contentBody = `
             <div class="content-header">

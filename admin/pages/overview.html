@@ -91,8 +91,9 @@
                 
                 const result = await response.json();
                 
-                if (result.success && result.requests) {
-                    const requests = result.requests;
+                if (result.success) {
+                    // API may return data as `requests` or `data` depending on endpoint
+                    const requests = result.requests || result.data || [];
                     
                     // Update stats
                     document.getElementById('statTotal').textContent = requests.length;
@@ -100,9 +101,11 @@
                     document.getElementById('statProgress').textContent = requests.filter(r => r.status === 'in-progress').length;
                     document.getElementById('statCompleted').textContent = requests.filter(r => r.status === 'completed').length;
                     
-                    // Show recent 5 requests
-                    const recent = requests.slice(0, 5);
-                    renderRecentRequests(recent);
+                    // Show recent 5 requests (or empty state if none)
+                    renderRecentRequests(requests.slice(0, 5));
+                } else {
+                    document.getElementById('recentRequestsTable').innerHTML = 
+                        '<p class="empty-state"><i class="fas fa-exclamation-circle"></i><br>Failed to load data</p>';
                 }
             } catch (error) {
                 console.error('Error loading overview data:', error);
