@@ -1,34 +1,28 @@
 #!/bin/bash
 
-# Deploy script that syncs with GitHub before deploying to Vercel
+# Deploy script for Vercel production deployment
+# IMPORTANT: Test locally first using 'npm run dev' before deploying
+# Sync to GitHub separately using 'npm run sync:git' if needed
 set -e  # Exit on error
 
-echo "🚀 Starting deployment process..."
+echo "🚀 Starting Vercel deployment..."
+echo "⚠️  Make sure you have tested locally first!"
+echo ""
 
-# Step 1: Check git status
-echo "📋 Checking git status..."
-git status
-
-# Step 2: Stage all changes
-echo "📦 Staging all changes..."
-git add .
-
-# Step 3: Check if there are changes to commit
-if git diff --staged --quiet; then
-    echo "✅ No changes to commit"
-else
-    # Step 4: Commit changes with timestamp
-    echo "💾 Committing changes..."
-    COMMIT_MSG="Deploy: $(date '+%Y-%m-%d %H:%M:%S')"
-    git commit -m "$COMMIT_MSG" || echo "⚠️  No changes to commit or commit failed"
+# Check if there are uncommitted changes
+if ! git diff-index --quiet HEAD --; then
+    echo "⚠️  WARNING: You have uncommitted changes."
+    echo "   Consider testing locally and committing before deploying."
+    read -p "   Continue with deployment anyway? (y/N) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Deployment cancelled. Test locally and commit changes first."
+        exit 1
+    fi
 fi
 
-# Step 5: Push to GitHub
-echo "⬆️  Pushing to GitHub..."
-git push origin main || echo "⚠️  Push failed or no changes to push"
-
-# Step 6: Deploy to Vercel
-echo "🌐 Deploying to Vercel..."
+# Deploy to Vercel
+echo "🌐 Deploying to Vercel production..."
 vercel --prod
 
 echo "✅ Deployment complete!"

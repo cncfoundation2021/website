@@ -567,47 +567,72 @@ p {
 .nav-links {
     display: flex;
     gap: var(--space-1);
-    overflow-x: auto;
-    overflow-y: visible;
     padding: var(--space-2) 0;
     flex: 1;
     white-space: nowrap;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
     position: relative;
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
+    align-items: center;
+    min-width: 0; /* Allow flex shrinking */
+    overflow: hidden; /* Hide overflow from parent */
 }
 
-/* Hide scrollbar by default */
-.nav-links::-webkit-scrollbar {
+/* Fixed navigation items (HOME and CnC BAZAR) */
+.nav-fixed-items {
+    display: flex;
+    gap: var(--space-1);
+    flex-shrink: 0;
+    padding-right: var(--space-4);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    margin-right: var(--space-2);
+    white-space: nowrap;
+}
+
+/* Scrollable navigation items */
+.nav-scrollable-items {
+    display: flex;
+    gap: var(--space-1);
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1 1 0; /* Allow flex shrinking - critical for scrolling */
+    min-width: 0; /* Critical: allows flex item to shrink below content size */
+    max-width: 100%; /* Constrain width */
+    width: 0; /* Force flex to constrain width */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    position: relative;
+}
+
+/* Hide scrollbar by default for scrollable items */
+.nav-scrollable-items::-webkit-scrollbar {
     height: 8px;
 }
 
-.nav-links::-webkit-scrollbar-track {
+.nav-scrollable-items::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.nav-links::-webkit-scrollbar-thumb {
+.nav-scrollable-items::-webkit-scrollbar-thumb {
     background: transparent;
     border-radius: 4px;
 }
 
 /* Show scrollbar on hover */
-.nav-links:hover::-webkit-scrollbar-thumb {
+.nav-scrollable-items:hover::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.3);
 }
 
-.nav-links:hover::-webkit-scrollbar-thumb:hover {
+.nav-scrollable-items:hover::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
 }
 
 /* Firefox */
-.nav-links:hover {
+.nav-scrollable-items:hover {
     scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
 
-/* Minimal Hover Scroll Zones */
+/* Minimal Hover Scroll Zones - positioned relative to scrollable items */
 .nav-scroll-zone {
     position: absolute;
     top: 0;
@@ -629,7 +654,19 @@ p {
     background: linear-gradient(to left, rgba(0, 0, 0, 0.15), transparent);
 }
 
-/* Show zones on container hover */
+/* Position scroll zones to overlay scrollable items section */
+.nav-container {
+    position: relative;
+}
+
+/* Scrollable items container needs relative positioning for zones */
+.nav-scrollable-items {
+    position: relative;
+    min-width: 0; /* Allow flex shrinking */
+}
+
+/* Show zones on scrollable items hover */
+.nav-scrollable-items:hover .nav-scroll-zone,
 .nav-container:hover .nav-scroll-zone {
     opacity: 1;
     pointer-events: auto;
@@ -680,6 +717,7 @@ p {
     transition: all var(--transition-fast) ease;
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.06);
+    flex-shrink: 0; /* Prevent nav items from shrinking */
 }
 
 .nav-item:hover {
@@ -722,6 +760,7 @@ p {
     font-size: var(--font-size-sm);
     white-space: nowrap;
     transition: all var(--transition-fast) ease;
+    flex-shrink: 0; /* Prevent dropdown items from shrinking */
 }
 
 .nav-dropdown .dropdown-toggle:hover {
@@ -1145,6 +1184,15 @@ p {
     box-shadow: 0 -4px 16px var(--shadow-lg);
 }
 
+.footer-bottom {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: var(--space-4);
+    font-size: var(--font-size-sm);
+    text-align: right;
+}
+
 /* Consistent typography across site */
 body, p, li, span, label, input, button, small, strong, em {
     color: var(--text);
@@ -1424,7 +1472,7 @@ a:hover {
 /* Breadcrumbs */
 .breadcrumbs {
     background-color: var(--bg-muted);
-    padding: var(--space-3) 0;
+    padding: var(--space-3) var(--gutter);
     border-bottom: 1px solid var(--border);
     margin-bottom: var(--space-6);
 }
@@ -1445,7 +1493,7 @@ a:hover {
 }
 
 .breadcrumb-list li:not(:last-child)::after {
-    content: '�';
+    content: '›';
     margin: 0 var(--space-2);
     color: var(--text-muted);
 }

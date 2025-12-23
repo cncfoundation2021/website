@@ -95,22 +95,17 @@
 
             <!-- Main Content -->
             <main id="main-content" class="main-content">
-                <div class="page-header">
-                    <h1>Announcements</h1>
-                    <p class="page-description">Information about announcements</p>
-                </div>
-                
-                <div class="content-section">
-                    
-        <div class="default-section">
-            <h2>ANNOUNCEMENTS</h2>
-            <p>Stay updated with our latest news, updates, and important announcements.</p>
-            <div class="coming-soon">
-                <h3>More Details Coming Soon</h3>
-                <p>We're preparing to share important updates and announcements. Check back regularly for the latest news.</p>
-            </div>
-        </div>
-    
+                <div class="content-section active" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                        <h2>Announcements</h2>
+                        <p class="page-description">Stay updated with our latest news, updates, and important announcements.</p>
+                        
+                        <section class="announcements-section" aria-labelledby="announcements-title" style="margin-top: 2rem;">
+                            <div class="announcements-grid" id="announcements-grid">
+                                <!-- Dynamically populated -->
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </main>
 
@@ -157,6 +152,41 @@
                 }
             });
         });
+
+        // Populate announcements on standalone page
+        const announcementsGrid = document.getElementById('announcements-grid');
+        if (announcementsGrid) {
+            const announcements = [
+                {
+                    day: '15', month: 'Dec',
+                    title: 'New Manufacturing Facility Inauguration',
+                    content: 'CnC opens new state-of-the-art manufacturing facility in Guwahati'
+                },
+                {
+                    day: '10', month: 'Dec',
+                    title: 'Partnership with Leading Brands',
+                    content: 'New partnerships with LG, Blue Star, and other major brands announced'
+                },
+                {
+                    day: '05', month: 'Dec',
+                    title: 'CSR Initiative Launch',
+                    content: 'New Corporate Social Responsibility programs for community development'
+                }
+            ];
+
+            announcementsGrid.innerHTML = announcements.map(announcement => `
+                <div class="announcement-card">
+                    <div class="announcement-date">
+                        <span class="day">${announcement.day}</span>
+                        <span class="month">${announcement.month}</span>
+                    </div>
+                    <div class="announcement-content">
+                        <h3>${announcement.title}</h3>
+                        <p>${announcement.content}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
     });
     </script>
 </body>

@@ -6,6 +6,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "python -m http.server 8000",
+    "sync:git": "bash scripts/sync-git.sh",
     "deploy": "bash scripts/deploy.sh",
     "deploy:vercel": "vercel --prod",
     "test:supabase": "node admin/test-connection.js"

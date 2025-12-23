@@ -77,14 +77,46 @@ class CNCFoundationApp {
         const topNavItems = this.menuManager.getTopTabs();
         console.log('Top nav items:', topNavItems);
         
-        const html = topNavItems.map(item => {
+        // Separate fixed items (HOME and CnC BAZAR) from scrollable items
+        const fixedItems = [];
+        const scrollableItems = [];
+        
+        topNavItems.forEach(item => {
+            const isFixed = item.slug === 'home' || 
+                          item.title === 'CnC BAZAR' || 
+                          item.slug.includes('cncbazar') || 
+                          item.slug.includes('cnc-bazar');
+            
+            if (isFixed) {
+                fixedItems.push(item);
+            } else {
+                scrollableItems.push(item);
+            }
+        });
+        
+        // Create fixed items HTML
+        const fixedHtml = fixedItems.map(item => {
             if (item.children && item.children.length > 0) {
                 return this.createDropdownNavItem(item);
             } else {
-                console.log('Creating simple nav for:', item.title);
                 return this.createSimpleNavItem(item);
             }
         }).join('');
+        
+        // Create scrollable items HTML
+        const scrollableHtml = scrollableItems.map(item => {
+            if (item.children && item.children.length > 0) {
+                return this.createDropdownNavItem(item);
+            } else {
+                return this.createSimpleNavItem(item);
+            }
+        }).join('');
+        
+        // Combine with fixed section and scrollable section
+        const html = `
+            <div class="nav-fixed-items">${fixedHtml}</div>
+            <div class="nav-scrollable-items">${scrollableHtml}</div>
+        `;
         
         console.log('Generated HTML:', html);
         topNavLinks.innerHTML = html;
@@ -92,16 +124,36 @@ class CNCFoundationApp {
         // Ensure scroll zones and custom scrollbar exist on every page
         const navContainer = topNavLinks.closest('.nav-container');
         const topNav = topNavLinks.closest('.top-navigation');
+        const scrollableItemsEl = topNavLinks.querySelector('.nav-scrollable-items');
+        
         if (navContainer) {
-            if (!navContainer.querySelector('.nav-scroll-left')) {
+            // Remove any existing zones from both navContainer and scrollableItemsEl to avoid duplicates
+            navContainer.querySelectorAll('.nav-scroll-zone').forEach(zone => zone.remove());
+            if (scrollableItemsEl) {
+                scrollableItemsEl.querySelectorAll('.nav-scroll-zone').forEach(zone => zone.remove());
+            }
+
+            // Position scroll zones relative to scrollable items - append to scrollable container if it exists
+            if (scrollableItemsEl) {
                 const leftZone = document.createElement('div');
                 leftZone.className = 'nav-scroll-zone nav-scroll-left';
-                navContainer.appendChild(leftZone);
-            }
-            if (!navContainer.querySelector('.nav-scroll-right')) {
+                scrollableItemsEl.appendChild(leftZone);
+                
                 const rightZone = document.createElement('div');
                 rightZone.className = 'nav-scroll-zone nav-scroll-right';
-                navContainer.appendChild(rightZone);
+                scrollableItemsEl.appendChild(rightZone);
+            } else {
+                // Fallback: append to nav-container if scrollable items don't exist yet
+                if (!navContainer.querySelector('.nav-scroll-left')) {
+                    const leftZone = document.createElement('div');
+                    leftZone.className = 'nav-scroll-zone nav-scroll-left';
+                    navContainer.appendChild(leftZone);
+                }
+                if (!navContainer.querySelector('.nav-scroll-right')) {
+                    const rightZone = document.createElement('div');
+                    rightZone.className = 'nav-scroll-zone nav-scroll-right';
+                    navContainer.appendChild(rightZone);
+                }
             }
         }
         if (topNav && !topNav.querySelector('#nav-scrollbar-thumb')) {
@@ -118,7 +170,10 @@ class CNCFoundationApp {
         setTimeout(() => {
             const dropdowns = document.querySelectorAll('.nav-dropdown');
             this.applyDropdownConfig();
-            this.initializeNavScrollButtons();
+            // Delay scroll initialization to ensure zones are positioned
+            setTimeout(() => {
+                this.initializeNavScrollButtons();
+            }, 200);
         }, 100);
     }
 
@@ -895,6 +950,134 @@ class CNCFoundationApp {
                 </div>
             </div>
             `;
+        } else if (sectionSlug === 'announcements') {
+            const announcements = [
+                {
+                    day: '15', month: 'Dec',
+                    title: 'New Manufacturing Facility Inauguration',
+                    content: 'CnC opens new state-of-the-art manufacturing facility in Guwahati'
+                },
+                {
+                    day: '10', month: 'Dec',
+                    title: 'Partnership with Leading Brands',
+                    content: 'New partnerships with LG, Blue Star, and other major brands announced'
+                },
+                {
+                    day: '05', month: 'Dec',
+                    title: 'CSR Initiative Launch',
+                    content: 'New Corporate Social Responsibility programs for community development'
+                }
+            ];
+
+            const announcementsHTML = announcements.map(announcement => `
+                <div class="announcement-card">
+                    <div class="announcement-date">
+                        <span class="day">${announcement.day}</span>
+                        <span class="month">${announcement.month}</span>
+                    </div>
+                    <div class="announcement-content">
+                        <h3>${announcement.title}</h3>
+                        <p>${announcement.content}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            contentBody = `
+            <div class="content-body">
+                <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <h2>Announcements</h2>
+                    <p class="content-summary">Stay updated with our latest news, updates, and important announcements.</p>
+                    
+                    <section class="announcements-section" aria-labelledby="announcements-title" style="margin-top: 2rem; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: var(--space-6); border-radius: 12px; border: 1px solid var(--border-light);">
+                        <div class="announcements-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4);">
+                            ${announcementsHTML}
+                        </div>
+                    </section>
+                </div>
+            </div>
+            `;
+        } else if (sectionSlug === 'key-contacts') {
+            contentBody = `
+            <div class="content-body">
+                <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <h2>Key Contacts</h2>
+                    <p class="content-summary">Information about key contacts</p>
+                    
+                    <div class="contact-card" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                        <img src="../Assets/WhatsApp Image 2025-12-23 at 11.26.29.jpeg" alt="Amir Sohail Choudhury" style="width: 120px; height: 120px; object-fit: cover; object-position: center top; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 12px;">
+                        <h3>Amir Sohail Choudhury</h3>
+                        <p><strong>B. Sc, M.A, B. Ed* — General Manager</strong></p>
+                        <div class="contact-info">
+                            <p>
+                                <i class="fas fa-phone" aria-hidden="true"></i>
+                                <strong>Contact:</strong> <a href="tel:+919101759991">+919101759991</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                        <img src="../Assets/WhatsApp Image 2025-12-23 at 11.26.28.jpeg" alt="Yamin Mustafa Barbhuiya" style="width: 120px; height: 120px; object-fit: cover; object-position: center top; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 12px;">
+                        <h3>Yamin Mustafa Barbhuiya</h3>
+                        <p><strong>B. Com — General Accounts Manager</strong></p>
+                        <div class="contact-info">
+                            <p>
+                                <i class="fas fa-phone" aria-hidden="true"></i>
+                                <strong>Contact:</strong> <a href="tel:+916002610858">+916002610858</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        } else if (sectionSlug === 'marketing-research') {
+            contentBody = `
+            <div class="content-body">
+                <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <h2>Marketing Research</h2>
+                    <p class="content-summary" style="color: #eaf2ff !important; font-size: 1.125rem;">Understanding market dynamics and consumer needs to deliver value-driven solutions</p>
+                    
+                    <div class="research-section" style="margin-top: 2rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(30, 41, 59, 0.95)); border: 1px solid var(--border, rgba(255, 255, 255, 0.16)); border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); margin-bottom: 2rem;">
+                        <h3 style="color: var(--primary, #0ea5e9); margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 700;">Consumer Needs & Affordability Research</h3>
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-bottom: 1.5rem;">
+                            At CnC Foundation, we conduct comprehensive research to understand consumer needs, their budget constraints, and affordability levels across Northeast India. Our dedicated research team analyzes market segments, purchasing patterns, and economic factors to identify what products and services are most needed and accessible to our target audience.
+                        </p>
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                            We carefully evaluate consumer spending capacity and design our product and service offerings to align with their financial capabilities. This ensures that we provide value-driven solutions that are not only high-quality but also affordable and accessible to a wide range of customers, from individual consumers to institutional clients.
+                        </p>
+                    </div>
+                    
+                    <div class="research-section" style="margin-top: 2rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(30, 41, 59, 0.95)); border: 1px solid var(--border, rgba(255, 255, 255, 0.16)); border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); margin-bottom: 2rem;">
+                        <h3 style="color: var(--primary, #0ea5e9); margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 700;">Competitive Market Price Monitoring</h3>
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-bottom: 1.5rem;">
+                            We continuously monitor market prices across various product categories and service sectors to ensure we remain competitive while maintaining our commitment to quality. Our pricing strategy is informed by real-time market analysis, allowing us to offer competitive rates without compromising on the excellence of our products and services.
+                        </p>
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                            Through systematic price tracking and competitive intelligence, we adjust our offerings to provide the best value proposition to our customers. This approach enables us to stay ahead in the market while ensuring that quality, reliability, and customer satisfaction remain our top priorities.
+                        </p>
+                    </div>
+                    
+                    <div class="research-section" style="margin-top: 2rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(30, 41, 59, 0.95)); border: 1px solid var(--border, rgba(255, 255, 255, 0.16)); border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); margin-bottom: 2rem;">
+                        <h3 style="color: var(--primary, #0ea5e9); margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 700;">Brand & Supplier Evaluation</h3>
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-bottom: 1.5rem;">
+                            We maintain a rigorous evaluation process for brands and suppliers, consistently assessing their quality standards, supply chain reliability, and commitment to excellence. Only those brands and suppliers that meet our stringent quality benchmarks and demonstrate consistent supply capabilities are onboarded into our network.
+                        </p>
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                            Our evaluation criteria include product quality, manufacturing standards, delivery timelines, after-sales support, and long-term reliability. This meticulous selection process ensures that our customers receive only the best products and services, backed by dependable supply chains and trusted partnerships.
+                        </p>
+                    </div>
+                    
+                    <div class="research-section" style="margin-top: 2rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(30, 41, 59, 0.95)); border: 1px solid var(--border, rgba(255, 255, 255, 0.16)); border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);">
+                        <h3 style="color: var(--primary, #0ea5e9); margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 700;">Customer Feedback & Repeat Purchase Analysis</h3>
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-bottom: 1.5rem;">
+                            Customer feedback and repeat buying trends are continuously monitored and analyzed to drive improvements in our service delivery and enhance customer satisfaction. We track customer purchase patterns, satisfaction scores, and feedback across all touchpoints to identify areas for enhancement.
+                        </p>
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                            This data-driven approach allows us to refine our product offerings, improve service quality, and strengthen customer relationships. By understanding what drives repeat purchases and customer loyalty, we can better serve our clients and build long-term partnerships based on trust and satisfaction.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            `;
         } else {
             contentBody = `
             <div class="content-header">
@@ -1194,12 +1377,12 @@ class CNCFoundationApp {
     }
 
     initializeNavScrollButtons() {
-        const navLinks = document.getElementById('top-nav-links');
+        const scrollableItems = document.querySelector('.nav-scrollable-items');
         const scrollLeftZone = document.querySelector('.nav-scroll-left');
         const scrollRightZone = document.querySelector('.nav-scroll-right');
         const scrollbarThumb = document.getElementById('nav-scrollbar-thumb');
         
-        if (!navLinks || !scrollLeftZone || !scrollRightZone || !scrollbarThumb) return;
+        if (!scrollableItems || !scrollLeftZone || !scrollRightZone || !scrollbarThumb) return;
 
         let scrollInterval = null;
         let autoScrollInterval = null;
@@ -1210,7 +1393,16 @@ class CNCFoundationApp {
 
         // Update scrollbar thumb position and size
         const updateScrollbar = () => {
-            const { scrollLeft, scrollWidth, clientWidth } = navLinks;
+            const { scrollLeft, scrollWidth, clientWidth } = scrollableItems;
+            
+            // If content fits, set safe defaults and hide
+            if (scrollWidth <= clientWidth || scrollWidth === 0) {
+                scrollbarThumb.style.width = '100%';
+                scrollbarThumb.style.left = '0%';
+                const scrollbar = scrollbarThumb.parentElement;
+                if (scrollbar) scrollbar.style.opacity = '0';
+                return;
+            }
             
             // Calculate thumb width as percentage of visible area
             const thumbWidthPercent = (clientWidth / scrollWidth) * 100;
@@ -1224,18 +1416,14 @@ class CNCFoundationApp {
             scrollbarThumb.style.width = `${thumbWidthPercent}%`;
             scrollbarThumb.style.left = `${thumbPosition}%`;
             
-            // Hide scrollbar if content fits in view
+            // Show scrollbar when overflow exists
             const scrollbar = scrollbarThumb.parentElement;
-            if (scrollWidth <= clientWidth) {
-                scrollbar.style.opacity = '0';
-            } else {
-                scrollbar.style.opacity = '1';
-            }
+            if (scrollbar) scrollbar.style.opacity = '1';
         };
 
         // Update zone visibility based on scroll position
         const updateZoneVisibility = () => {
-            const { scrollLeft, scrollWidth, clientWidth } = navLinks;
+            const { scrollLeft, scrollWidth, clientWidth } = scrollableItems;
             
             // Hide left zone if at start
             if (scrollLeft <= 0) {
@@ -1260,7 +1448,7 @@ class CNCFoundationApp {
 
         // Auto-scroll function that changes direction at boundaries
         const autoScroll = () => {
-            const { scrollLeft, scrollWidth, clientWidth } = navLinks;
+            const { scrollLeft, scrollWidth, clientWidth } = scrollableItems;
             
             // Check if we've reached the right end
             if (scrollLeft + clientWidth >= scrollWidth - 1) {
@@ -1272,7 +1460,7 @@ class CNCFoundationApp {
             }
             
             // Perform the scroll
-            navLinks.scrollBy({
+            scrollableItems.scrollBy({
                 left: autoScrollDirection * autoScrollSpeed,
                 behavior: 'auto'
             });
@@ -1301,7 +1489,7 @@ class CNCFoundationApp {
             stopAutoScroll(); // Stop auto-scroll when user hovers
             
             scrollInterval = setInterval(() => {
-                navLinks.scrollBy({
+                scrollableItems.scrollBy({
                     left: direction * scrollSpeed,
                     behavior: 'auto'
                 });
@@ -1333,12 +1521,12 @@ class CNCFoundationApp {
         scrollRightZone.addEventListener('mouseleave', stopScrolling);
 
         // Pause auto-scroll when user interacts with the navigation
-        navLinks.addEventListener('mouseenter', () => {
+        scrollableItems.addEventListener('mouseenter', () => {
             isHovering = true;
             stopAutoScroll();
         });
 
-        navLinks.addEventListener('mouseleave', () => {
+        scrollableItems.addEventListener('mouseleave', () => {
             isHovering = false;
             setTimeout(() => {
                 if (!isHovering) {
@@ -1348,7 +1536,7 @@ class CNCFoundationApp {
         });
 
         // Update on scroll
-        navLinks.addEventListener('scroll', updateAll);
+        scrollableItems.addEventListener('scroll', updateAll);
         
         // Update on resize
         window.addEventListener('resize', updateAll);
