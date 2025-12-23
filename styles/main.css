@@ -593,10 +593,9 @@ p {
     gap: var(--space-1);
     overflow-x: auto;
     overflow-y: hidden;
-    flex: 1 1 0; /* Allow flex shrinking - critical for scrolling */
+    flex: 1 1 auto; /* Allow flex shrinking while maintaining intrinsic width */
     min-width: 0; /* Critical: allows flex item to shrink below content size */
     max-width: 100%; /* Constrain width */
-    width: 0; /* Force flex to constrain width */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
@@ -654,19 +653,16 @@ p {
     background: linear-gradient(to left, rgba(0, 0, 0, 0.15), transparent);
 }
 
-/* Position scroll zones to overlay scrollable items section */
+/* Position scroll zones to overlay scrollable area */
 .nav-container {
     position: relative;
 }
 
-/* Scrollable items container needs relative positioning for zones */
 .nav-scrollable-items {
     position: relative;
-    min-width: 0; /* Allow flex shrinking */
 }
 
-/* Show zones on scrollable items hover */
-.nav-scrollable-items:hover .nav-scroll-zone,
+/* Show zones on container hover */
 .nav-container:hover .nav-scroll-zone {
     opacity: 1;
     pointer-events: auto;

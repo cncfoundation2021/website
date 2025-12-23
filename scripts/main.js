@@ -127,34 +127,17 @@ class CNCFoundationApp {
         const scrollableItemsEl = topNavLinks.querySelector('.nav-scrollable-items');
         
         if (navContainer) {
-            // Remove any existing zones from both navContainer and scrollableItemsEl to avoid duplicates
+            // Remove any existing zones to avoid duplicates
             navContainer.querySelectorAll('.nav-scroll-zone').forEach(zone => zone.remove());
-            if (scrollableItemsEl) {
-                scrollableItemsEl.querySelectorAll('.nav-scroll-zone').forEach(zone => zone.remove());
-            }
 
-            // Position scroll zones relative to scrollable items - append to scrollable container if it exists
-            if (scrollableItemsEl) {
-                const leftZone = document.createElement('div');
-                leftZone.className = 'nav-scroll-zone nav-scroll-left';
-                scrollableItemsEl.appendChild(leftZone);
-                
-                const rightZone = document.createElement('div');
-                rightZone.className = 'nav-scroll-zone nav-scroll-right';
-                scrollableItemsEl.appendChild(rightZone);
-            } else {
-                // Fallback: append to nav-container if scrollable items don't exist yet
-                if (!navContainer.querySelector('.nav-scroll-left')) {
-                    const leftZone = document.createElement('div');
-                    leftZone.className = 'nav-scroll-zone nav-scroll-left';
-                    navContainer.appendChild(leftZone);
-                }
-                if (!navContainer.querySelector('.nav-scroll-right')) {
-                    const rightZone = document.createElement('div');
-                    rightZone.className = 'nav-scroll-zone nav-scroll-right';
-                    navContainer.appendChild(rightZone);
-                }
-            }
+            // Always append scroll zones to navContainer (not inside scrollableItems) for stable positioning
+            const leftZone = document.createElement('div');
+            leftZone.className = 'nav-scroll-zone nav-scroll-left';
+            navContainer.appendChild(leftZone);
+            
+            const rightZone = document.createElement('div');
+            rightZone.className = 'nav-scroll-zone nav-scroll-right';
+            navContainer.appendChild(rightZone);
         }
         if (topNav && !topNav.querySelector('#nav-scrollbar-thumb')) {
             const bar = document.createElement('div');
