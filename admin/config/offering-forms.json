@@ -1,0 +1,783 @@
+{
+  "manufacturing-of-products": {
+    "title": "Manufacturing Request",
+    "description": "Request manufacturing services for food products",
+    "sections": [
+      {
+        "title": "Product Details",
+        "fields": [
+          {
+            "name": "product_type",
+            "label": "Product Type",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Sweets",
+              "Namkeen",
+              "Puffed Rice",
+              "Flattened Rice",
+              "Other"
+            ]
+          },
+          {
+            "name": "quantity",
+            "label": "Quantity (kg/pieces)",
+            "type": "text",
+            "required": true,
+            "placeholder": "e.g., 100 kg, 500 pieces"
+          },
+          {
+            "name": "packaging_requirements",
+            "label": "Packaging Requirements",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Specify packaging type, size, materials needed"
+          }
+        ]
+      },
+      {
+        "title": "Production Details",
+        "fields": [
+          {
+            "name": "production_timeline",
+            "label": "Production Timeline",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Within 1 week",
+              "1-2 weeks",
+              "2-4 weeks",
+              "1-2 months",
+              "Flexible"
+            ]
+          },
+          {
+            "name": "quality_standards",
+            "label": "Quality Standards",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Standard Quality",
+              "Premium Quality",
+              "Export Quality",
+              "Custom Specifications"
+            ]
+          },
+          {
+            "name": "custom_ingredients",
+            "label": "Custom Ingredients/Recipe",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Any specific ingredients or recipe requirements"
+          }
+        ]
+      }
+    ]
+  },
+
+  "services": {
+    "title": "Service Request",
+    "description": "Request professional services",
+    "sections": [
+      {
+        "title": "Service Details",
+        "fields": [
+          {
+            "name": "service_type",
+            "label": "Service Type",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Web Development",
+              "Graphic Design",
+              "Photography",
+              "Videography",
+              "Event Organizing",
+              "Catering Services",
+              "Home Maintenance",
+              "Vehicle Services",
+              "Manpower Services",
+              "Email Marketing",
+              "Paid Advertising",
+              "Online Apply Services"
+            ]
+          },
+          {
+            "name": "project_description",
+            "label": "Project Description",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Describe your project requirements in detail"
+          },
+          {
+            "name": "timeline",
+            "label": "Preferred Timeline",
+            "type": "select",
+            "required": true,
+            "options": [
+              "ASAP",
+              "Within 1 week",
+              "1-2 weeks",
+              "1 month",
+              "Flexible"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Project Specifications",
+        "fields": [
+          {
+            "name": "budget_range",
+            "label": "Budget Range",
+            "type": "select",
+            "required": false,
+            "options": [
+              "Under ₹10,000",
+              "₹10,000 - ₹25,000",
+              "₹25,000 - ₹50,000",
+              "₹50,000 - ₹1,00,000",
+              "Above ₹1,00,000",
+              "To be discussed"
+            ]
+          },
+          {
+            "name": "special_requirements",
+            "label": "Special Requirements",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Any specific features, styles, or requirements"
+          }
+        ]
+      }
+    ]
+  },
+
+  "supply-of-products": {
+    "title": "Supply Request",
+    "description": "Request product supply services",
+    "sections": [
+      {
+        "title": "Supply Details",
+        "fields": [
+          {
+            "name": "supply_category",
+            "label": "Supply Category",
+            "type": "select",
+            "required": true,
+            "options": [
+              "General Products",
+              "Machineries",
+              "Instruments",
+              "Office Stationery",
+              "Printing Materials",
+              "Other"
+            ]
+          },
+          {
+            "name": "product_list",
+            "label": "Product List",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "List all products you need with quantities"
+          },
+          {
+            "name": "delivery_timeline",
+            "label": "Delivery Timeline",
+            "type": "select",
+            "required": true,
+            "options": [
+              "ASAP",
+              "Within 1 week",
+              "1-2 weeks",
+              "1 month",
+              "Flexible"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Supply Specifications",
+        "fields": [
+          {
+            "name": "quality_requirements",
+            "label": "Quality Requirements",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Any specific quality standards or certifications needed"
+          },
+          {
+            "name": "installation_support",
+            "label": "Installation Support Required",
+            "type": "select",
+            "required": false,
+            "options": [
+              "Yes, full installation",
+              "Yes, partial support",
+              "No, self-installation",
+              "To be discussed"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "construction-repairing": {
+    "title": "Construction/Repair Request",
+    "description": "Request construction or repair services",
+    "sections": [
+      {
+        "title": "Project Details",
+        "fields": [
+          {
+            "name": "work_type",
+            "label": "Type of Work",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Civil Construction",
+              "Electrical Work",
+              "Maintenance",
+              "Renovation",
+              "Repair Work",
+              "Other"
+            ]
+          },
+          {
+            "name": "project_description",
+            "label": "Project Description",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Detailed description of the work needed"
+          },
+          {
+            "name": "property_type",
+            "label": "Property Type",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Residential",
+              "Commercial",
+              "Industrial",
+              "Office",
+              "Other"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Project Specifications",
+        "fields": [
+          {
+            "name": "area_size",
+            "label": "Area Size (sq ft)",
+            "type": "text",
+            "required": false,
+            "placeholder": "e.g., 1000 sq ft"
+          },
+          {
+            "name": "timeline",
+            "label": "Project Timeline",
+            "type": "select",
+            "required": true,
+            "options": [
+              "ASAP",
+              "Within 1 week",
+              "1-2 weeks",
+              "1 month",
+              "2-3 months",
+              "Flexible"
+            ]
+          },
+          {
+            "name": "special_requirements",
+            "label": "Special Requirements",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Any special materials, permits, or requirements"
+          }
+        ]
+      }
+    ]
+  },
+
+  "donation": {
+    "title": "Donation Request",
+    "description": "Request donation services or make a donation",
+    "sections": [
+      {
+        "title": "Donation Details",
+        "fields": [
+          {
+            "name": "donation_type",
+            "label": "Donation Type",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Charity Fund",
+              "CSR (Corporate Social Responsibility)",
+              "Relief Fund",
+              "Zakat",
+              "General Donation"
+            ]
+          },
+          {
+            "name": "donation_amount",
+            "label": "Donation Amount (₹)",
+            "type": "number",
+            "required": false,
+            "placeholder": "Enter amount in rupees"
+          },
+          {
+            "name": "donation_purpose",
+            "label": "Purpose of Donation",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Describe how the donation will be used"
+          }
+        ]
+      },
+      {
+        "title": "Additional Information",
+        "fields": [
+          {
+            "name": "anonymity_preference",
+            "label": "Anonymity Preference",
+            "type": "select",
+            "required": false,
+            "options": [
+              "Public recognition",
+              "Anonymous donation",
+              "No preference"
+            ]
+          },
+          {
+            "name": "receipt_required",
+            "label": "Receipt Required",
+            "type": "select",
+            "required": false,
+            "options": [
+              "Yes, for tax purposes",
+              "Yes, for records",
+              "No receipt needed"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "authorized-reseller": {
+    "title": "Authorized Reseller Request",
+    "description": "Request authorized reseller services for branded products",
+    "sections": [
+      {
+        "title": "Product Information",
+        "fields": [
+          {
+            "name": "brand_interested",
+            "label": "Brand Interested In",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Acer",
+              "BenQ",
+              "Blue Star",
+              "Bluprints",
+              "Cello",
+              "CP Plus",
+              "Decowell",
+              "Dr Shred",
+              "Eezy",
+              "Euronics",
+              "Gym Creation",
+              "Kent",
+              "LG",
+              "Luminous",
+              "Microtek",
+              "Orient",
+              "Supreme Furniture",
+              "Uniline",
+              "Zebronics",
+              "Other"
+            ]
+          },
+          {
+            "name": "product_category",
+            "label": "Product Category",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Electronics",
+              "Appliances",
+              "Furniture",
+              "Office Equipment",
+              "Security Systems",
+              "Other"
+            ]
+          },
+          {
+            "name": "specific_products",
+            "label": "Specific Products Needed",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "List specific models or product lines you want to resell"
+          }
+        ]
+      },
+      {
+        "title": "Business Requirements",
+        "fields": [
+          {
+            "name": "business_type",
+            "label": "Business Type",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Retail Store",
+              "Online Business",
+              "Corporate",
+              "Distributor",
+              "Other"
+            ]
+          },
+          {
+            "name": "expected_volume",
+            "label": "Expected Monthly Volume",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Under 10 units",
+              "10-50 units",
+              "50-100 units",
+              "100+ units",
+              "To be discussed"
+            ]
+          },
+          {
+            "name": "special_requirements",
+            "label": "Special Requirements",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Any special pricing, support, or service requirements"
+          }
+        ]
+      }
+    ]
+  },
+
+  "dealers": {
+    "title": "Dealer Services Request",
+    "description": "Request dealer services for products",
+    "sections": [
+      {
+        "title": "Dealer Requirements",
+        "fields": [
+          {
+            "name": "dealer_type",
+            "label": "Dealer Type",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Product Dealer",
+              "Service Dealer",
+              "Authorized Dealer",
+              "Distributor",
+              "Other"
+            ]
+          },
+          {
+            "name": "products_interested",
+            "label": "Products Interested In",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "List products or services you want to deal in"
+          },
+          {
+            "name": "business_experience",
+            "label": "Business Experience",
+            "type": "select",
+            "required": true,
+            "options": [
+              "New to business",
+              "1-2 years",
+              "3-5 years",
+              "5+ years"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "distributors": {
+    "title": "Distribution Services Request",
+    "description": "Request distribution services",
+    "sections": [
+      {
+        "title": "Distribution Requirements",
+        "fields": [
+          {
+            "name": "distribution_area",
+            "label": "Distribution Area",
+            "type": "text",
+            "required": true,
+            "placeholder": "Geographic area you want to distribute in"
+          },
+          {
+            "name": "product_categories",
+            "label": "Product Categories",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "List product categories you want to distribute"
+          },
+          {
+            "name": "distribution_capacity",
+            "label": "Distribution Capacity",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Local distribution",
+              "Regional distribution",
+              "National distribution",
+              "International distribution"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "e-bussiness": {
+    "title": "E-Business Services Request",
+    "description": "Request e-business services",
+    "sections": [
+      {
+        "title": "E-Business Requirements",
+        "fields": [
+          {
+            "name": "service_type",
+            "label": "E-Business Service Type",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Government E-Marketplace",
+              "Online Store Setup",
+              "E-Commerce Platform",
+              "Digital Marketing",
+              "Other"
+            ]
+          },
+          {
+            "name": "business_requirements",
+            "label": "Business Requirements",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Describe your e-business needs"
+          },
+          {
+            "name": "target_audience",
+            "label": "Target Audience",
+            "type": "text",
+            "required": false,
+            "placeholder": "Who are your target customers?"
+          }
+        ]
+      }
+    ]
+  },
+
+  "home": {
+    "title": "Home Services Request",
+    "description": "Request home services",
+    "sections": [
+      {
+        "title": "Home Service Requirements",
+        "fields": [
+          {
+            "name": "service_type",
+            "label": "Home Service Type",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Home Maintenance",
+              "Cleaning Services",
+              "Repair Services",
+              "Installation Services",
+              "Other"
+            ]
+          },
+          {
+            "name": "property_details",
+            "label": "Property Details",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Describe your property and specific needs"
+          },
+          {
+            "name": "urgency",
+            "label": "Urgency Level",
+            "type": "select",
+            "required": true,
+            "options": [
+              "ASAP",
+              "Within 1 week",
+              "Within 1 month",
+              "Flexible"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "product-marketing": {
+    "title": "Product Marketing Request",
+    "description": "Request product marketing services",
+    "sections": [
+      {
+        "title": "Marketing Requirements",
+        "fields": [
+          {
+            "name": "product_category",
+            "label": "Product Category",
+            "type": "text",
+            "required": true,
+            "placeholder": "What product category needs marketing?"
+          },
+          {
+            "name": "marketing_goals",
+            "label": "Marketing Goals",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "What are your marketing objectives?"
+          },
+          {
+            "name": "target_market",
+            "label": "Target Market",
+            "type": "text",
+            "required": true,
+            "placeholder": "Who is your target market?"
+          },
+          {
+            "name": "budget_range",
+            "label": "Marketing Budget Range",
+            "type": "select",
+            "required": false,
+            "options": [
+              "Under ₹10,000",
+              "₹10,000 - ₹25,000",
+              "₹25,000 - ₹50,000",
+              "₹50,000 - ₹1,00,000",
+              "Above ₹1,00,000",
+              "To be discussed"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "service-centre": {
+    "title": "Service Centre Request",
+    "description": "Request service centre services",
+    "sections": [
+      {
+        "title": "Service Requirements",
+        "fields": [
+          {
+            "name": "brand_name",
+            "label": "Brand Name",
+            "type": "select",
+            "required": true,
+            "options": [
+              "BenQ",
+              "Acer",
+              "LG",
+              "Samsung",
+              "Other"
+            ]
+          },
+          {
+            "name": "service_type",
+            "label": "Service Type",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Repair Service",
+              "Maintenance",
+              "Installation",
+              "Warranty Service",
+              "Other"
+            ]
+          },
+          {
+            "name": "product_details",
+            "label": "Product Details",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Model number, serial number, issue description"
+          },
+          {
+            "name": "urgency",
+            "label": "Service Urgency",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Emergency",
+              "ASAP",
+              "Within 1 week",
+              "Within 1 month",
+              "Flexible"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "default": {
+    "title": "Service Request",
+    "description": "Submit your request for our services",
+    "sections": [
+      {
+        "title": "Request Details",
+        "fields": [
+          {
+            "name": "service_description",
+            "label": "Service Description",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Describe what service you need in detail"
+          },
+          {
+            "name": "timeline",
+            "label": "Preferred Timeline",
+            "type": "select",
+            "required": true,
+            "options": [
+              "ASAP",
+              "Within 1 week",
+              "1-2 weeks",
+              "1 month",
+              "Flexible"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Additional Information",
+        "fields": [
+          {
+            "name": "special_requirements",
+            "label": "Special Requirements",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Any specific requirements, preferences, or additional information"
+          }
+        ]
+      }
+    ]
+  }
+}

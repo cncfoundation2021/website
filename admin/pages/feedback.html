@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Feedback - CNC Assam Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/admin-dashboard.css">
+    <link rel="icon" type="image/jpeg" href="/Assets/unnamed.jpg">
+</head>
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-comments"></i> Website Feedback</h1>
+            <p>View and analyze customer feedback from the website</p>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>Feedback Analytics</h2>
+                <button class="btn btn-primary" onclick="loadFeedback()">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+            
+            <!-- Feedback Analytics -->
+            <div class="feedback-analytics" id="feedbackAnalytics">
+                <!-- Will be populated dynamically -->
+            </div>
+            
+            <!-- Feedback Table -->
+            <div class="table-container" id="feedbackTableContainer">
+                <p class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i><br>
+                    Loading feedback...
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../scripts/auth-check.js"></script>
+    <script src="../scripts/shared-sidebar.js"></script>
+    <script src="../scripts/admin-dashboard.js"></script>
+    
+    <script>
+        // Initialize feedback page
+        document.addEventListener('DOMContentLoaded', async () => {
+            await window.adminAuth.init();
+            
+            // Check permission
+            if (!window.adminAuth.hasPermission('view_feedback')) {
+                alert('You do not have permission to view feedback');
+                window.location.href = '/admin/pages/overview.html';
+                return;
+            }
+            
+            // Load feedback
+            setTimeout(() => {
+                if (typeof loadFeedback === 'function') {
+                    loadFeedback();
+                }
+            }, 300);
+        });
+    </script>
+</body>
+</html>
+
+

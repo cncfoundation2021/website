@@ -1,0 +1,8 @@
+# Vercel Ignore Configuration
+# Rename this file to .vercelignore to exclude admin features from deployment
+
+# Uncomment the line below to exclude admin features from deployment
+# admin/
+
+# To deploy admin features, comment out or delete the admin/ line above
+

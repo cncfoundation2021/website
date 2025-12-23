@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Feedback Admin - CnC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0d1320 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            color: #ef4444;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            color: #fca5a5;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card h3 {
+            color: #0ea5e9;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .rating-distribution {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .rating-distribution h3 {
+            color: #0ea5e9;
+            margin-bottom: 1rem;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-bar span {
+            width: 60px;
+            color: #94a3b8;
+        }
+
+        .rating-bar .bar {
+            flex: 1;
+            height: 20px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            margin: 0 1rem;
+            overflow: hidden;
+        }
+
+        .rating-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f97316, #eab308, #22c55e, #0ea5e9);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .rating-bar .count {
+            width: 40px;
+            text-align: right;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .page-analytics {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .page-analytics h3 {
+            color: #0ea5e9;
+            margin-bottom: 1rem;
+        }
+
+        .page-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-name {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .page-stats {
+            display: flex;
+            gap: 1rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .feedback-list {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .feedback-list h3 {
+            color: #0ea5e9;
+            margin-bottom: 1rem;
+        }
+
+        .feedback-item {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stars {
+            color: #fbbf24;
+        }
+
+        .feedback-date {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .feedback-page {
+            color: #0ea5e9;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-path {
+            color: #64748b;
+            font-size: 0.8rem;
+            font-family: monospace;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-text {
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #fca5a5;
+            margin-bottom: 1rem;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .refresh-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-shield-alt"></i> Private Feedback Admin</h1>
+            <p>Confidential feedback analytics - Accessible only via direct link</p>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+            <button class="refresh-btn" onclick="loadFeedbackData()">
+                <i class="fas fa-sync-alt"></i> Refresh Data
+            </button>
+            <button class="export-btn" onclick="exportData()">
+                <i class="fas fa-download"></i> Export CSV
+            </button>
+        </div>
+
+        <div id="error-container"></div>
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading feedback data...
+        </div>
+
+        <div id="dashboard-content" style="display: none;">
+            <!-- Stats Grid -->
+            <div class="stats-grid" id="stats-grid">
+                <!-- Stats will be populated here -->
+            </div>
+
+            <!-- Rating Distribution -->
+            <div class="rating-distribution">
+                <h3><i class="fas fa-star"></i> Rating Distribution</h3>
+                <div id="rating-distribution">
+                    <!-- Rating bars will be populated here -->
+                </div>
+            </div>
+
+            <!-- Page Analytics -->
+            <div class="page-analytics">
+                <h3><i class="fas fa-chart-bar"></i> Page Analytics</h3>
+                <div id="page-analytics">
+                    <!-- Page analytics will be populated here -->
+                </div>
+            </div>
+
+            <!-- Recent Feedback -->
+            <div class="feedback-list">
+                <h3><i class="fas fa-comments"></i> Recent Feedback (Last 100)</h3>
+                <div id="feedback-list">
+                    <!-- Feedback items will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = null;
+
+        async function loadFeedbackData() {
+            const loading = document.getElementById('loading');
+            const dashboardContent = document.getElementById('dashboard-content');
+            const errorContainer = document.getElementById('error-container');
+            const refreshBtn = document.querySelector('.refresh-btn');
+            
+            // Show loading state
+            loading.style.display = 'block';
+            dashboardContent.style.display = 'none';
+            errorContainer.innerHTML = '';
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+
+            try {
+                const response = await fetch('/api/private-feedback-dashboard');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Failed to load feedback data');
+                }
+                
+                currentData = result.analytics;
+                displayAnalytics(currentData);
+                
+                // Hide loading, show content
+                loading.style.display = 'none';
+                dashboardContent.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading feedback data:', error);
+                errorContainer.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Error loading feedback data:</strong> ${error.message}
+                        <br><small>Make sure the API endpoint is accessible and Supabase is properly configured.</small>
+                    </div>
+                `;
+                loading.style.display = 'none';
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Data';
+            }
+        }
+
+        function displayAnalytics(analytics) {
+            // Display stats
+            const statsGrid = document.getElementById('stats-grid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <h3>${analytics.totalFeedback}</h3>
+                    <p><i class="fas fa-comments"></i> Total Feedback</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${analytics.totalRatings}</h3>
+                    <p><i class="fas fa-star"></i> With Ratings</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${analytics.averageRating}</h3>
+                    <p><i class="fas fa-chart-line"></i> Average Rating</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${Object.keys(analytics.pageFeedbackAnalytics).length}</h3>
+                    <p><i class="fas fa-globe"></i> Pages with Feedback</p>
+                </div>
+            `;
+
+            // Display rating distribution
+            const ratingDistribution = document.getElementById('rating-distribution');
+            ratingDistribution.innerHTML = '';
+            
+            for (let i = 5; i >= 1; i--) {
+                const count = analytics.ratingDistribution[i] || 0;
+                const percentage = analytics.totalRatings > 0 ? (count / analytics.totalRatings) * 100 : 0;
+                
+                ratingDistribution.innerHTML += `
+                    <div class="rating-bar">
+                        <span>${i} ★</span>
+                        <div class="bar">
+                            <div class="fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <span class="count">${count}</span>
+                    </div>
+                `;
+            }
+
+            // Display page analytics
+            const pageAnalytics = document.getElementById('page-analytics');
+            pageAnalytics.innerHTML = '';
+            
+            const sortedPages = Object.entries(analytics.pageFeedbackAnalytics)
+                .sort(([,a], [,b]) => b.count - a.count);
+            
+            sortedPages.forEach(([pageName, data]) => {
+                pageAnalytics.innerHTML += `
+                    <div class="page-item">
+                        <div class="page-name">${pageName}</div>
+                        <div class="page-stats">
+                            <span><i class="fas fa-comments"></i> ${data.count}</span>
+                            <span><i class="fas fa-star"></i> ${data.averageRating.toFixed(1)}</span>
+                            <span><i class="fas fa-chart-line"></i> ${data.ratings}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Display recent feedback
+            const feedbackList = document.getElementById('feedback-list');
+            feedbackList.innerHTML = '';
+            
+            if (analytics.recentFeedback.length === 0) {
+                feedbackList.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 2rem;">No feedback received yet.</p>';
+                return;
+            }
+            
+            analytics.recentFeedback.forEach(feedback => {
+                const stars = '★'.repeat(feedback.rating || 0) + '☆'.repeat(5 - (feedback.rating || 0));
+                const date = new Date(feedback.created_at).toLocaleDateString();
+                const time = new Date(feedback.created_at).toLocaleTimeString();
+                
+                feedbackList.innerHTML += `
+                    <div class="feedback-item">
+                        <div class="feedback-header">
+                            <div class="feedback-rating">
+                                <span class="stars">${stars}</span>
+                                <span>${feedback.rating || 0}/5</span>
+                            </div>
+                            <div class="feedback-date">${date} at ${time}</div>
+                        </div>
+                        <div class="feedback-page">
+                            <i class="fas fa-globe"></i> <strong>Page:</strong> ${feedback.pageName || 'Unknown page'}
+                        </div>
+                        <div class="feedback-path">
+                            <i class="fas fa-link"></i> <strong>Path:</strong> ${feedback.originalPath || 'Unknown path'}
+                        </div>
+                        ${feedback.feedback ? `<div class="feedback-text">${feedback.feedback}</div>` : ''}
+                    </div>
+                `;
+            });
+        }
+
+        function exportData() {
+            if (!currentData) {
+                alert('No data to export. Please load data first.');
+                return;
+            }
+
+            // Create CSV content
+            let csvContent = 'Date,Time,Rating,Page Name,Page Path,Feedback\n';
+            
+            currentData.recentFeedback.forEach(feedback => {
+                const date = new Date(feedback.created_at).toLocaleDateString();
+                const time = new Date(feedback.created_at).toLocaleTimeString();
+                const rating = feedback.rating || 0;
+                const pageName = feedback.pageName || 'Unknown';
+                const pagePath = feedback.originalPath || 'Unknown';
+                const feedbackText = (feedback.feedback || '').replace(/"/g, '""');
+                
+                csvContent += `"${date}","${time}","${rating}","${pageName}","${pagePath}","${feedbackText}"\n`;
+            });
+
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cnc-feedback-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadFeedbackData);
+    </script>
+</body>
+</html>

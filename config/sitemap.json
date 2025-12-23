@@ -1,0 +1,439 @@
+{
+  "sitemap": {
+    "config": {
+      "dropdowns": {
+        "positioning": "fixed",
+        "zIndex": 999999,
+        "offset": {
+          "top": 5,
+          "left": 0
+        },
+        "styling": {
+          "background": "white",
+          "border": "1px solid #e1e6ef",
+          "borderRadius": "4px",
+          "boxShadow": "0 4px 12px rgba(0, 0, 0, 0.15)",
+          "minWidth": "220px",
+          "padding": "0.5rem 0"
+        },
+        "behavior": {
+          "closeOnOutsideClick": true,
+          "closeOnEscape": true,
+          "repositionOnResize": true,
+          "animation": {
+            "duration": "0.2s",
+            "easing": "ease",
+            "transform": "translateY(-10px) to translateY(0)"
+          }
+        }
+      },
+      "navigation": {
+        "topNavZIndex": 10000,
+        "dropdownContainerZIndex": 10001,
+        "dropdownMenuZIndex": 999999
+      }
+    },
+    "leftPane": [
+      {
+        "title": "ABOUT US",
+        "slug": "about-us"
+      },
+      {
+        "title": "KEY CONTACTS",
+        "slug": "key-contacts"
+      },
+      {
+        "title": "ORGANISATIONAL CHART",
+        "slug": "organisational-chart"
+      },
+      {
+        "title": "MISSION & VISSION",
+        "slug": "mission-vission"
+      },
+      {
+        "title": "ONLINE MARKETING",
+        "slug": "online-marketing"
+      },
+      {
+        "title": "MARKETING RESEARCH",
+        "slug": "marketing-research"
+      },
+      {
+        "title": "SOCIAL MEDIA",
+        "slug": "social-media"
+      },
+      {
+        "title": "EMPLOYEE MANAGEMENT",
+        "slug": "employee-management"
+      },
+      {
+        "title": "BUSINESS TIE UPS",
+        "slug": "business-tie-ups"
+      },
+      {
+        "title": "GRIEVANCES",
+        "slug": "grievances"
+      },
+      {
+        "title": "GALLERY & PUBLICATIONS",
+        "slug": "gallery-publications"
+      },
+      {
+        "title": "ANNOUNCEMENTS",
+        "slug": "announcements"
+      },
+      {
+        "title": "SEARCH",
+        "slug": "search"
+      },
+      {
+        "title": "CONTACT US",
+        "slug": "contact-us"
+      }
+    ],
+    "topNav": [
+      {
+        "title": "HOME",
+        "slug": "home",
+        "children": []
+      },
+      {
+        "title": "MANUFACTURING & RESELLING",
+        "slug": "manufacturing-of-products",
+        "children": [
+          {
+            "title": "Sweets",
+            "slug": "sweets"
+          },
+          {
+            "title": "Namkeen",
+            "slug": "namkeen"
+          },
+          {
+            "title": "Puffed Rice",
+            "slug": "puffed-rice"
+          },
+          {
+            "title": "Flattened Rice",
+            "slug": "flattened-rice"
+          }
+        ]
+      },
+      {
+        "title": "SUPPLY OF PRODUCTS",
+        "slug": "supply-of-products",
+        "children": [
+          {
+            "title": "Supply of General Products",
+            "slug": "supply-of-general-products"
+          },
+          {
+            "title": "Supply of Machineries",
+            "slug": "supply-of-machinaries"
+          },
+          {
+            "title": "Supply of Instruments",
+            "slug": "supply-of-instruments"
+          },
+          {
+            "title": "Supply of Office Stationery Items",
+            "slug": "supply-of-office-stationeries"
+          },
+          {
+            "title": "Supply of Printing Materials Etc.",
+            "slug": "supply-of-printing-materials-etc"
+          }
+        ]
+      },
+      {
+        "title": "SERVICES",
+        "slug": "services",
+        "children": [
+          {
+            "title": "Home Maintenance",
+            "slug": "home-maintenance"
+          },
+          {
+            "title": "Vehicle Services",
+            "slug": "vehicle-services"
+          },
+          {
+            "title": "Manpower Services",
+            "slug": "manpower-services"
+          },
+          {
+            "title": "Event Organizing",
+            "slug": "event-organizing"
+          },
+          {
+            "title": "Catering Services",
+            "slug": "catering-services"
+          },
+          {
+            "title": "Photography",
+            "slug": "photography"
+          },
+          {
+            "title": "Videography",
+            "slug": "videography"
+          },
+          {
+            "title": "Web Development",
+            "slug": "web-development"
+          },
+          {
+            "title": "Graphic Design",
+            "slug": "graphic-design"
+          },
+          {
+            "title": "Email Marketing",
+            "slug": "email-marketing"
+          },
+          {
+            "title": "Paid Advertizing",
+            "slug": "paid-advertizing"
+          },
+          {
+            "title": "Online Apply Services",
+            "slug": "online-apply-services"
+          }
+        ]
+      },
+      {
+        "title": "CnC BAZAR",
+        "slug": "https://vyaparapp.in/store/cncbazar",
+        "children": []
+      },
+      {
+        "title": "E-BUSSINESS",
+        "slug": "e-bussiness",
+        "children": [
+          {
+            "title": "Govt. E- Marketplace",
+            "slug": "govt-e-marketplace"
+          }
+        ]
+      },
+      {
+        "title": "DISTRIBUTORS",
+        "slug": "distributors",
+        "children": []
+      },
+      {
+        "title": "DEALERS",
+        "slug": "dealers",
+        "children": [
+          {
+            "title": "Kangayam Coir Products",
+            "slug": "kangayam-coir"
+          }
+        ]
+      },
+      {
+        "title": "SERVICE CENTRE",
+        "slug": "service-centre",
+        "children": [
+          {
+            "title": "BenQ",
+            "slug": "benq"
+          }
+        ]
+      },
+      {
+        "title": "AUTHORIZED RESELLER",
+        "slug": "authorized-reseller",
+        "children": [
+          {
+            "title": "LG",
+            "slug": "lg"
+          },
+          {
+            "title": "Blue Star",
+            "slug": "blue-star"
+          },
+          {
+            "title": "Luminous",
+            "slug": "luminous"
+          },
+          {
+            "title": "Acer",
+            "slug": "acer"
+          },
+          {
+            "title": "Uniline",
+            "slug": "uniline"
+          },
+          {
+            "title": "Microtek",
+            "slug": "microtek"
+          },
+          {
+            "title": "Cello",
+            "slug": "cello"
+          },
+          {
+            "title": "Supreme Furniture",
+            "slug": "supreme-furniture"
+          },
+          {
+            "title": "Eezy",
+            "slug": "eezy"
+          },
+          {
+            "title": "BluPrints",
+            "slug": "bluprints"
+          },
+          {
+            "title": "Decowell",
+            "slug": "decowell"
+          },
+          {
+            "title": "BenQ",
+            "slug": "benq"
+          },
+          {
+            "title": "Gym Creation",
+            "slug": "gym-creation"
+          },
+          {
+            "title": "Kent",
+            "slug": "kent"
+          },
+          {
+            "title": "Euronics",
+            "slug": "euronics"
+          },
+          {
+            "title": "Zebronics",
+            "slug": "zebronics"
+          },
+          { "title": "Dr. Shred", "slug": "dr-shred" },
+          { "title": "Orient",   "slug": "orient"   },
+          { "title": "CP Plus",  "slug": "cp-plus"  }
+        ]
+      },
+      {
+        "title": "PRODUCT MARKETING",
+        "slug": "product-marketing",
+        "children": []
+      },
+      {
+        "title": "CONSTRUCTION & REPAIRING",
+        "slug": "construction-repairing",
+        "children": [
+          {
+            "title": "Civil",
+            "slug": "civil"
+          },
+          {
+            "title": "Electrical",
+            "slug": "electrical"
+          },
+          {
+            "title": "Maintenance",
+            "slug": "maintenance"
+          }
+        ]
+      },
+      {
+        "title": "DONATION",
+        "slug": "donation",
+        "children": [
+          {
+            "title": "CSR",
+            "slug": "csr"
+          },
+          {
+            "title": "Relief Fund",
+            "slug": "relief-fund"
+          },
+          {
+            "title": "Zakat",
+            "slug": "zakat"
+          },
+          {
+            "title": "Charity Fund",
+            "slug": "charity-fund"
+          }
+        ]
+      }
+    ]
+  },
+  "routes": [
+    "/offerings/services/home-maintenance",
+    "/info/about-us",
+    "/info/key-contacts",
+    "/info/organisational-chart",
+    "/info/mission-vission",
+    "/info/online-marketing",
+    "/info/marketing-research",
+    "/info/social-media",
+    "/info/employee-management",
+    "/info/business-tie-ups",
+    "/info/grievances",
+    "/info/gallery-publications",
+    "/info/announcements",
+    "/info/search",
+    "/info/contact-us",
+    "/offerings/manufacturing-of-products",
+    "/offerings/manufacturing-of-products/sweets",
+    "/offerings/manufacturing-of-products/namkeen",
+    "/offerings/manufacturing-of-products/puffed-rice",
+    "/offerings/manufacturing-of-products/flattened-rice",
+    "/offerings/supply-of-products",
+    "/offerings/supply-of-products/supply-of-general-products",
+    "/offerings/supply-of-products/supply-of-machinaries",
+    "/offerings/supply-of-products/supply-of-instruments",
+    "/offerings/supply-of-products/supply-of-office-stationeries",
+    "/offerings/supply-of-products/supply-of-printing-materials-etc",
+    "/offerings/services",
+    "/offerings/services/vehicle-services",
+    "/offerings/services/manpower-services",
+    "/offerings/services/event-organizing",
+    "/offerings/services/catering-services",
+    "/offerings/services/photography",
+    "/offerings/services/videography",
+    "/offerings/services/web-development",
+    "/offerings/services/graphic-design",
+    "/offerings/services/email-marketing",
+    "/offerings/services/paid-advertizing",
+    "/offerings/services/online-apply-services",
+    "/offerings/e-bussiness",
+    "/offerings/e-bussiness/govt-e-marketplace",
+    "/offerings/distributors",
+    "/offerings/dealers",
+    "/offerings/dealers/kangayam-coir",
+    "/offerings/service-centre",
+    "/offerings/service-centre/benq",
+    "/offerings/authorized-reseller",
+    "/offerings/authorized-reseller/lg",
+    "/offerings/authorized-reseller/blue-star",
+    "/offerings/authorized-reseller/luminous",
+    "/offerings/authorized-reseller/acer",
+    "/offerings/authorized-reseller/uniline",
+    "/offerings/authorized-reseller/microtek",
+    "/offerings/authorized-reseller/cello",
+    "/offerings/authorized-reseller/supreme-furniture",
+    "/offerings/authorized-reseller/eezy",
+    "/offerings/authorized-reseller/bluprints",
+    "/offerings/authorized-reseller/decowell",
+    "/offerings/authorized-reseller/benq",
+    "/offerings/authorized-reseller/gym-creation",
+    "/offerings/authorized-reseller/kent",
+    "/offerings/authorized-reseller/euronics",
+    "/offerings/authorized-reseller/zebronics",
+    "/offerings/authorized-reseller/dr-shred",
+    "/offerings/authorized-reseller/orient",
+    "/offerings/authorized-reseller/cp-plus",
+    "/offerings/product-marketing",
+    "/offerings/construction-repairing",
+    "/offerings/construction-repairing/civil",
+    "/offerings/construction-repairing/electrical",
+    "/offerings/construction-repairing/maintenance",
+    "/offerings/donation",
+    "/offerings/donation/csr",
+    "/offerings/donation/relief-fund",
+    "/offerings/donation/zakat",
+    "/offerings/donation/charity-fund"
+  ]
+}

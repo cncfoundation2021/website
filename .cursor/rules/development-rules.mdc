@@ -1,0 +1,27 @@
+---
+alwaysApply: true
+---
+
+## Development Workflow Rules
+
+1. **Local Testing Before Production Deployment**
+   - Always make changes and allow testing locally before deploying to production
+   - Ensure the local development server is running and accessible for testing
+   - Verify all functionality works correctly in the local environment before any production deployment
+
+2. **Callout Major Changes**
+   - Before applying any modifications, callout and explain any major changes that will be made
+   - Describe the impact and scope of changes
+   - Get explicit confirmation for significant modifications that could affect functionality or user experience
+
+3. **Debugging and Logging**
+   - Ensure there are sufficient logs for debugging purposes
+   - Add appropriate console.log statements, error logging, and debug information
+   - Include relevant context in logs (timestamps, function names, input/output values where appropriate)
+   - Make logs clear and helpful for troubleshooting issues
+
+4. **Deployment Platform**
+   - Always deploy this project to Vercel for production
+   - Use `vercel --prod` or `npm run deploy` for production deployments
+   - Do not use alternative deployment platforms unless explicitly requested
+   - Ensure Vercel configuration (vercel.json) is properly maintained

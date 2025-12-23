@@ -1,0 +1,409 @@
+{
+  "commonFields": [
+    {
+      "name": "customer_name",
+      "label": "Full Name",
+      "type": "text",
+      "required": true,
+      "placeholder": "Enter your full name",
+      "validation": {
+        "minLength": 2,
+        "maxLength": 100
+      }
+    },
+    {
+      "name": "customer_email",
+      "label": "Email Address",
+      "type": "email",
+      "required": true,
+      "placeholder": "your.email@example.com",
+      "validation": {
+        "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+      }
+    },
+    {
+      "name": "customer_phone",
+      "label": "Phone Number",
+      "type": "tel",
+      "required": true,
+      "placeholder": "+91 XXXXX XXXXX",
+      "validation": {
+        "pattern": "^[+]?[0-9]{10,15}$"
+      }
+    },
+    {
+      "name": "customer_address",
+      "label": "Address",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Enter your complete address",
+      "validation": {
+        "minLength": 10,
+        "maxLength": 500
+      }
+    }
+  ],
+  "offeringCategories": {
+    "manufacturing-of-products": {
+      "title": "Manufacturing & Reselling",
+      "fields": [
+        {
+          "name": "quantity",
+          "label": "Required Quantity",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., 100 kg, 500 packets"
+        },
+        {
+          "name": "delivery_date",
+          "label": "Expected Delivery Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "customization",
+          "label": "Any Customization Needs?",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Specify any special requirements, packaging preferences, etc."
+        }
+      ]
+    },
+    "supply-of-products": {
+      "title": "Supply of Products",
+      "fields": [
+        {
+          "name": "product_specifications",
+          "label": "Product Specifications",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe the products you need in detail"
+        },
+        {
+          "name": "quantity",
+          "label": "Quantity Required",
+          "type": "text",
+          "required": true,
+          "placeholder": "Specify quantity and units"
+        },
+        {
+          "name": "delivery_location",
+          "label": "Delivery Location",
+          "type": "text",
+          "required": true,
+          "placeholder": "Where should the products be delivered?"
+        },
+        {
+          "name": "timeline",
+          "label": "Required Timeline",
+          "type": "text",
+          "required": true,
+          "placeholder": "When do you need this delivered?"
+        }
+      ]
+    },
+    "services": {
+      "title": "Services",
+      "fields": [
+        {
+          "name": "service_date",
+          "label": "Preferred Service Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "service_time",
+          "label": "Preferred Time",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Morning, Afternoon, Evening"
+        },
+        {
+          "name": "duration",
+          "label": "Estimated Duration/Frequency",
+          "type": "text",
+          "required": false,
+          "placeholder": "How long or how often?"
+        },
+        {
+          "name": "special_requirements",
+          "label": "Special Requirements",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Any specific requirements or preferences?"
+        }
+      ]
+    },
+    "authorized-reseller": {
+      "title": "Authorized Reseller",
+      "fields": [
+        {
+          "name": "product_model",
+          "label": "Product Model/Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., LG 65-inch OLED TV"
+        },
+        {
+          "name": "quantity",
+          "label": "Quantity",
+          "type": "number",
+          "required": true,
+          "placeholder": "Number of units"
+        },
+        {
+          "name": "warranty_preference",
+          "label": "Warranty Preference",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Standard Warranty",
+            "Extended Warranty",
+            "Premium Warranty"
+          ]
+        },
+        {
+          "name": "installation_required",
+          "label": "Installation Required?",
+          "type": "select",
+          "required": true,
+          "options": ["Yes", "No"]
+        }
+      ]
+    },
+    "construction-repairing": {
+      "title": "Construction & Repairing",
+      "fields": [
+        {
+          "name": "project_scope",
+          "label": "Project Scope",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe your construction/repair project in detail"
+        },
+        {
+          "name": "project_location",
+          "label": "Project Location",
+          "type": "text",
+          "required": true,
+          "placeholder": "Where is the project site?"
+        },
+        {
+          "name": "timeline",
+          "label": "Expected Timeline",
+          "type": "text",
+          "required": true,
+          "placeholder": "When do you want this completed?"
+        },
+        {
+          "name": "budget_range",
+          "label": "Budget Range (Optional)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Your approximate budget"
+        }
+      ]
+    },
+    "donation": {
+      "title": "Donation",
+      "fields": [
+        {
+          "name": "donation_amount",
+          "label": "Donation Amount",
+          "type": "number",
+          "required": true,
+          "placeholder": "Amount in INR"
+        },
+        {
+          "name": "purpose",
+          "label": "Purpose of Donation",
+          "type": "select",
+          "required": true,
+          "options": [
+            "CSR",
+            "Relief Fund",
+            "Zakat",
+            "Charity Fund",
+            "General"
+          ]
+        },
+        {
+          "name": "receipt_required",
+          "label": "Receipt Required?",
+          "type": "select",
+          "required": true,
+          "options": ["Yes", "No"]
+        },
+        {
+          "name": "additional_notes",
+          "label": "Additional Notes",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Any specific instructions or wishes"
+        }
+      ]
+    },
+    "dealers": {
+      "title": "Dealers",
+      "fields": [
+        {
+          "name": "product_interest",
+          "label": "Product of Interest",
+          "type": "text",
+          "required": true,
+          "placeholder": "Which products are you interested in?"
+        },
+        {
+          "name": "quantity",
+          "label": "Expected Quantity",
+          "type": "text",
+          "required": true,
+          "placeholder": "Approximate quantity needed"
+        },
+        {
+          "name": "delivery_location",
+          "label": "Delivery Location",
+          "type": "text",
+          "required": true,
+          "placeholder": "Where should products be delivered?"
+        }
+      ]
+    },
+    "distributors": {
+      "title": "Distributors",
+      "fields": [
+        {
+          "name": "distribution_area",
+          "label": "Distribution Area",
+          "type": "text",
+          "required": true,
+          "placeholder": "Which area/region?"
+        },
+        {
+          "name": "product_interest",
+          "label": "Products of Interest",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Which products would you like to distribute?"
+        },
+        {
+          "name": "business_details",
+          "label": "Business Details",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Tell us about your business"
+        }
+      ]
+    },
+    "service-centre": {
+      "title": "Service Centre",
+      "fields": [
+        {
+          "name": "product_brand",
+          "label": "Product Brand",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., BenQ"
+        },
+        {
+          "name": "product_model",
+          "label": "Product Model",
+          "type": "text",
+          "required": true,
+          "placeholder": "Model number or name"
+        },
+        {
+          "name": "issue_description",
+          "label": "Issue Description",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe the problem in detail"
+        },
+        {
+          "name": "purchase_date",
+          "label": "Purchase Date (Optional)",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "warranty_status",
+          "label": "Warranty Status",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Under Warranty",
+            "Out of Warranty",
+            "Not Sure"
+          ]
+        }
+      ]
+    },
+    "product-marketing": {
+      "title": "Product Marketing",
+      "fields": [
+        {
+          "name": "product_details",
+          "label": "Product Details",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe the product you want to market"
+        },
+        {
+          "name": "target_market",
+          "label": "Target Market/Region",
+          "type": "text",
+          "required": true,
+          "placeholder": "Where do you want to market?"
+        },
+        {
+          "name": "marketing_budget",
+          "label": "Marketing Budget (Optional)",
+          "type": "text",
+          "required": false,
+          "placeholder": "Your approximate budget"
+        },
+        {
+          "name": "timeline",
+          "label": "Campaign Timeline",
+          "type": "text",
+          "required": true,
+          "placeholder": "When do you want to start?"
+        }
+      ]
+    },
+    "e-bussiness": {
+      "title": "E-Business",
+      "fields": [
+        {
+          "name": "business_type",
+          "label": "Type of Business",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., Govt. E-Marketplace, Online Store"
+        },
+        {
+          "name": "products_services",
+          "label": "Products/Services",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "What do you want to sell/offer?"
+        },
+        {
+          "name": "assistance_needed",
+          "label": "Assistance Needed",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "How can we help you?"
+        }
+      ]
+    }
+  },
+  "generalRequirements": {
+    "name": "additional_requirements",
+    "label": "Additional Requirements",
+    "type": "textarea",
+    "required": false,
+    "placeholder": "Any other details or requirements you'd like to share with us"
+  }
+}
+

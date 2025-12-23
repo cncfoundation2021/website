@@ -1,0 +1,24 @@
+{
+  "name": "cnc-assam-website",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CNC Assam Website with Feedback System",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "deploy": "vercel --prod",
+    "test:supabase": "node admin/test-connection.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "bcryptjs": "^2.4.3",
+    "googleapis": "^128.0.0"
+  },
+  "keywords": [
+    "website",
+    "feedback",
+    "analytics"
+  ],
+  "author": "CNC Assam",
+  "license": "MIT"
+}

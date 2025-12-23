@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Requests - CNC Assam Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/admin-dashboard.css">
+    <link rel="icon" type="image/jpeg" href="/Assets/unnamed.jpg">
+</head>
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-file-alt"></i> Service Requests</h1>
+            <p>Manage all customer service requests</p>
+        </div>
+
+        <!-- Service Requests Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>All Requests</h2>
+                <div class="section-controls">
+                    <input type="search" id="searchRequests" placeholder="Search...">
+                    <select id="filterStatus">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <select id="filterCategory">
+                        <option value="all">All Categories</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="loadRequests()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="table-container" id="requestsTable">
+                <p class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i><br>
+                    Loading requests...
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Request Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be dynamically loaded -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../scripts/auth-check.js"></script>
+    <script src="../scripts/shared-sidebar.js"></script>
+    <script src="../scripts/admin-dashboard.js"></script>
+    
+    <script>
+        // Initialize requests page
+        document.addEventListener('DOMContentLoaded', async () => {
+            await window.adminAuth.init();
+            
+            // Check permission
+            if (!window.adminAuth.hasPermission('view_requests')) {
+                alert('You do not have permission to view service requests');
+                window.location.href = '/admin/pages/overview.html';
+                return;
+            }
+            
+            // Load requests
+            setTimeout(() => {
+                if (typeof loadRequests === 'function') {
+                    loadRequests();
+                    
+                    // Setup filters
+                    document.getElementById('searchRequests')?.addEventListener('input', filterRequests);
+                    document.getElementById('filterStatus')?.addEventListener('change', filterRequests);
+                    document.getElementById('filterCategory')?.addEventListener('change', filterRequests);
+                }
+            }, 300);
+        });
+    </script>
+</body>
+</html>
+
+

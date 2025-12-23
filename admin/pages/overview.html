@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Overview - CNC Assam Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/admin-dashboard.css">
+    <link rel="icon" type="image/jpeg" href="/Assets/unnamed.jpg">
+</head>
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-chart-line"></i> Dashboard Overview</h1>
+            <p>Quick overview of system statistics and recent activities</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="statTotal">0</h3>
+                    <p>Total Requests</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="statPending">0</h3>
+                    <p>Pending</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon progress">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="statProgress">0</h3>
+                    <p>In Progress</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon completed">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="statCompleted">0</h3>
+                    <p>Completed</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Requests -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>Recent Requests</h2>
+                <a href="/admin/pages/requests.html" class="btn btn-primary">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="table-container" id="recentRequestsTable">
+                <p class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i><br>
+                    Loading...
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../scripts/auth-check.js"></script>
+    <script src="../scripts/shared-sidebar.js"></script>
+    <script>
+        // Load overview data
+        async function loadOverviewData() {
+            try {
+                const response = await fetch('/api/service-requests', {
+                    headers: {
+                        'Authorization': `Bearer ${window.adminAuth.sessionToken}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.requests) {
+                    const requests = result.requests;
+                    
+                    // Update stats
+                    document.getElementById('statTotal').textContent = requests.length;
+                    document.getElementById('statPending').textContent = requests.filter(r => r.status === 'pending').length;
+                    document.getElementById('statProgress').textContent = requests.filter(r => r.status === 'in-progress').length;
+                    document.getElementById('statCompleted').textContent = requests.filter(r => r.status === 'completed').length;
+                    
+                    // Show recent 5 requests
+                    const recent = requests.slice(0, 5);
+                    renderRecentRequests(recent);
+                }
+            } catch (error) {
+                console.error('Error loading overview data:', error);
+                document.getElementById('recentRequestsTable').innerHTML = 
+                    '<p class="empty-state"><i class="fas fa-exclamation-circle"></i><br>Error loading data</p>';
+            }
+        }
+        
+        function renderRecentRequests(requests) {
+            const container = document.getElementById('recentRequestsTable');
+            
+            if (requests.length === 0) {
+                container.innerHTML = '<p class="empty-state"><i class="fas fa-inbox"></i><br>No recent requests</p>';
+                return;
+            }
+            
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Service</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${requests.map(request => `
+                            <tr>
+                                <td>${request.customer_name}</td>
+                                <td>${request.offering_name}</td>
+                                <td><span class="status-badge status-${request.status}">${request.status}</span></td>
+                                <td>${new Date(request.created_at).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = table;
+        }
+        
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.adminAuth.sessionToken) {
+                    loadOverviewData();
+                }
+            }, 200);
+        });
+    </script>
+</body>
+</html>
+
+

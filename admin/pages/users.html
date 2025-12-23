@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - CNC Assam Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/admin-dashboard.css">
+    <link rel="icon" type="image/jpeg" href="/Assets/unnamed.jpg">
+</head>
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-users"></i> User Management</h1>
+            <p>Manage admin users and signup requests</p>
+        </div>
+
+        <!-- Users Section with Tabs -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>Admin Users</h2>
+            </div>
+
+            <!-- User Management Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchUserTab('existing')">
+                    <i class="fas fa-users"></i> Existing Users
+                </button>
+                <button class="tab" onclick="switchUserTab('signups')" id="signupTab">
+                    <i class="fas fa-user-clock"></i> Signup Requests
+                    <span id="pendingBadge" class="badge-count" style="display: none;"></span>
+                </button>
+            </div>
+
+            <!-- Existing Users Tab -->
+            <div id="existingUsersTab" class="user-tab-content active">
+                <div style="padding: 20px 30px; border-bottom: 1px solid #e1e6ef;">
+                    <button class="btn btn-primary" onclick="showCreateUserModal()" data-permission="create_users">
+                        <i class="fas fa-user-plus"></i> Add User
+                    </button>
+                </div>
+                <div class="table-container" id="usersTableContainer">
+                    <p class="loading-state">
+                        <i class="fas fa-spinner fa-spin"></i><br>
+                        Loading users...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Signup Requests Tab -->
+            <div id="signupRequestsTab" class="user-tab-content">
+                <div style="padding: 20px 30px; border-bottom: 1px solid #e1e6ef;">
+                    <div class="section-controls">
+                        <select id="filterSignupStatus">
+                            <option value="all">All Status</option>
+                            <option value="pending" selected>Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="loadSignupRequests()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Statistics -->
+                <div id="signupStatsContainer" style="padding: 0 30px;"></div>
+                
+                <!-- Requests Table -->
+                <div class="table-container" id="signupRequestsTable">
+                    <p class="loading-state">
+                        <i class="fas fa-spinner fa-spin"></i><br>
+                        Loading signup requests...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- User Management Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="userModalTitle">User Management</h3>
+                <button class="modal-close" onclick="closeUserModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="userModalBody">
+                <!-- Content will be dynamically loaded -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../scripts/auth-check.js"></script>
+    <script src="../scripts/shared-sidebar.js"></script>
+    <script src="../scripts/user-management.js"></script>
+    <script src="../scripts/signup-management.js"></script>
+    
+    <script>
+        // Initialize users page
+        document.addEventListener('DOMContentLoaded', async () => {
+            await window.adminAuth.init();
+            
+            // Check permission
+            if (!window.adminAuth.hasPermission('view_users')) {
+                alert('You do not have permission to view users');
+                window.location.href = '/admin/pages/overview.html';
+                return;
+            }
+            
+            // Apply permission-based visibility
+            window.adminAuth.applyPermissionBasedVisibility();
+            
+            // Load users
+            setTimeout(() => {
+                if (typeof loadUsers === 'function') {
+                    loadUsers();
+                }
+                if (typeof loadSignupRequests === 'function') {
+                    loadSignupRequests();
+                }
+            }, 300);
+        });
+        
+        function switchUserTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab').classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.user-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            if (tab === 'existing') {
+                document.getElementById('existingUsersTab').classList.add('active');
+            } else if (tab === 'signups') {
+                document.getElementById('signupRequestsTab').classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
+
+

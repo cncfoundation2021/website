@@ -1,0 +1,30 @@
+# PowerShell scripts
+*.ps1
+
+# Documentation
+*.md
+!README.md
+
+# Netlify config (keep local, don't deploy)
+netlify.toml
+domain-config.json
+netlify-backup-deployed/
+.netlify/
+
+# Cursor rules (keep local only)
+.cursor/
+
+# Personal/Development files
+Resume/
+*.exe
+*.xlsx
+*.pptx
+*.zip
+*.docx
+*.pdf
+!robots.txt
+
+# Misc
+.git/
+node_modules/
+.env*.local

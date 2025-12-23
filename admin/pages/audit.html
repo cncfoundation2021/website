@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Log - CNC Assam Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/admin-dashboard.css">
+    <link rel="icon" type="image/jpeg" href="/Assets/unnamed.jpg">
+</head>
+<body>
+    <!-- Sidebar Container -->
+    <div id="sidebarContainer"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-history"></i> Audit Log</h1>
+            <p>Track all administrative actions and system events</p>
+        </div>
+
+        <!-- Audit Log Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>Recent Activities</h2>
+                <div class="section-controls">
+                    <select id="filterAction">
+                        <option value="all">All Actions</option>
+                        <option value="login">Logins</option>
+                        <option value="logout">Logouts</option>
+                        <option value="create_user">User Created</option>
+                        <option value="update_user">User Updated</option>
+                        <option value="delete_user">User Deleted</option>
+                        <option value="update_permissions">Permissions Changed</option>
+                        <option value="approve_signup">Signup Approved</option>
+                        <option value="reject_signup">Signup Rejected</option>
+                    </select>
+                    <input type="date" id="filterDate" title="Filter by date">
+                    <button class="btn btn-primary" onclick="loadAuditLog()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="table-container" id="auditLogTable">
+                <p class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i><br>
+                    Loading audit log...
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../scripts/auth-check.js"></script>
+    <script src="../scripts/shared-sidebar.js"></script>
+    
+    <script>
+        let auditLogData = [];
+        
+        // Load audit log
+        async function loadAuditLog() {
+            try {
+                const response = await fetch('/api/admin-auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${window.adminAuth.sessionToken}`
+                    },
+                    body: JSON.stringify({ action: 'get_audit_log', limit: 100 })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.auditLog) {
+                    auditLogData = result.auditLog;
+                    renderAuditLog(auditLogData);
+                } else {
+                    showError('Failed to load audit log');
+                }
+            } catch (error) {
+                console.error('Error loading audit log:', error);
+                showError('Error connecting to server');
+            }
+        }
+        
+        function renderAuditLog(logs) {
+            const container = document.getElementById('auditLogTable');
+            
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<p class="empty-state"><i class="fas fa-inbox"></i><br>No audit log entries found</p>';
+                return;
+            }
+            
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Action</th>
+                            <th>User</th>
+                            <th>Target</th>
+                            <th>IP Address</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${logs.map(log => `
+                            <tr>
+                                <td class="timestamp">${new Date(log.created_at).toLocaleString()}</td>
+                                <td><span class="action-badge action-${log.action}">${log.action.replace('_', ' ')}</span></td>
+                                <td>
+                                    <div class="user-info">
+                                        <strong>${log.admin_user?.full_name || log.admin_user?.username || 'System'}</strong>
+                                        <small>${log.admin_user?.email || ''}</small>
+                                    </div>
+                                </td>
+                                <td>${log.target_user?.full_name || log.target_user?.username || '-'}</td>
+                                <td><code>${log.ip_address || 'unknown'}</code></td>
+                                <td>${log.details ? JSON.stringify(log.details).substring(0, 50) + '...' : '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = table;
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('auditLogTable');
+            container.innerHTML = `<p class="empty-state"><i class="fas fa-exclamation-circle"></i><br>${message}</p>`;
+        }
+        
+        function filterAuditLog() {
+            const actionFilter = document.getElementById('filterAction').value;
+            const dateFilter = document.getElementById('filterDate').value;
+            
+            let filtered = [...auditLogData];
+            
+            if (actionFilter && actionFilter !== 'all') {
+                filtered = filtered.filter(log => log.action === actionFilter);
+            }
+            
+            if (dateFilter) {
+                const selectedDate = new Date(dateFilter).toDateString();
+                filtered = filtered.filter(log => {
+                    return new Date(log.created_at).toDateString() === selectedDate;
+                });
+            }
+            
+            renderAuditLog(filtered);
+        }
+        
+        // Initialize audit page
+        document.addEventListener('DOMContentLoaded', async () => {
+            await window.adminAuth.init();
+            
+            // Check permission
+            if (!window.adminAuth.hasPermission('view_audit')) {
+                alert('You do not have permission to view audit log');
+                window.location.href = '/admin/pages/overview.html';
+                return;
+            }
+            
+            // Load audit log
+            setTimeout(() => {
+                loadAuditLog();
+                
+                // Setup filters
+                document.getElementById('filterAction')?.addEventListener('change', filterAuditLog);
+                document.getElementById('filterDate')?.addEventListener('change', filterAuditLog);
+            }, 300);
+        });
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,12 @@
+# robots.txt for CnC Assam Website
+User-agent: *
+Allow: /
+
+# Disallow private admin pages
+Disallow: /private-feedback-admin.html
+Disallow: /private-feedback-admin
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://cncassam.com/sitemap.xml
+
