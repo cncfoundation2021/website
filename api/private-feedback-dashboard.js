@@ -2,10 +2,13 @@ import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Use service key if available (for admin operations), otherwise fall back to anon key
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('Missing Supabase environment variables');
+  console.error('Supabase URL:', supabaseUrl ? 'Set' : 'Missing');
+  console.error('Supabase Key:', supabaseKey ? 'Set' : 'Missing');
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);

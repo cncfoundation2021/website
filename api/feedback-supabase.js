@@ -2,10 +2,13 @@ import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Use service key if available (for admin operations), otherwise fall back to anon key
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('Missing Supabase environment variables');
+  console.error('Supabase URL:', supabaseUrl ? 'Set' : 'Missing');
+  console.error('Supabase Key:', supabaseKey ? 'Set' : 'Missing');
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -24,65 +27,88 @@ async function verifySession(authHeader) {
   try {
     // Find the session - check for both NULL expires_at AND future expires_at
     const now = new Date().toISOString();
-    const { data: sessions, error: fetchError } = await supabase
+    
+    // First try to find session with valid expiration (matching pattern from admin-users.js)
+    let { data: sessions, error: fetchError } = await supabase
       .from('admin_sessions')
-      .select(`
-        *,
-        admin_user:admin_user_id (
-          id, username, email, full_name, role, is_active
-        )
-      `)
+      .select('*, admin_users(*)')
       .eq('session_token', sessionToken)
       .or(`expires_at.is.null,expires_at.gt.${now}`);
 
     console.log('📊 Sessions found:', sessions?.length || 0);
     
-    if (sessions && sessions.length > 0) {
-      console.log('📋 Session details:', {
-        created_at: sessions[0].created_at,
-        user: sessions[0].admin_user?.username
-      });
-    } else {
-      console.log('🔍 Checking all active sessions in database...');
-      const { data: allSessions } = await supabase
-        .from('admin_sessions')
-        .select('id, session_token, created_at, expires_at')
-        .or(`expires_at.is.null,expires_at.gt.${now}`)
-        .limit(5);
-      console.log('📊 Total active sessions:', allSessions?.length || 0);
-      if (allSessions && allSessions.length > 0) {
-        allSessions.forEach((s, i) => {
-          console.log(`  Session ${i+1}: ${s.session_token.substring(0, 10)}... (created: ${s.created_at}, expires: ${s.expires_at || 'never'})`);
-        });
-      }
-    }
-    
+    // If no sessions found, check if Supabase connection is working
     if (fetchError) {
-      console.log('❌ Database error:', fetchError);
-      return { success: false, error: 'Database error: ' + fetchError.message };
+      console.error('❌ Supabase connection error:', fetchError);
+      console.error('Error code:', fetchError.code);
+      console.error('Error message:', fetchError.message);
+      console.error('Error details:', fetchError.details);
+      
+      // Check if this is a connection/authentication error
+      if (fetchError.code === 'PGRST116' || fetchError.message?.includes('JWT') || fetchError.message?.includes('authentication')) {
+        return { success: false, error: 'Supabase authentication failed - please check environment variables' };
+      }
+      
+      return { success: false, error: 'Database error: ' + (fetchError.message || 'Unknown error') };
     }
 
     if (!sessions || sessions.length === 0) {
       console.log('❌ No session found for token');
+      // Debug: Check if any sessions exist
+      const { data: allSessions } = await supabase
+        .from('admin_sessions')
+        .select('id, session_token, created_at, expires_at, admin_user_id')
+        .limit(5);
+      console.log('📊 Total sessions in DB:', allSessions?.length || 0);
       return { success: false, error: 'Session not found or expired - please log in again' };
     }
 
     const session = sessions[0];
     
-    // Session is already validated by the query (not expired)
-    console.log('✅ Session verified for user:', session.admin_user?.username, '(expires:', session.expires_at || 'never', ')');
-
-    if (!session.admin_user) {
-      console.log('❌ User not found in session');
+    // Check if user relation was loaded (admin_users is the relation name)
+    if (!session.admin_users || !Array.isArray(session.admin_users) || session.admin_users.length === 0) {
+      console.log('❌ User not found in session - checking admin_user_id:', session.admin_user_id);
+      
+      // Try to fetch user directly if relation failed
+      if (session.admin_user_id) {
+        const { data: user, error: userError } = await supabase
+          .from('admin_users')
+          .select('id, username, email, full_name, role, is_active')
+          .eq('id', session.admin_user_id)
+          .single();
+        
+        if (userError || !user) {
+          console.error('❌ Failed to fetch user directly:', userError);
+          return { success: false, error: 'User not found - please contact administrator' };
+        }
+        
+        if (!user.is_active) {
+          return { success: false, error: 'User account is inactive' };
+        }
+        
+        console.log('✅ User fetched directly:', user.username);
+        return { success: true, user };
+      }
+      
       return { success: false, error: 'User not found' };
     }
 
-    if (!session.admin_user.is_active) {
+    // Handle array result from relation (should be single user)
+    const user = Array.isArray(session.admin_users) ? session.admin_users[0] : session.admin_users;
+    
+    console.log('✅ Session verified for user:', user?.username, '(expires:', session.expires_at || 'never', ')');
+
+    if (!user) {
+      console.log('❌ User object is null');
+      return { success: false, error: 'User not found' };
+    }
+
+    if (!user.is_active) {
       console.log('❌ User account is inactive');
       return { success: false, error: 'User account is inactive' };
     }
 
-    return { success: true, user: session.admin_user };
+    return { success: true, user };
   } catch (error) {
     console.error('Session verification error:', error);
     return { success: false, error: 'Session verification failed: ' + error.message };
