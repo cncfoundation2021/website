@@ -10,9 +10,17 @@ let rolePermissions = [];
 // Load users
 async function loadUsers() {
     try {
+        // Get session token from global auth or fallback
+        const token = window.adminAuth?.sessionToken || sessionToken || localStorage.getItem('admin_session');
+        
+        if (!token) {
+            showError('No session token found. Please log in again.');
+            return;
+        }
+        
         const response = await fetch('/api/admin-users', {
             headers: {
-                'Authorization': `Bearer ${sessionToken}`
+                'Authorization': `Bearer ${token}`
             }
         });
 
@@ -85,7 +93,7 @@ function renderUsersTable(users) {
                                 <button class="btn-icon btn-permissions" onclick="managePermissions('${user.id}')" title="Manage Permissions">
                                     <i class="fas fa-key"></i>
                                 </button>
-                                ${user.id !== currentUser.id ? `
+                                ${user.id !== (window.adminAuth?.currentUser?.id || currentUser?.id) ? `
                                     <button class="btn-icon btn-delete" onclick="deleteUser('${user.id}')" title="Delete User">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -124,7 +132,7 @@ function showCreateUserModal() {
                     <option value="viewer">Viewer - Read-only access</option>
                     <option value="manager">Manager - Can manage requests</option>
                     <option value="admin" selected>Admin - Full access except user management</option>
-                    ${currentUser.role === 'super_admin' ? '<option value="super_admin">Super Admin - Full system access</option>' : ''}
+                    ${(window.adminAuth?.currentUser?.role || currentUser?.role) === 'super_admin' ? '<option value="super_admin">Super Admin - Full system access</option>' : ''}
                 </select>
             </div>
             <div class="form-group">
@@ -176,7 +184,7 @@ async function createUser() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${sessionToken}`
+                'Authorization': `Bearer ${window.adminAuth?.sessionToken || sessionToken || localStorage.getItem('admin_session')}`
             },
             body: JSON.stringify({
                 username,
@@ -228,7 +236,7 @@ async function editUser(userId) {
                     <option value="viewer" ${user.role === 'viewer' ? 'selected' : ''}>Viewer - Read-only access</option>
                     <option value="manager" ${user.role === 'manager' ? 'selected' : ''}>Manager - Can manage requests</option>
                     <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin - Full access except user management</option>
-                    ${currentUser.role === 'super_admin' ? `<option value="super_admin" ${user.role === 'super_admin' ? 'selected' : ''}>Super Admin - Full system access</option>` : ''}
+                    ${(window.adminAuth?.currentUser?.role || currentUser?.role) === 'super_admin' ? `<option value="super_admin" ${user.role === 'super_admin' ? 'selected' : ''}>Super Admin - Full system access</option>` : ''}
                 </select>
             </div>
             <div class="form-group">
@@ -289,7 +297,7 @@ async function updateUser(userId) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${sessionToken}`
+                'Authorization': `Bearer ${window.adminAuth?.sessionToken || sessionToken || localStorage.getItem('admin_session')}`
             },
             body: JSON.stringify(updateData)
         });
@@ -322,7 +330,7 @@ async function deleteUser(userId) {
         const response = await fetch(`/api/admin-users?userId=${userId}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${sessionToken}`
+                'Authorization': `Bearer ${window.adminAuth?.sessionToken || sessionToken || localStorage.getItem('admin_session')}`
             }
         });
 
@@ -349,7 +357,7 @@ async function managePermissions(userId) {
     try {
         const response = await fetch(`/api/admin-users?userId=${userId}`, {
             headers: {
-                'Authorization': `Bearer ${sessionToken}`
+                'Authorization': `Bearer ${window.adminAuth?.sessionToken || sessionToken || localStorage.getItem('admin_session')}`
             }
         });
 
@@ -453,7 +461,7 @@ async function savePermissions(userId) {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${sessionToken}`
+                'Authorization': `Bearer ${window.adminAuth?.sessionToken || sessionToken || localStorage.getItem('admin_session')}`
             },
             body: JSON.stringify({
                 userId,

@@ -6,8 +6,16 @@
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Use NEXT_PUBLIC_SUPABASE_URL for consistency, fallback to SUPABASE_URL
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables');
+  console.error('Supabase URL:', supabaseUrl ? 'Set' : 'Missing');
+  console.error('Supabase Key:', supabaseKey ? 'Set' : 'Missing');
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Helper function to verify session and get user
@@ -18,22 +26,32 @@ async function verifySession(authHeader) {
 
     const token = authHeader.split(' ')[1];
     
+    const now = new Date().toISOString();
     const { data: session, error } = await supabase
         .from('admin_sessions')
         .select('*, admin_users(*)')
         .eq('session_token', token)
-        .gt('expires_at', new Date().toISOString())
+        .or(`expires_at.is.null,expires_at.gt.${now}`)
         .single();
 
     if (error || !session) {
+        console.error('Session verification error:', error);
         return { success: false, error: 'Invalid or expired session' };
     }
 
-    if (!session.admin_users.is_active) {
+    // Handle array result from relation (should be single user)
+    const user = Array.isArray(session.admin_users) ? session.admin_users[0] : session.admin_users;
+    
+    if (!user) {
+        console.error('User not found in session');
+        return { success: false, error: 'User not found' };
+    }
+
+    if (!user.is_active) {
         return { success: false, error: 'User account is inactive' };
     }
 
-    return { success: true, user: session.admin_users };
+    return { success: true, user };
 }
 
 // Check if user has specific permission
