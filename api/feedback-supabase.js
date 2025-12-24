@@ -60,7 +60,7 @@ async function verifySession(authHeader) {
         .select('id, session_token, created_at, expires_at, admin_user_id')
         .limit(5);
       console.log('📊 Total sessions in DB:', allSessions?.length || 0);
-      return { success: false, error: 'Session not found or expired - please log in again' };
+      return { success: false, error: 'SESSION_EXPIRED', message: 'Your session has expired. Please sign in again.' };
     }
 
     const session = sessions[0];

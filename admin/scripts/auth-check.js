@@ -66,6 +66,12 @@ async function loadUserPermissions() {
         
         const result = await response.json();
         
+        // Check for session expiration
+        if (result.error === 'SESSION_EXPIRED' || (response.status === 401 && result.error)) {
+            handleSessionExpired();
+            return [];
+        }
+        
         if (result.success && result.permissions) {
             window.adminAuth.userPermissions = result.permissions;
             localStorage.setItem(AUTH_CONFIG.PERMISSIONS_KEY, JSON.stringify(result.permissions));
@@ -81,6 +87,10 @@ async function loadUserPermissions() {
         }
     } catch (error) {
         console.error('Error loading permissions:', error);
+        // If it's a session expired error, handle it
+        if (error.message === 'Session expired') {
+            return [];
+        }
         // Fallback to cached permissions
         const cached = localStorage.getItem(AUTH_CONFIG.PERMISSIONS_KEY);
         if (cached) {
@@ -120,6 +130,29 @@ function hasAnyPermission(...permissionNames) {
  */
 function hasAllPermissions(...permissionNames) {
     return permissionNames.every(permission => hasPermission(permission));
+}
+
+/**
+ * Handle session expiration - logout and redirect to login
+ */
+function handleSessionExpired() {
+    console.log('⏰ Session expired - logging out...');
+    
+    // Clear session data
+    localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+    localStorage.removeItem(AUTH_CONFIG.USER_KEY);
+    localStorage.removeItem(AUTH_CONFIG.PERMISSIONS_KEY);
+    
+    // Clear global auth state
+    window.adminAuth.currentUser = null;
+    window.adminAuth.sessionToken = null;
+    window.adminAuth.userPermissions = [];
+    
+    // Show message to user
+    alert('Your session has expired. Please sign in again.');
+    
+    // Redirect to login
+    window.location.href = AUTH_CONFIG.LOGIN_URL;
 }
 
 /**
@@ -224,6 +257,42 @@ function applyPermissionBasedVisibility() {
     });
 }
 
+/**
+ * Intercept fetch calls to handle session expiration
+ */
+const originalFetch = window.fetch;
+window.fetch = async function(...args) {
+    try {
+        const response = await originalFetch.apply(this, args);
+        
+        // Check if response indicates session expired
+        if (response.status === 401) {
+            try {
+                const data = await response.clone().json();
+                if (data.error === 'SESSION_EXPIRED' || 
+                    data.error === 'Invalid or expired session' ||
+                    data.error === 'Session not found or expired - please log in again' ||
+                    data.message?.includes('expired') ||
+                    data.message?.includes('Invalid session')) {
+                    handleSessionExpired();
+                    // Return a rejected promise to stop further processing
+                    return Promise.reject(new Error('Session expired'));
+                }
+            } catch (e) {
+                // If JSON parsing fails, check status code
+                if (response.status === 401) {
+                    // Might be session expired, but we can't be sure
+                    // Let the calling code handle it
+                }
+            }
+        }
+        
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Export functions to global scope
 window.adminAuth = Object.assign(window.adminAuth, {
     init: initAuth,
@@ -233,7 +302,8 @@ window.adminAuth = Object.assign(window.adminAuth, {
     hasAnyPermission,
     hasAllPermissions,
     logout,
-    applyPermissionBasedVisibility
+    applyPermissionBasedVisibility,
+    handleSessionExpired
 });
 
 // Auto-initialize on DOMContentLoaded

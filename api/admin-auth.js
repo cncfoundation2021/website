@@ -413,7 +413,7 @@ async function handleGetPermissions(req, res) {
       .single();
     
     if (!session) {
-      return res.status(401).json({ success: false, message: 'Invalid session' });
+      return res.status(401).json({ success: false, error: 'SESSION_EXPIRED', message: 'Your session has expired. Please sign in again.' });
     }
     
     // Get user permissions using the database function
@@ -462,7 +462,7 @@ async function handleGetAuditLog(req, res) {
       .single();
     
     if (!session) {
-      return res.status(401).json({ success: false, message: 'Invalid session' });
+      return res.status(401).json({ success: false, error: 'SESSION_EXPIRED', message: 'Your session has expired. Please sign in again.' });
     }
     
     // Get audit log

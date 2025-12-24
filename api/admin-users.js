@@ -36,7 +36,7 @@ async function verifySession(authHeader) {
 
     if (error || !session) {
         console.error('Session verification error:', error);
-        return { success: false, error: 'Invalid or expired session' };
+        return { success: false, error: 'SESSION_EXPIRED', message: 'Your session has expired. Please sign in again.' };
     }
 
     // Handle array result from relation (should be single user)

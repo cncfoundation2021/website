@@ -899,10 +899,20 @@ async function loadFeedback() {
             renderFeedbackTable(result.analytics.recentFeedback);
         } else {
             console.error('Failed to load feedback:', result.message);
-            if (result.message.includes('permission')) {
+            // Check for session expiration
+            if (result.error === 'SESSION_EXPIRED' || !response.ok) {
+                if (window.adminAuth?.handleSessionExpired) {
+                    window.adminAuth.handleSessionExpired();
+                } else {
+                    alert('Your session has expired. Please sign in again.');
+                    window.location.href = '/admin/pages/login.html';
+                }
+                return;
+            }
+            if (result.message?.includes('permission')) {
                 showFeedbackError('You do not have permission to view feedback');
             } else {
-            showFeedbackError('Failed to load feedback');
+                showFeedbackError('Failed to load feedback');
             }
         }
     } catch (error) {

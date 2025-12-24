@@ -26,7 +26,7 @@ async function verifySession(authHeader) {
         .single();
 
     if (error || !session) {
-        return { success: false, error: 'Invalid or expired session' };
+        return { success: false, error: 'SESSION_EXPIRED', message: 'Your session has expired. Please sign in again.' };
     }
 
     if (!session.admin_users.is_active) {

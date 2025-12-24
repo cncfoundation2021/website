@@ -32,7 +32,17 @@ async function loadUsers() {
             rolePermissions = result.rolePermissions || [];
             renderUsersTable(allUsers);
         } else {
-            showError('Failed to load users: ' + result.message);
+            // Check for session expiration
+            if (result.error === 'SESSION_EXPIRED' || !response.ok) {
+                if (window.adminAuth?.handleSessionExpired) {
+                    window.adminAuth.handleSessionExpired();
+                } else {
+                    alert('Your session has expired. Please sign in again.');
+                    window.location.href = '/admin/pages/login.html';
+                }
+                return;
+            }
+            showError('Failed to load users: ' + (result.message || result.error));
         }
     } catch (error) {
         console.error('Error loading users:', error);
