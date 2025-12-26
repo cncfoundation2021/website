@@ -4,6 +4,40 @@
     margin-top: var(--space-6);
 }
 
+/* Sync Status Indicator */
+.sync-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: var(--font-size-sm);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background: rgba(17, 24, 39, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sync-status i {
+    font-size: 0.875rem;
+}
+
+.sync-status.sync-syncing {
+    color: var(--primary);
+}
+
+.sync-status.sync-success {
+    color: var(--success, #10b981);
+}
+
+.sync-status.sync-error {
+    color: var(--warning, #f59e0b);
+}
+
+.page-header {
+    position: relative;
+}
+
 .product-table-wrapper {
     overflow-x: auto;
     background: rgba(17, 24, 39, 0.95);
@@ -78,6 +112,11 @@
     min-width: 80px;
 }
 
+.product-table td:nth-child(2) {
+    color: var(--text-muted);
+    min-width: 120px;
+}
+
 .product-image-cell {
     text-align: center;
     padding: var(--space-2) !important;
@@ -99,25 +138,16 @@
     border-color: var(--primary);
 }
 
-.product-table td:nth-child(3) {
+.product-table td:nth-child(4) {
     font-weight: 500;
     color: var(--text);
     min-width: 150px;
 }
 
-.product-table td:nth-child(4) {
+.product-table td:nth-child(5) {
     color: var(--text-muted);
-    min-width: 120px;
-}
-
-.product-table td:nth-child(5),
-.product-table td:nth-child(10),
-.product-table td:nth-child(12) {
-    font-weight: 600;
-    color: var(--accent);
-    text-align: right;
-    white-space: nowrap;
-    min-width: 100px;
+    min-width: 80px;
+    text-align: center;
 }
 
 .product-table td:nth-child(6) {
@@ -137,15 +167,19 @@
     min-width: 120px;
 }
 
-.product-table td:nth-child(9) {
-    color: var(--warning);
+.product-table td:nth-child(9),
+.product-table td:nth-child(11),
+.product-table td:nth-child(12),
+.product-table td:nth-child(13) {
+    font-weight: 600;
+    color: var(--accent);
     text-align: right;
     white-space: nowrap;
     min-width: 100px;
 }
 
-.product-table td:nth-child(11) {
-    color: var(--text-muted);
+.product-table td:nth-child(10) {
+    color: var(--warning);
     text-align: right;
     white-space: nowrap;
     min-width: 100px;
@@ -189,13 +223,18 @@
     }
     
     .product-table {
-        min-width: 1200px;
+        min-width: 1400px;
     }
     
     .product-table th,
     .product-table td {
         padding: var(--space-2);
         font-size: var(--font-size-sm);
+    }
+    
+    .sync-status {
+        font-size: var(--font-size-xs);
+        padding: 0.375rem 0.75rem;
     }
 }
 
