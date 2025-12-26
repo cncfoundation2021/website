@@ -172,10 +172,17 @@ class CNCFoundationApp {
             </a>`;
         }).join('');
 
+        // Check if this is a featured item (HOME or CnC BAZAR) - though they shouldn't have dropdowns
+        const isFeatured = item.slug === 'home' || 
+                          item.title === 'CnC BAZAR' || 
+                          item.slug.includes('cncbazar') || 
+                          item.slug.includes('cnc-bazar');
+        const featuredClass = isFeatured ? ' nav-item-featured' : '';
+
         const parentRoute = `/offerings/${item.slug}/index.html`;
         return `
             <div class="nav-dropdown" data-dropdown="${item.slug}">
-                <a href="${parentRoute}" class="nav-item dropdown-toggle" aria-expanded="false">
+                <a href="${parentRoute}" class="nav-item dropdown-toggle${featuredClass}" aria-expanded="false">
                     <i class="${icon}" aria-hidden="true"></i>
                     <span>${item.title}</span>
                     <i class="fas fa-chevron-down dropdown-arrow" aria-hidden="true"></i>
@@ -191,6 +198,19 @@ class CNCFoundationApp {
         const icon = this.getIconForSlug(item.slug);
         const href = item.external ? item.route : (item.slug === 'home' ? '/' : item.route);
         const target = item.external ? ' target="_blank" rel="noopener"' : '';
+        
+        // Check if this is a featured item (HOME or CnC BAZAR)
+        const isFeatured = item.slug === 'home' || 
+                          item.title === 'CnC BAZAR' || 
+                          item.title === 'HOME' ||
+                          item.slug.includes('cncbazar') || 
+                          item.slug.includes('cnc-bazar');
+        const featuredClass = isFeatured ? ' nav-item-featured' : '';
+        
+        // Debug logging
+        if (isFeatured) {
+            console.log('Featured item detected:', item.title, item.slug, 'Class:', featuredClass);
+        }
         
         // Special handling for CNC Bazar - use logo image instead of icon
         if (item.title === 'CnC BAZAR' || item.slug.includes('cncbazar') || item.slug.includes('cnc-bazar')) {
@@ -208,7 +228,7 @@ class CNCFoundationApp {
             }
             
             return `
-                <a href="${href}" class="nav-item" data-section="${item.slug}"${target}>
+                <a href="${href}" class="nav-item${featuredClass}" data-section="${item.slug}"${target}>
                     <img src="${logoPath}" alt="CnC Bazar Logo" class="cnc-bazar-nav-logo" style="width: 16px; height: 16px; object-fit: contain; margin-right: 0.5rem;">
                     <span>${item.title}</span>
                 </a>
@@ -216,7 +236,7 @@ class CNCFoundationApp {
         }
         
         return `
-            <a href="${href}" class="nav-item" data-section="${item.slug}"${target}>
+            <a href="${href}" class="nav-item${featuredClass}" data-section="${item.slug}"${target}>
                 <i class="${icon}" aria-hidden="true"></i>
                 <span>${item.title}</span>
             </a>
@@ -995,6 +1015,10 @@ class CNCFoundationApp {
                                 <i class="fas fa-phone" aria-hidden="true"></i>
                                 <strong>Contact:</strong> <a href="tel:+919101759991">+919101759991</a>
                             </p>
+                            <p>
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                                <strong>Email:</strong> <a href="mailto:amirsohail.biz@gmail.com">amirsohail.biz@gmail.com</a>
+                            </p>
                         </div>
                     </div>
                     
@@ -1006,6 +1030,10 @@ class CNCFoundationApp {
                             <p>
                                 <i class="fas fa-phone" aria-hidden="true"></i>
                                 <strong>Contact:</strong> <a href="tel:+916002610858">+916002610858</a>
+                            </p>
+                            <p>
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                                <strong>Email:</strong> <a href="mailto:yaminbarbhuiya123@gmail.com">yaminbarbhuiya123@gmail.com</a>
                             </p>
                         </div>
                     </div>
@@ -1137,6 +1165,19 @@ class CNCFoundationApp {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            `;
+        } else if (sectionSlug === 'grievances') {
+            contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary">Information about grievances</p>
+            </div>
+            <div class="content-body">
+                <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <p style="color: #ffffff !important; font-size: 1.125rem !important; line-height: 1.7 !important; margin-bottom: 1.5rem !important;">If you have any concerns, complaints, or grievances regarding our services, please feel free to reach out. Our team will review and address your issue at the earliest.</p>
+                    <p style="color: var(--text, #eaf2ff) !important; font-size: 1.125rem !important; line-height: 1.7 !important; margin-bottom: 0 !important;"><strong>Grievance Email:</strong> <a href="mailto:ccare4001@gmail.com" style="color: var(--primary, #0ea5e9) !important; text-decoration: none;">ccare4001@gmail.com</a></p>
                 </div>
             </div>
             `;

@@ -2,27 +2,209 @@
 class ProductCatalog {
     constructor() {
         this.products = [];
+        this.filteredProducts = [];
         this.googleSheetsId = '1jxb-aUNEc6jKR39wHKRlxHVuLC5Eh6YfxngT7vMTTl4';
-        this.csvUrl = `https://docs.google.com/spreadsheets/d/${this.googleSheetsId}/export?format=csv&gid=0`;
+        // Direct Google Sheets URL (may have CORS issues)
+        this.directCsvUrl = `https://docs.google.com/spreadsheets/d/${this.googleSheetsId}/export?format=csv&gid=0`;
+        // API proxy URL (works in production)
+        this.apiProxyUrl = `/api/product-catalog`;
         this.lastSyncTime = null;
         this.syncInterval = 5 * 60 * 1000; // Sync every 5 minutes
         this.isLoading = false;
+        this.filters = {
+            search: '',
+            category: '',
+            brand: ''
+        };
         this.init();
     }
 
     init() {
         this.loadProducts();
+        this.setupFilters();
         // Set up auto-refresh
         setInterval(() => this.loadProducts(true), this.syncInterval);
     }
 
+    // Setup filter event listeners
+    setupFilters() {
+        const searchInput = document.getElementById('search-product-name');
+        const categoryFilter = document.getElementById('filter-category');
+        const brandFilter = document.getElementById('filter-brand');
+        const clearSearchBtn = document.getElementById('clear-search');
+        const clearAllBtn = document.getElementById('clear-all-filters');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.filters.search = e.target.value.trim().toLowerCase();
+                this.updateClearSearchButton();
+                this.applyFilters();
+            });
+        }
+
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', () => {
+                this.filters.search = '';
+                if (searchInput) searchInput.value = '';
+                this.updateClearSearchButton();
+                this.applyFilters();
+            });
+        }
+
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', (e) => {
+                this.filters.category = e.target.value;
+                this.applyFilters();
+            });
+        }
+
+        if (brandFilter) {
+            brandFilter.addEventListener('change', (e) => {
+                this.filters.brand = e.target.value;
+                this.applyFilters();
+            });
+        }
+
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', () => {
+                this.clearAllFilters();
+            });
+        }
+    }
+
+    // Update clear search button visibility
+    updateClearSearchButton() {
+        const clearSearchBtn = document.getElementById('clear-search');
+        if (clearSearchBtn) {
+            clearSearchBtn.style.display = this.filters.search ? 'block' : 'none';
+        }
+    }
+
+    // Clear all filters
+    clearAllFilters() {
+        this.filters = {
+            search: '',
+            category: '',
+            brand: ''
+        };
+
+        const searchInput = document.getElementById('search-product-name');
+        const categoryFilter = document.getElementById('filter-category');
+        const brandFilter = document.getElementById('filter-brand');
+
+        if (searchInput) searchInput.value = '';
+        if (categoryFilter) categoryFilter.value = '';
+        if (brandFilter) brandFilter.value = '';
+
+        this.updateClearSearchButton();
+        this.applyFilters();
+    }
+
+    // Populate filter dropdowns with unique values
+    populateFilterOptions() {
+        const categories = new Set();
+        const brands = new Set();
+
+        this.products.forEach(product => {
+            if (product.category) categories.add(product.category);
+            if (product.brand) brands.add(product.brand);
+        });
+
+        const categoryFilter = document.getElementById('filter-category');
+        const brandFilter = document.getElementById('filter-brand');
+
+        if (categoryFilter) {
+            const currentValue = categoryFilter.value;
+            categoryFilter.innerHTML = '<option value="">All Categories</option>';
+            Array.from(categories).sort().forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categoryFilter.appendChild(option);
+            });
+            if (currentValue) categoryFilter.value = currentValue;
+        }
+
+        if (brandFilter) {
+            const currentValue = brandFilter.value;
+            brandFilter.innerHTML = '<option value="">All Brands</option>';
+            Array.from(brands).sort().forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                brandFilter.appendChild(option);
+            });
+            if (currentValue) brandFilter.value = currentValue;
+        }
+    }
+
+    // Apply filters to products
+    applyFilters() {
+        this.filteredProducts = this.products.filter(product => {
+            // Search filter (product name)
+            if (this.filters.search) {
+                const productName = (product.productName || '').toLowerCase();
+                if (!productName.includes(this.filters.search)) {
+                    return false;
+                }
+            }
+
+            // Category filter
+            if (this.filters.category) {
+                if (product.category !== this.filters.category) {
+                    return false;
+                }
+            }
+
+            // Brand filter
+            if (this.filters.brand) {
+                if (product.brand !== this.filters.brand) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        this.renderProducts();
+        this.updateResultsInfo();
+    }
+
+    // Update results count info
+    updateResultsInfo() {
+        const resultsInfo = document.getElementById('filter-results-info');
+        const resultsCount = document.getElementById('results-count');
+        const hasActiveFilters = this.filters.search || this.filters.category || this.filters.brand;
+
+        if (resultsInfo && resultsCount) {
+            if (hasActiveFilters) {
+                resultsInfo.style.display = 'block';
+                resultsCount.textContent = this.filteredProducts.length;
+            } else {
+                resultsInfo.style.display = 'none';
+            }
+        }
+    }
+
     // Parse CSV text into array of objects
     parseCSV(csvText) {
-        const lines = csvText.split('\n').filter(line => line.trim());
-        if (lines.length < 2) return [];
+        if (!csvText || typeof csvText !== 'string') {
+            console.error('Invalid CSV text:', typeof csvText);
+            return [];
+        }
+        
+        const lines = csvText.split('\n').filter(line => line && line.trim());
+        if (lines.length < 2) {
+            console.warn('CSV has less than 2 lines');
+            return [];
+        }
 
         // Parse header row
         const headers = this.parseCSVLine(lines[0]);
+        if (!headers || headers.length === 0) {
+            console.error('No headers found in CSV');
+            return [];
+        }
         
         // Map headers to our expected format (handle variations)
         const headerMap = {
@@ -41,34 +223,59 @@ class ProductCatalog {
             'Total Amount': 'totalAmount'
         };
 
-        // Parse data rows
+        // Parse data rows with merged cell handling
         const products = [];
+        let previousRowValues = {}; // Store previous row values to handle merged cells
+        
         for (let i = 1; i < lines.length; i++) {
             const values = this.parseCSVLine(lines[i]);
             if (values.length === 0) continue;
             
             // Skip if first column (serial no) is empty or not a number
-            const serialNo = values[0] ? values[0].trim() : '';
+            const serialNo = values[0] != null ? String(values[0]).trim() : '';
             if (!serialNo || isNaN(parseInt(serialNo))) continue;
 
             const product = {};
+            const currentRowValues = {}; // Track what values we're using for this row
+            
             headers.forEach((header, index) => {
-                const cleanHeader = header.trim();
-                const mappedKey = headerMap[cleanHeader];
-                if (mappedKey && values[index] !== undefined) {
-                    const value = values[index] ? values[index].trim() : '';
-                    // Convert numeric fields
-                    if (['mrp', 'discountRate', 'offeredRate', 'taxesIncl', 'totalAmount'].includes(mappedKey)) {
-                        product[mappedKey] = this.parseNumber(value);
-                    } else {
-                        product[mappedKey] = value;
+                try {
+                    const cleanHeader = header != null ? String(header).trim() : '';
+                    const mappedKey = headerMap[cleanHeader];
+                    if (mappedKey && values[index] !== undefined) {
+                        // Safely convert to string and trim
+                        let value = values[index] != null ? String(values[index]).trim() : '';
+                        
+                        // Handle merged cells: if current cell is empty and previous row had a value,
+                        // inherit it (except for serialNo which should always be unique)
+                        if (!value && mappedKey !== 'serialNo' && previousRowValues[mappedKey] != null) {
+                            const prevValue = previousRowValues[mappedKey];
+                            value = prevValue != null ? String(prevValue) : '';
+                        }
+                        
+                        // Convert numeric fields
+                        if (['mrp', 'discountRate', 'offeredRate', 'taxesIncl', 'totalAmount'].includes(mappedKey)) {
+                            product[mappedKey] = this.parseNumber(value);
+                            // Store the original value for merged cell propagation
+                            currentRowValues[mappedKey] = value ? this.parseNumber(value) : (previousRowValues[mappedKey] || 0);
+                        } else {
+                            product[mappedKey] = value;
+                            // Store value for merged cell propagation (use current if exists, otherwise previous)
+                            const prevValue = previousRowValues[mappedKey];
+                            currentRowValues[mappedKey] = value || (prevValue != null ? String(prevValue) : '');
+                        }
                     }
+                } catch (error) {
+                    console.error(`Error parsing column ${index} (${header}):`, error);
                 }
             });
 
             // Only add if we have at least a serial number
             if (product.serialNo) {
                 products.push(product);
+                // Update previous row values for merged cell handling
+                // Store all values (including inherited ones) so they propagate to next row if needed
+                previousRowValues = { ...currentRowValues };
             }
         }
 
@@ -122,20 +329,72 @@ class ProductCatalog {
         }
 
         try {
-            // Add timestamp to prevent caching
-            const url = `${this.csvUrl}&t=${Date.now()}`;
+            // Try API proxy first (works in production), fallback to direct URL
+            let url = `${this.apiProxyUrl}?t=${Date.now()}`;
+            let useDirectUrl = false;
             
-            const response = await fetch(url);
+            // On localhost, try direct URL first, then API proxy
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1';
+            
+            if (isLocalhost) {
+                url = `${this.directCsvUrl}&t=${Date.now()}`;
+                useDirectUrl = true;
+            }
+            
+            console.log('Fetching from URL:', url);
+            
+            let response;
+            try {
+                response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Accept': 'text/csv'
+                    }
+                });
+            } catch (fetchError) {
+                // If direct URL fails (CORS), try API proxy
+                if (useDirectUrl) {
+                    console.warn('Direct URL failed, trying API proxy:', fetchError.message);
+                    url = `${this.apiProxyUrl}?t=${Date.now()}`;
+                    response = await fetch(url, {
+                        method: 'GET',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        headers: {
+                            'Accept': 'text/csv'
+                        }
+                    });
+                } else {
+                    throw fetchError;
+                }
+            }
+            
+            console.log('Response status:', response.status, response.statusText);
             
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorText = await response.text().catch(() => 'Unable to read error response');
+                console.error('Response error:', errorText);
+                throw new Error(`HTTP error! status: ${response.status} - ${errorText.substring(0, 100)}`);
             }
 
             const csvText = await response.text();
+            console.log('CSV received, length:', csvText.length, 'characters');
+            console.log('First 500 chars:', csvText.substring(0, 500));
+            
+            if (!csvText || csvText.trim().length === 0) {
+                throw new Error('Empty CSV response received');
+            }
+            
             this.products = this.parseCSV(csvText);
+            console.log('Parsed products:', this.products.length);
             this.lastSyncTime = new Date();
             
-            this.renderProducts();
+            // Populate filter options and apply current filters
+            this.populateFilterOptions();
+            this.applyFilters();
             
             if (!silent) {
                 this.updateSyncStatus('success', `Last synced: ${this.lastSyncTime.toLocaleTimeString()}`);
@@ -146,7 +405,14 @@ class ProductCatalog {
             }
         } catch (error) {
             console.error('Error loading products from Google Sheets:', error);
-            this.updateSyncStatus('error', 'Failed to sync. Showing cached data.');
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+            });
+            
+            const errorMessage = error.message || 'Unknown error';
+            this.updateSyncStatus('error', `Failed to sync: ${errorMessage.substring(0, 50)}...`);
             
             // Try to load from cache if available
             const cached = localStorage.getItem('cnc_product_catalog_cache');
@@ -155,10 +421,14 @@ class ProductCatalog {
                     const cachedData = JSON.parse(cached);
                     this.products = cachedData.products || [];
                     this.lastSyncTime = cachedData.lastSyncTime ? new Date(cachedData.lastSyncTime) : null;
-                    this.renderProducts();
+                    console.log('Loaded from cache:', this.products.length, 'products');
+                    this.populateFilterOptions();
+                    this.applyFilters();
                 } catch (e) {
                     console.error('Error loading cached data:', e);
                 }
+            } else {
+                console.warn('No cached data available');
             }
         } finally {
             this.isLoading = false;
@@ -204,13 +474,21 @@ class ProductCatalog {
         
         if (!tbody) return;
 
-        if (this.products.length === 0) {
+        const hasActiveFilters = this.filters.search || this.filters.category || this.filters.brand;
+        const productsToRender = hasActiveFilters ? this.filteredProducts : this.products;
+
+        if (productsToRender.length === 0) {
+            const emptyMessage = hasActiveFilters 
+                ? 'No products found matching your filters. Try adjusting your search criteria.'
+                : 'No products found. The catalog is being updated.';
+            
             tbody.innerHTML = `
                 <tr>
                     <td colspan="13" style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-                            <i class="fas fa-inbox" style="font-size: 3rem; color: var(--text-muted); opacity: 0.5;"></i>
-                            <p style="margin: 0; font-size: 1rem;">No products found. The catalog is being updated.</p>
+                            <i class="fas fa-${hasActiveFilters ? 'search' : 'inbox'}" style="font-size: 3rem; color: var(--text-muted); opacity: 0.5;"></i>
+                            <p style="margin: 0; font-size: 1rem;">${emptyMessage}</p>
+                            ${hasActiveFilters ? '<button onclick="window.productCatalog.clearAllFilters()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">Clear All Filters</button>' : ''}
                         </div>
                     </td>
                 </tr>
@@ -225,7 +503,8 @@ class ProductCatalog {
             emptyState.style.display = 'none';
         }
 
-        tbody.innerHTML = this.products.map(product => {
+        // Render all rows individually with duplicated merged values
+        tbody.innerHTML = productsToRender.map((product) => {
             const imageUrl = product.image && product.image.trim() 
                 ? product.image.trim() 
                 : 'https://via.placeholder.com/100x100/0ea5e9/ffffff?text=Product';
@@ -257,7 +536,9 @@ class ProductCatalog {
 
     // Format number with commas
     formatNumber(num) {
-        return parseFloat(num || 0).toLocaleString('en-IN', {
+        const numValue = parseFloat(num || 0);
+        if (isNaN(numValue)) return '0.00';
+        return numValue.toLocaleString('en-IN', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
@@ -265,9 +546,10 @@ class ProductCatalog {
 
     // Escape HTML to prevent XSS
     escapeHtml(text) {
-        if (!text) return '';
+        if (text == null) return '';
+        const textStr = String(text);
         const div = document.createElement('div');
-        div.textContent = text.toString();
+        div.textContent = textStr;
         return div.innerHTML;
     }
 

@@ -300,6 +300,13 @@ p {
     opacity: 1;
 }
 
+/* Crop right logo from top */
+.logo-right .logo {
+    object-fit: cover;
+    object-position: center 20%;
+    height: 180px;
+}
+
 .logo:hover {
     transform: scale(1.05);
     filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
@@ -725,6 +732,30 @@ p {
     background: linear-gradient(135deg, rgba(14, 165, 233, 0.35), rgba(16, 185, 129, 0.35));
     color: #ffffff;
     border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Featured navigation items (HOME and CnC BAZAR) - solid button styling */
+.nav-item.nav-item-featured {
+    background: linear-gradient(135deg, #0ea5e9, #10b981) !important;
+    border: 1px solid #0ea5e9 !important;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4) !important;
+    font-weight: 600;
+    color: #ffffff !important;
+}
+
+.nav-item.nav-item-featured:hover {
+    background: linear-gradient(135deg, #0284c7, #059669) !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 3px 12px rgba(14, 165, 233, 0.5) !important;
+    transform: translateY(-1px);
+    color: #ffffff !important;
+}
+
+.nav-item.nav-item-featured.active {
+    background: linear-gradient(135deg, #0284c7, #059669) !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .nav-item i {
@@ -2078,6 +2109,13 @@ a:hover {
     
     .logo {
         width: 120px;
+        height: 120px;
+    }
+    
+    /* Maintain top crop for right logo on mobile */
+    .logo-right .logo {
+        object-fit: cover;
+        object-position: center 20%;
         height: 120px;
     }
     
