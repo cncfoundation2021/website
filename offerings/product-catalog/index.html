@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>Product Catalog - CnC Assam | Product Listing</title>
+    <meta name="title" content="Product Catalog - CnC Assam">
+    <meta name="description" content="Browse our comprehensive product catalog with detailed product information, pricing, and specifications.">
+    <meta name="keywords" content="CnC products, product catalog, CnC Assam products, product listing">
+    <meta name="author" content="Care & Cure Foundation (CnC), Assam">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../../styles/main.css" as="style">
+    <link rel="preload" href="../../lib/menu.js" as="script">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link rel="stylesheet" href="../../styles/feedback-popup.css">
+    <link rel="stylesheet" href="../../styles/visual-effects.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="product-catalog.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="../../Assets/unnamed.jpg">
+    <link rel="apple-touch-icon" href="../../Assets/1000126838.png">
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="page-wrapper">
+        <div class="container">
+        <!-- Header -->
+        <header class="header" role="banner">
+            <!-- Top contact bar -->
+            <div class="header-top">
+                <div class="contact-info">
+                    <span><i class="fas fa-envelope" aria-hidden="true"></i> cncfoundation2021@gmail.com</span>
+                    <span><i class="fas fa-phone" aria-hidden="true"></i> +916002610858</span>
+                </div>
+                <div class="header-controls">
+                    <div class="search-box">
+                        <label for="search-input" class="sr-only">Search website</label>
+                        <input type="search" id="search-input" placeholder="Search..." aria-label="Search website">
+                        <button type="button" class="search-btn" aria-label="Search">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Logo and title -->
+            <div class="logo-section">
+                <div class="logo-left">
+                    <a href="/"><img src="../../Assets/1000126838.png" alt="CnC Logo" class="logo"></a>
+                </div>
+                <div class="title-section">
+                    <h1>CARE & CURE FOUNDATION (CnC), ASSAM</h1>
+                    <p class="tagline">(Manufacturing, Reselling and Service Providing Across Northeast India)</p>
+                </div>
+                <div class="logo-right">
+                    <a href="/"><img src="../../Assets/IMG-20231119-WA0002.jpg" alt="CnC Logo" class="logo"></a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout sub-page-layout">
+            <!-- Main Content Area -->
+            <main class="main-content full-width" id="main-content">
+                <!-- Top Navigation -->
+                <nav class="top-navigation" role="navigation" aria-label="Main navigation">
+                    <div class="nav-container">
+                        <div class="nav-scroll-zone nav-scroll-left" aria-hidden="true"></div>
+                        <div class="nav-links" id="top-nav-links" role="menubar">
+                            <!-- Dynamically populated from sitemap.json -->
+                        </div>
+                        <div class="nav-scroll-zone nav-scroll-right" aria-hidden="true"></div>
+                    </div>
+                    <div class="nav-scrollbar">
+                        <div class="nav-scrollbar-thumb" id="nav-scrollbar-thumb"></div>
+                    </div>
+                </nav>
+
+                <!-- Breadcrumbs -->
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <ol class="breadcrumb-list" id="breadcrumb-list">
+                        <li><a href="../../">Home</a></li>
+                        <li><a href="../">Our Offerings</a></li>
+                        <li><span>Product Catalog</span></li>
+                    </ol>
+                </nav>
+
+                <!-- Page Content -->
+                <div class="page-content">
+                    <div class="content-section active">
+                        <div class="page-header">
+                            <h1>Product Catalog</h1>
+                            <p class="page-description">Comprehensive listing of all products sold by CnC - Coming Soon</p>
+                        </div>
+                        
+                        <div class="product-catalog-container">
+                            <!-- Product Table -->
+                            <div class="product-table-wrapper">
+                                <table class="product-table" id="product-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Serial No.</th>
+                                            <th>Image</th>
+                                            <th>Product Name</th>
+                                            <th>Category</th>
+                                            <th>MRP</th>
+                                            <th>Description</th>
+                                            <th>Brand</th>
+                                            <th>Dimensions</th>
+                                            <th>Discount Rate</th>
+                                            <th>Offered Rate</th>
+                                            <th>Taxes Incl.</th>
+                                            <th>Total Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="product-table-body">
+                                        <!-- Products will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Empty State -->
+                            <div class="empty-state" id="empty-state" style="display: none;">
+                                <i class="fas fa-box-open"></i>
+                                <p>No products found. Add products using the product management interface.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer" role="contentinfo">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contact Information</h3>
+                    <p>Email: cncfoundation2021@gmail.com</p>
+                    <p>Phone: +916002610858</p>
+                </div>
+            </div>
+        </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../lib/menu.js"></script>
+    <script src="../../scripts/main.js"></script>
+    <script src="../../scripts/visual-effects.js"></script>
+    <script src="../../scripts/feedback-popup.js"></script>
+    <script src="product-catalog.js"></script>
+
+    <script>
+    // Logo fallback script
+    document.addEventListener('DOMContentLoaded', function() {
+        const logos = document.querySelectorAll('.logo');
+        logos.forEach(logo => {
+            logo.addEventListener('error', function() {
+                const originalSrc = this.src;
+                if (originalSrc.includes('Assets/1000126838.png')) {
+                    this.src = 'https://cncassam.com/Assets/1000126838.png';
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
+

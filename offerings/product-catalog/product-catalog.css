@@ -1,0 +1,201 @@
+/* Product Catalog Styles */
+
+.product-catalog-container {
+    margin-top: var(--space-6);
+}
+
+.product-table-wrapper {
+    overflow-x: auto;
+    background: rgba(17, 24, 39, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 16px var(--shadow-lg);
+    margin-bottom: var(--space-6);
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+    color: var(--text);
+    background: rgba(17, 24, 39, 0.95);
+}
+
+.product-table thead {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(16, 185, 129, 0.3));
+    border-bottom: 2px solid var(--primary);
+}
+
+.product-table th {
+    padding: var(--space-4) var(--space-3);
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.product-table th:last-child {
+    border-right: none;
+}
+
+.product-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color var(--transition-fast);
+    background: rgba(17, 24, 39, 0.95);
+}
+
+.product-table tbody tr:hover {
+    background: rgba(14, 165, 233, 0.25);
+}
+
+.product-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.product-table td {
+    padding: var(--space-4) var(--space-3);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    vertical-align: top;
+    word-wrap: break-word;
+    max-width: 200px;
+    background: rgba(17, 24, 39, 0.95);
+}
+
+.product-table td:last-child {
+    border-right: none;
+}
+
+/* Specific column styling */
+.product-table td:nth-child(1) {
+    font-weight: 600;
+    color: var(--primary);
+    text-align: center;
+    min-width: 80px;
+}
+
+.product-image-cell {
+    text-align: center;
+    padding: var(--space-2) !important;
+    min-width: 120px;
+}
+
+.product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    transition: transform var(--transition-fast);
+}
+
+.product-image:hover {
+    transform: scale(1.1);
+    border-color: var(--primary);
+}
+
+.product-table td:nth-child(3) {
+    font-weight: 500;
+    color: var(--text);
+    min-width: 150px;
+}
+
+.product-table td:nth-child(4) {
+    color: var(--text-muted);
+    min-width: 120px;
+}
+
+.product-table td:nth-child(5),
+.product-table td:nth-child(10),
+.product-table td:nth-child(12) {
+    font-weight: 600;
+    color: var(--accent);
+    text-align: right;
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+.product-table td:nth-child(6) {
+    color: var(--text-muted);
+    max-width: 250px;
+    line-height: 1.5;
+}
+
+.product-table td:nth-child(7) {
+    color: var(--text);
+    min-width: 100px;
+}
+
+.product-table td:nth-child(8) {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    min-width: 120px;
+}
+
+.product-table td:nth-child(9) {
+    color: var(--warning);
+    text-align: right;
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+.product-table td:nth-child(11) {
+    color: var(--text-muted);
+    text-align: right;
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: var(--space-16) var(--space-8);
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: var(--font-size-lg);
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .product-table {
+        font-size: var(--font-size-sm);
+    }
+    
+    .product-table th,
+    .product-table td {
+        padding: var(--space-3) var(--space-2);
+    }
+}
+
+@media (max-width: 768px) {
+    .product-table-wrapper {
+        overflow-x: scroll;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .product-table {
+        min-width: 1200px;
+    }
+    
+    .product-table th,
+    .product-table td {
+        padding: var(--space-2);
+        font-size: var(--font-size-sm);
+    }
+}
+
