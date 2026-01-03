@@ -22,56 +22,6 @@ class CNCFoundationApp {
         this.initializeNavigation();
         this.initializeSearch();
         this.updateLastUpdated();
-        // Ensure home content is visible on page load (only on homepage)
-        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('/index.html');
-        if (isHomePage) {
-            this.showHomeContent();
-        } else {
-            // On offering/sub pages, ensure content-section has active class
-            // Do this immediately and also protect it from being removed
-            const ensureActiveSection = () => {
-                const allContentSections = document.querySelectorAll('.content-section');
-                if (allContentSections.length > 0) {
-                    // Find section that already has active class, or use first one
-                    let activeSection = Array.from(allContentSections).find(section => section.classList.contains('active'));
-                    if (!activeSection) {
-                        // No active section found, activate the first one
-                        activeSection = allContentSections[0];
-                        activeSection.classList.add('active');
-                    }
-                    
-                    // Set up observer to immediately re-add active class if it's removed
-                    const observer = new MutationObserver((mutations) => {
-                        mutations.forEach((mutation) => {
-                            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                                const target = mutation.target;
-                                if (target.classList.contains('content-section') && 
-                                    !target.classList.contains('active') && 
-                                    target === activeSection) {
-                                    // Active class was removed, re-add it immediately (synchronously)
-                                    if (!target.classList.contains('active')) {
-                                        target.classList.add('active');
-                                    }
-                                }
-                            }
-                        });
-                    });
-                    
-                    // Observe the active section
-                    if (activeSection) {
-                        observer.observe(activeSection, {
-                            attributes: true,
-                            attributeFilter: ['class']
-                        });
-                        console.log('Offering page: Content section active and protected');
-                    }
-                }
-            };
-            
-            // Run immediately and also after a short delay to catch late removals
-            ensureActiveSection();
-            setTimeout(ensureActiveSection, 100);
-        }
         console.log('CnC App initialized');
     }
 
@@ -685,12 +635,6 @@ class CNCFoundationApp {
     }
 
     showContentSection(sectionSlug) {
-        // Only run on homepage - don't interfere with offering pages
-        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('/index.html');
-        if (!isHomePage) {
-            return; // Don't touch content sections on offering pages
-        }
-        
         // Hide home content
         const homeContent = document.getElementById('home-content');
         if (homeContent) {
@@ -1773,12 +1717,6 @@ class CNCFoundationApp {
     }
 
     showHomeContent() {
-        // Only run on homepage - don't interfere with offering pages
-        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('/index.html');
-        if (!isHomePage) {
-            return; // Don't touch content sections on offering pages
-        }
-        
         // Hide all other content sections
         document.querySelectorAll('.content-section').forEach(section => {
             section.classList.remove('active');
