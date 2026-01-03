@@ -27,13 +27,21 @@ class CNCFoundationApp {
         if (isHomePage) {
             this.showHomeContent();
         } else {
-            // On offering/sub pages, ensure any existing content-section with 'active' class stays active
-            // Don't interfere with pages that already have their content sections set up
-            const existingActiveSection = document.querySelector('.content-section.active');
-            if (existingActiveSection && !isHomePage) {
-                // Keep it active - don't touch it
-                console.log('Offering page detected - preserving active content section');
-            }
+            // On offering/sub pages, ensure content-section has active class
+            // Wait for DOM to be fully ready
+            setTimeout(() => {
+                const allContentSections = document.querySelectorAll('.content-section');
+                if (allContentSections.length > 0) {
+                    // Remove active from all first
+                    allContentSections.forEach(section => section.classList.remove('active'));
+                    // Add active to the first content-section (or one that already had it)
+                    const existingActive = document.querySelector('.content-section[class*="active"]') || allContentSections[0];
+                    if (existingActive) {
+                        existingActive.classList.add('active');
+                        console.log('Offering page: Ensured content-section has active class');
+                    }
+                }
+            }, 100);
         }
         console.log('CnC App initialized');
     }
