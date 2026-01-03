@@ -28,7 +28,7 @@ class CNCFoundationApp {
             this.showHomeContent();
         } else {
             // On offering/sub pages, ensure content-section has active class
-            // Wait for DOM to be fully ready
+            // Use MutationObserver to watch for any attempts to remove active class
             setTimeout(() => {
                 const allContentSections = document.querySelectorAll('.content-section');
                 if (allContentSections.length > 0) {
@@ -37,14 +37,35 @@ class CNCFoundationApp {
                     if (!activeSection) {
                         // No active section found, activate the first one
                         activeSection = allContentSections[0];
+                        activeSection.classList.add('active');
                     }
                     
-                    // Remove active from all
-                    allContentSections.forEach(section => section.classList.remove('active'));
-                    // Add active to the chosen section
+                    // Set up observer to re-add active class if it's removed
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                                const target = mutation.target;
+                                if (target.classList.contains('content-section') && 
+                                    !target.classList.contains('active') && 
+                                    target === activeSection) {
+                                    // Active class was removed, re-add it
+                                    setTimeout(() => {
+                                        if (!target.classList.contains('active')) {
+                                            target.classList.add('active');
+                                        }
+                                    }, 0);
+                                }
+                            }
+                        });
+                    });
+                    
+                    // Observe the active section
                     if (activeSection) {
-                        activeSection.classList.add('active');
-                        console.log('Offering page: Ensured content-section has active class');
+                        observer.observe(activeSection, {
+                            attributes: true,
+                            attributeFilter: ['class']
+                        });
+                        console.log('Offering page: Content section active and protected');
                     }
                 }
             }, 100);
