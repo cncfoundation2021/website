@@ -1792,7 +1792,99 @@ class CNCFoundationApp {
             console.error('Error initializing admin auth:', error);
         }
         
-        // Initialize sidebar
+        // Override sidebar render and init BEFORE calling initSidebar
+        // This ensures the sidebar is rendered with data-section attributes
+        const originalRenderSidebar = window.renderSidebar;
+        const originalInitSidebar = window.initSidebar;
+        
+        if (originalRenderSidebar) {
+            // Override renderSidebar to add data-section attributes
+            window.renderSidebar = function() {
+                const sidebar = originalRenderSidebar();
+                // Replace hrefs with data-section and make href="#"
+                return sidebar.replace(/href="([^"]+)"/g, function(match, href) {
+                    let section = 'overview';
+                    if (href.includes('requests')) section = 'requests';
+                    else if (href.includes('feedback')) section = 'feedback';
+                    else if (href.includes('users')) section = 'users';
+                    else if (href.includes('audit')) section = 'audit';
+                    return `href="#" data-section="${section}"`;
+                });
+            };
+        }
+        
+        if (originalInitSidebar) {
+            // Override initSidebar to add event listeners after rendering
+            window.initSidebar = function() {
+                originalInitSidebar();
+                
+                // Setup sidebar navigation using event delegation (persists across re-renders)
+                const sidebarContainer = document.getElementById('sidebarContainer');
+                if (sidebarContainer) {
+                    // Remove any existing listener and add new one
+                    sidebarContainer.removeEventListener('click', handleSidebarClick);
+                    sidebarContainer.addEventListener('click', handleSidebarClick);
+                }
+                
+                // Re-attach logout button with embedded mode handler
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    // Clone to remove existing listeners
+                    const newLogoutBtn = logoutBtn.cloneNode(true);
+                    logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+                    
+                    // Attach our embedded logout handler
+                    newLogoutBtn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        if (window.adminAuth && window.adminAuth.logout) {
+                            await window.adminAuth.logout();
+                        }
+                    });
+                }
+            };
+        }
+        
+        // Define sidebar click handler function
+        const handleSidebarClick = (e) => {
+            const link = e.target.closest('.sidebar-menu a');
+            if (!link) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const href = link.getAttribute('href');
+            const dataSection = link.getAttribute('data-section');
+            
+            // Determine section from data-section or href
+            let section = 'overview';
+            if (dataSection) {
+                section = dataSection;
+            } else if (href) {
+                if (href.includes('requests')) section = 'requests';
+                else if (href.includes('feedback')) section = 'feedback';
+                else if (href.includes('users')) section = 'users';
+                else if (href.includes('audit')) section = 'audit';
+            }
+            
+            console.log('🔗 Sidebar click - Switching to section:', section);
+            
+            // Update active state
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            // Load the section
+            if (window.loadAdminSection) {
+                console.log('✅ Calling loadAdminSection with:', section);
+                window.loadAdminSection(section);
+            } else {
+                console.error('❌ loadAdminSection function not available!');
+            }
+        };
+        
+        // Initialize sidebar (which will now use our overrides)
         try {
             if (window.initSidebar) {
                 window.initSidebar();
@@ -1800,104 +1892,26 @@ class CNCFoundationApp {
         } catch (error) {
             console.error('Error initializing sidebar:', error);
         }
-        
-        // Setup sidebar navigation with embedded mode
-        setTimeout(() => {
-            const sidebarLinks = container.querySelectorAll('.sidebar-menu a');
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const href = link.getAttribute('href');
-                    const dataSection = link.getAttribute('data-section');
-                    
-                    // Determine section from href or data-section
-                    let section = 'overview';
-                    if (dataSection) {
-                        section = dataSection;
-                    } else if (href) {
-                        if (href.includes('requests')) section = 'requests';
-                        else if (href.includes('feedback')) section = 'feedback';
-                        else if (href.includes('users')) section = 'users';
-                        else if (href.includes('audit')) section = 'audit';
-                    }
-                    
-                    // Update active state
-                    sidebarLinks.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                    
-                    console.log('Switching to section:', section);
-                    if (window.loadAdminSection) {
-                        window.loadAdminSection(section);
-                    } else {
-                        console.error('loadAdminSection function not available!');
-                    }
-                });
-            });
             
-            // Override sidebar render to work in embedded mode
-            const originalRenderSidebar = window.renderSidebar;
-            if (originalRenderSidebar) {
-                window.renderSidebar = function() {
-                    const sidebar = originalRenderSidebar();
-                    return sidebar.replace(/href="([^"]+)"/g, function(match, href) {
-                        let section = 'overview';
-                        if (href.includes('requests')) section = 'requests';
-                        else if (href.includes('feedback')) section = 'feedback';
-                        else if (href.includes('users')) section = 'users';
-                        else if (href.includes('audit')) section = 'audit';
-                        return `href="#" data-section="${section}"`;
-                    });
-                };
-                
-                // Override initSidebar to ensure logout button uses our override
-                const originalInitSidebar = window.initSidebar;
-                window.initSidebar = function() {
-                    originalInitSidebar();
-                    // Re-attach logout button with embedded mode handler
-                    setTimeout(() => {
-                        const logoutBtn = document.getElementById('logoutBtn');
-                        if (logoutBtn) {
-                            // Remove any existing listeners
-                            const newLogoutBtn = logoutBtn.cloneNode(true);
-                            logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
-                            
-                            // Attach our embedded logout handler
-                            newLogoutBtn.addEventListener('click', async (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                
-                                if (window.adminAuth && window.adminAuth.logout) {
-                                    await window.adminAuth.logout();
-                                }
-                            });
-                        }
-                    }, 50);
-                };
-                
-                window.initSidebar();
-            }
-            
-            // Intercept any navigation attempts to admin login page
-            const checkForAdminRedirects = () => {
-                // Monitor for any navigation to admin login
-                const originalPushState = history.pushState;
-                history.pushState = function(...args) {
-                    const url = args[2];
-                    if (url && url.includes('/admin/pages/login.html')) {
-                        console.log('Navigation to login intercepted');
-                        const portalContent = document.getElementById('adminPortalContent');
-                        const portalContainer = document.getElementById('adminPortalContainer');
-                        if (portalContent && portalContainer) {
-                            self.loadAdminLoginScreen(portalContent, portalContainer);
-                        }
-                        return;
+        // Intercept any navigation attempts to admin login page
+        const checkForAdminRedirects = () => {
+            // Monitor for any navigation to admin login
+            const originalPushState = history.pushState;
+            history.pushState = function(...args) {
+                const url = args[2];
+                if (url && url.includes('/admin/pages/login.html')) {
+                    console.log('Navigation to login intercepted');
+                    const portalContent = document.getElementById('adminPortalContent');
+                    const portalContainer = document.getElementById('adminPortalContainer');
+                    if (portalContent && portalContainer) {
+                        self.loadAdminLoginScreen(portalContent, portalContainer);
                     }
-                    return originalPushState.apply(history, args);
-                };
+                    return;
+                }
+                return originalPushState.apply(history, args);
             };
-            checkForAdminRedirects();
+        };
+        checkForAdminRedirects();
         }, 100);
         
             // Setup exit function (just reload the section to show login again)
