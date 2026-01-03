@@ -217,47 +217,6 @@
     <script src="product-catalog.js"></script>
 
     <script>
-    // Sandbox check: Redirect if not on localhost or private network
-    (function() {
-        function isLocalOrPrivateNetwork() {
-            const hostname = window.location.hostname;
-            
-            // Check for localhost variants
-            if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
-                return true;
-            }
-            
-            // Check for private IP ranges
-            // 192.168.0.0 - 192.168.255.255
-            if (hostname.startsWith('192.168.')) {
-                return true;
-            }
-            
-            // 10.0.0.0 - 10.255.255.255
-            if (hostname.startsWith('10.')) {
-                return true;
-            }
-            
-            // 172.16.0.0 - 172.31.255.255
-            const parts = hostname.split('.');
-            if (parts.length >= 2) {
-                const firstOctet = parseInt(parts[0], 10);
-                const secondOctet = parseInt(parts[1], 10);
-                if (firstOctet === 172 && secondOctet >= 16 && secondOctet <= 31) {
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-        
-        // Only redirect if we're not on localhost or private network
-        if (!isLocalOrPrivateNetwork()) {
-            console.warn('Product Catalog is sandboxed and only available on localhost or private networks');
-            window.location.href = '/';
-        }
-    })();
-    
     // Logo fallback script
     document.addEventListener('DOMContentLoaded', function() {
         const logos = document.querySelectorAll('.logo');
