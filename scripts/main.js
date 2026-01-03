@@ -22,8 +22,11 @@ class CNCFoundationApp {
         this.initializeNavigation();
         this.initializeSearch();
         this.updateLastUpdated();
-        // Ensure home content is visible on page load
-        this.showHomeContent();
+        // Ensure home content is visible on page load (only on homepage)
+        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('/index.html');
+        if (isHomePage) {
+            this.showHomeContent();
+        }
         console.log('CnC App initialized');
     }
 
