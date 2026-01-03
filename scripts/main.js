@@ -1683,6 +1683,105 @@ class CNCFoundationApp {
             </div>
         `;
         
+        // Store reference to self for logout override
+        const self = this;
+        
+        // Override logout and redirect functions BEFORE initializing auth
+        // This ensures they're in place before any auth checks trigger redirects
+        if (window.adminAuth) {
+            // Override logout to stay within employee management section
+            if (window.adminAuth.logout) {
+                const originalLogout = window.adminAuth.logout.bind(window.adminAuth);
+                window.adminAuth.logout = async function() {
+                const sessionToken = this.sessionToken || window.adminAuth.sessionToken;
+                
+                if (sessionToken) {
+                    try {
+                        // Call logout API
+                        await fetch('/api/admin-auth', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${sessionToken}`
+                            },
+                            body: JSON.stringify({ action: 'logout' })
+                        });
+                    } catch (error) {
+                        console.error('Error during logout API call:', error);
+                    }
+                }
+                
+                // Clear session data
+                try {
+                    localStorage.removeItem('admin_session');
+                    localStorage.removeItem('admin_user');
+                    localStorage.removeItem('admin_permissions');
+                } catch (e) {
+                    console.error('Error clearing localStorage:', e);
+                }
+                
+                // Clear global auth state
+                if (window.adminAuth) {
+                    window.adminAuth.currentUser = null;
+                    window.adminAuth.sessionToken = null;
+                    window.adminAuth.userPermissions = [];
+                }
+                
+                console.log('Logged out - showing login screen within portal');
+                
+                // Instead of redirecting, reload the login screen within the portal
+                const portalContent = document.getElementById('adminPortalContent');
+                const portalContainer = document.getElementById('adminPortalContainer');
+                if (portalContent && portalContainer) {
+                    self.loadAdminLoginScreen(portalContent, portalContainer);
+                }
+                };
+            }
+            
+            // Override redirectToLogin to prevent navigation away
+            if (typeof window.adminAuth.redirectToLogin === 'function') {
+                window.adminAuth.redirectToLogin = function() {
+                    console.log('Redirect to login intercepted - showing login screen in portal');
+                    // Don't redirect - just show login screen
+                    const portalContent = document.getElementById('adminPortalContent');
+                    const portalContainer = document.getElementById('adminPortalContainer');
+                    if (portalContent && portalContainer) {
+                        self.loadAdminLoginScreen(portalContent, portalContainer);
+                    }
+                };
+            }
+            
+            // Override handleSessionExpired to prevent navigation
+            if (typeof window.adminAuth.handleSessionExpired === 'function') {
+                window.adminAuth.handleSessionExpired = function() {
+                    console.log('⏰ Session expired - showing login screen in portal...');
+                    
+                    // Clear session data
+                    try {
+                        localStorage.removeItem('admin_session');
+                        localStorage.removeItem('admin_user');
+                        localStorage.removeItem('admin_permissions');
+                    } catch (e) {
+                        console.error('Error clearing localStorage:', e);
+                    }
+                    
+                    // Clear global auth state
+                    if (window.adminAuth) {
+                        window.adminAuth.currentUser = null;
+                        window.adminAuth.sessionToken = null;
+                        window.adminAuth.userPermissions = [];
+                    }
+                    
+                    // Show login screen instead of redirecting
+                    const portalContent = document.getElementById('adminPortalContent');
+                    const portalContainer = document.getElementById('adminPortalContainer');
+                    if (portalContent && portalContainer) {
+                        self.loadAdminLoginScreen(portalContent, portalContainer);
+                    }
+                };
+            }
+        }
+        
         // Initialize authentication
         try {
             if (window.adminAuth && window.adminAuth.init) {
@@ -1708,12 +1807,25 @@ class CNCFoundationApp {
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
+                    
                     const href = link.getAttribute('href');
+                    const dataSection = link.getAttribute('data-section');
+                    
+                    // Determine section from href or data-section
                     let section = 'overview';
-                    if (href && href.includes('requests')) section = 'requests';
-                    else if (href && href.includes('feedback')) section = 'feedback';
-                    else if (href && href.includes('users')) section = 'users';
-                    else if (href && href.includes('audit')) section = 'audit';
+                    if (dataSection) {
+                        section = dataSection;
+                    } else if (href) {
+                        if (href.includes('requests')) section = 'requests';
+                        else if (href.includes('feedback')) section = 'feedback';
+                        else if (href.includes('users')) section = 'users';
+                        else if (href.includes('audit')) section = 'audit';
+                    }
+                    
+                    // Update active state
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
                     
                     if (window.loadAdminSection) {
                         window.loadAdminSection(section);
@@ -1735,8 +1847,54 @@ class CNCFoundationApp {
                         return `href="#" data-section="${section}"`;
                     });
                 };
+                
+                // Override initSidebar to ensure logout button uses our override
+                const originalInitSidebar = window.initSidebar;
+                window.initSidebar = function() {
+                    originalInitSidebar();
+                    // Re-attach logout button with embedded mode handler
+                    setTimeout(() => {
+                        const logoutBtn = document.getElementById('logoutBtn');
+                        if (logoutBtn) {
+                            // Remove any existing listeners
+                            const newLogoutBtn = logoutBtn.cloneNode(true);
+                            logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+                            
+                            // Attach our embedded logout handler
+                            newLogoutBtn.addEventListener('click', async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                
+                                if (window.adminAuth && window.adminAuth.logout) {
+                                    await window.adminAuth.logout();
+                                }
+                            });
+                        }
+                    }, 50);
+                };
+                
                 window.initSidebar();
             }
+            
+            // Intercept any navigation attempts to admin login page
+            const checkForAdminRedirects = () => {
+                // Monitor for any navigation to admin login
+                const originalPushState = history.pushState;
+                history.pushState = function(...args) {
+                    const url = args[2];
+                    if (url && url.includes('/admin/pages/login.html')) {
+                        console.log('Navigation to login intercepted');
+                        const portalContent = document.getElementById('adminPortalContent');
+                        const portalContainer = document.getElementById('adminPortalContainer');
+                        if (portalContent && portalContainer) {
+                            self.loadAdminLoginScreen(portalContent, portalContainer);
+                        }
+                        return;
+                    }
+                    return originalPushState.apply(history, args);
+                };
+            };
+            checkForAdminRedirects();
         }, 100);
         
             // Setup exit function (just reload the section to show login again)
