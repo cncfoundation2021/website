@@ -501,6 +501,34 @@ p {
     box-shadow: 0 4px 16px var(--shadow-lg);
 }
 
+/* Content Header (for dynamically loaded sections) */
+.content-header {
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 2px solid var(--primary);
+    text-align: center;
+}
+
+.content-header h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: var(--space-2);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.content-summary {
+    font-size: var(--font-size-lg);
+    color: var(--text-muted);
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Content Body (for dynamically loaded sections) */
+.content-body {
+    margin-top: var(--space-6);
+}
+
 /* Default Section (for placeholder content) */
 .default-section {
     padding: var(--space-6);

@@ -1181,6 +1181,124 @@ class CNCFoundationApp {
                 </div>
             </div>
             `;
+        } else if (sectionSlug === 'employee-management') {
+            // Admin Portal - Match structure of other dynamically loaded sections
+            contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary">Access the comprehensive admin dashboard to manage employees, requests, feedback, and system operations</p>
+            </div>
+            <div class="content-body">
+                <style>
+                    /* Admin Portal Styles - Match exact positioning of other content */
+                    /* Prevent admin dashboard CSS from affecting main site layout */
+                    /* Override admin-dashboard.css that adds margin-left: 260px to .main-content */
+                    .main-layout .main-content {
+                        margin-left: 0 !important;
+                    }
+                    
+                    /* Ensure admin dashboard .main-content doesn't affect site's main-content */
+                    .main-content:not(.admin-main-content) {
+                        margin-left: 0 !important;
+                    }
+                    
+                    /* Ensure content-section has correct positioning */
+                    #content-employee-management.content-section {
+                        margin-left: 0 !important;
+                        margin-right: 0 !important;
+                    }
+                    
+                    #content-employee-management #adminPortalContainer,
+                    #content-employee-management #adminPortalContent {
+                        width: 100% !important;
+                        min-height: 600px !important;
+                        display: block !important;
+                        background: transparent !important;
+                        position: relative !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-sizing: border-box !important;
+                    }
+                    
+                    /* Admin Panel Layout */
+                    #content-employee-management .admin-panel-layout {
+                        display: flex !important;
+                        gap: 20px !important;
+                        min-height: 600px !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        width: 100% !important;
+                        box-sizing: border-box !important;
+                    }
+                    
+                    #content-employee-management #sidebarContainer .sidebar {
+                        position: relative !important;
+                        width: 260px !important;
+                        min-width: 260px !important;
+                        height: auto !important;
+                        min-height: 600px !important;
+                        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%) !important;
+                        color: white !important;
+                        padding: 20px !important;
+                        border-radius: 12px !important;
+                        overflow-y: auto !important;
+                        margin: 0 !important;
+                        box-sizing: border-box !important;
+                    }
+                    
+                    #content-employee-management .admin-main-content {
+                        flex: 1 !important;
+                        background: #f5f7fa !important;
+                        border-radius: 12px !important;
+                        padding: 30px !important;
+                        min-height: 600px !important;
+                        margin: 0 !important;
+                        box-sizing: border-box !important;
+                    }
+                    
+                    /* Login Screen Styles (embedded) */
+                    #content-employee-management .admin-login-container {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        min-height: 500px !important;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                        padding: 40px 20px !important;
+                        border-radius: 12px !important;
+                        margin: 0 !important;
+                        width: 100% !important;
+                        box-sizing: border-box !important;
+                    }
+                    
+                    #content-employee-management .admin-login-box {
+                        background: white !important;
+                        border-radius: 16px !important;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+                        width: 100% !important;
+                        max-width: 420px !important;
+                        overflow: hidden !important;
+                        box-sizing: border-box !important;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        #content-employee-management .admin-panel-layout {
+                            flex-direction: column !important;
+                        }
+                        
+                        #content-employee-management #sidebarContainer .sidebar {
+                            width: 100% !important;
+                            min-height: auto !important;
+                        }
+                    }
+                </style>
+                <div id="adminPortalContainer" class="admin-portal-container">
+                    <!-- Content will be loaded based on authentication status -->
+                    <div id="adminPortalContent">
+                        <!-- Will show login or admin panel based on auth -->
+                    </div>
+                </div>
+            </div>
+            `;
         } else {
             contentBody = `
             <div class="content-header">
@@ -1208,7 +1326,501 @@ class CNCFoundationApp {
             this.executeOrgChartScript(section);
         }
         
+        // Initialize admin portal if it's the employee management section
+        if (sectionSlug === 'employee-management') {
+            this.initializeEmployeeManagementPortal(section);
+        }
+        
         return section;
+    }
+    
+    initializeEmployeeManagementPortal(contentSection) {
+        // Initialize admin portal for employee management section
+        setTimeout(async () => {
+            console.log('Initializing Employee Management Admin Portal...');
+            
+            // Don't hide main site elements - keep them visible
+            
+            // Load admin CSS if not already loaded
+            if (!document.querySelector('link[href*="admin-dashboard.css"]')) {
+                const cssLink = document.createElement('link');
+                cssLink.rel = 'stylesheet';
+                cssLink.href = '../admin/styles/admin-dashboard.css';
+                document.head.appendChild(cssLink);
+                console.log('Admin CSS loaded');
+                
+                // Add override to prevent admin CSS from affecting main site layout
+                const overrideStyle = document.createElement('style');
+                overrideStyle.id = 'admin-css-override';
+                overrideStyle.textContent = `
+                    /* Override admin-dashboard.css styles that conflict with main site */
+                    .main-layout .main-content {
+                        margin-left: 0 !important;
+                        width: calc(100vw - 280px) !important;
+                        max-width: calc(100vw - 280px) !important;
+                    }
+                `;
+                document.head.appendChild(overrideStyle);
+            } else {
+                // Ensure override exists even if CSS was already loaded
+                if (!document.getElementById('admin-css-override')) {
+                    const overrideStyle = document.createElement('style');
+                    overrideStyle.id = 'admin-css-override';
+                    overrideStyle.textContent = `
+                        /* Override admin-dashboard.css styles that conflict with main site */
+                        .main-layout .main-content {
+                            margin-left: 0 !important;
+                            width: calc(100vw - 280px) !important;
+                            max-width: calc(100vw - 280px) !important;
+                        }
+                    `;
+                    document.head.appendChild(overrideStyle);
+                }
+            }
+            
+            // Check if admin scripts are loaded
+            if (typeof window.adminAuth === 'undefined') {
+                console.warn('Admin auth scripts not loaded. Loading them now...');
+                
+                // Dynamically load admin scripts
+                const scripts = [
+                    '../admin/scripts/auth-check.js',
+                    '../admin/scripts/shared-sidebar.js',
+                    '../admin/scripts/admin-dashboard.js',
+                    '../admin/scripts/user-management.js',
+                    '../admin/scripts/signup-management.js'
+                ];
+                
+                for (const src of scripts) {
+                    await new Promise((resolve, reject) => {
+                        // Check if script is already loaded
+                        if (document.querySelector(`script[src="${src}"]`)) {
+                            resolve();
+                            return;
+                        }
+                        
+                        const script = document.createElement('script');
+                        script.src = src;
+                        script.async = false;
+                        script.onload = resolve;
+                        script.onerror = () => {
+                            console.error(`Failed to load ${src}`);
+                            resolve(); // Continue even if one fails
+                        };
+                        document.head.appendChild(script);
+                    });
+                }
+                
+                // Wait a bit for scripts to initialize
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+            
+            // Initialize admin portal
+            const portalContainer = contentSection.querySelector('#adminPortalContainer');
+            const portalContent = contentSection.querySelector('#adminPortalContent');
+            
+            if (!portalContainer || !portalContent) {
+                console.error('Admin portal container not found in content section');
+                return;
+            }
+            
+            // Ensure container is visible (embedded in content area)
+            portalContainer.style.display = 'block';
+            portalContainer.style.visibility = 'visible';
+            portalContainer.style.opacity = '1';
+            
+            console.log('Admin portal container initialized and made visible');
+            
+            // Check authentication status - handle localStorage access safely
+            let sessionToken = null;
+            let storedUser = null;
+            
+            try {
+                sessionToken = localStorage.getItem('admin_session');
+                storedUser = localStorage.getItem('admin_user');
+            } catch (error) {
+                console.error('localStorage access denied:', error);
+                // If localStorage is blocked, show login screen
+                this.loadAdminLoginScreen(portalContent, portalContainer);
+                return;
+            }
+            
+            if (!sessionToken || !storedUser) {
+                // Show login screen
+                this.loadAdminLoginScreen(portalContent, portalContainer);
+            } else {
+                // Verify session and load admin panel
+                try {
+                    const response = await fetch('/api/admin-auth?action=verify', {
+                        headers: {
+                            'Authorization': `Bearer ${sessionToken}`
+                        }
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Session valid - load admin panel
+                        await this.loadAdminPanel(portalContent, portalContainer);
+                    } else {
+                        // Invalid session - show login
+                        try {
+                            localStorage.removeItem('admin_session');
+                            localStorage.removeItem('admin_user');
+                        } catch (e) {
+                            console.error('Error clearing localStorage:', e);
+                        }
+                        this.loadAdminLoginScreen(portalContent, portalContainer);
+                    }
+                } catch (error) {
+                    console.error('Error verifying session:', error);
+                    this.loadAdminLoginScreen(portalContent, portalContainer);
+                }
+            }
+            
+            console.log('Employee Management Admin Portal initialized');
+        }, 300);
+    }
+    
+    loadAdminLoginScreen(container, portalContainer) {
+        // Load login screen HTML directly (embedded in content area)
+        container.innerHTML = `
+            <div class="admin-login-container" style="display: flex !important; align-items: center !important; justify-content: center !important; min-height: 500px !important; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; padding: 40px 20px !important; border-radius: 12px !important;">
+                <div class="admin-login-box" style="background: white !important; border-radius: 16px !important; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important; width: 100% !important; max-width: 420px !important; overflow: hidden !important;">
+                    <div class="login-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; color: white !important; padding: 40px 30px !important; text-align: center !important;">
+                        <h1 style="font-size: 28px !important; margin-bottom: 10px !important;"><i class="fas fa-shield-alt"></i> Admin Login</h1>
+                        <p style="font-size: 14px !important; opacity: 0.9 !important;">Care & Cure Foundation (CNC), Assam</p>
+                    </div>
+                    <div class="login-body" style="padding: 40px 30px !important;">
+                        <div id="loginAlert" style="display: none; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;"></div>
+                        <form id="adminLoginForm">
+                            <div class="form-group" style="margin-bottom: 25px;">
+                                <label for="adminUsername" style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Username</label>
+                                <div style="position: relative;">
+                                    <i class="fas fa-user" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                                    <input type="text" id="adminUsername" name="username" placeholder="Enter your username" required autocomplete="username" style="width: 100%; padding: 14px 15px 14px 45px; border: 2px solid #e1e6ef; border-radius: 8px; font-size: 14px;">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 25px;">
+                                <label for="adminPassword" style="display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px;">Password</label>
+                                <div style="position: relative;">
+                                    <i class="fas fa-lock" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                                    <input type="password" id="adminPassword" name="password" placeholder="Enter your password" required autocomplete="current-password" style="width: 100%; padding: 14px 15px 14px 45px; border: 2px solid #e1e6ef; border-radius: 8px; font-size: 14px;">
+                                </div>
+                            </div>
+                            <div style="margin-top: 30px;">
+                                <button type="submit" id="adminLoginBtn" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                </button>
+                            </div>
+                        </form>
+                        <div style="margin-top: 20px; text-align: center;">
+                            <a href="/admin/pages/login.html" target="_blank" style="color: #667eea; text-decoration: none; font-size: 14px;">Open login page in new tab</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Initialize login form
+        this.initializeLoginForm(container, portalContainer);
+    }
+    
+    initializeLoginForm(container, portalContainer) {
+        // Store reference to this for use in callbacks
+        const self = this;
+        
+        // Re-attach event listeners for login form
+        const loginForm = container.querySelector('#adminLoginForm');
+        const alertBox = container.querySelector('#loginAlert');
+        const loginBtn = container.querySelector('#adminLoginBtn');
+        
+        if (loginForm) {
+            const showAlert = (message, type = 'error') => {
+                if (alertBox) {
+                    alertBox.textContent = message;
+                    alertBox.style.display = 'block';
+                    alertBox.style.background = type === 'error' ? '#fee' : '#efe';
+                    alertBox.style.border = type === 'error' ? '1px solid #fcc' : '1px solid #cfc';
+                    alertBox.style.color = type === 'error' ? '#c33' : '#3c3';
+                    if (type === 'success') {
+                        setTimeout(() => {
+                            alertBox.style.display = 'none';
+                        }, 3000);
+                    }
+                }
+            };
+            
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (alertBox) alertBox.style.display = 'none';
+                
+                const username = container.querySelector('#adminUsername')?.value;
+                const password = container.querySelector('#adminPassword')?.value;
+                
+                if (!username || !password) {
+                    showAlert('Please enter both username and password', 'error');
+                    return;
+                }
+                
+                if (loginBtn) {
+                    loginBtn.disabled = true;
+                    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+                }
+                
+                try {
+                    const apiUrl = '/api/admin-auth?action=login';
+                    console.log('Attempting login to:', apiUrl);
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+                    
+                    // Check if response is JSON
+                    const contentType = response.headers.get('content-type') || '';
+                    let result;
+                    
+                    if (contentType.includes('application/json')) {
+                        result = await response.json();
+                    } else {
+                        // Try to parse as JSON anyway, but if it fails, show the text
+                        const text = await response.text();
+                        console.error('Non-JSON response received. Status:', response.status);
+                        console.error('Response text (first 500 chars):', text.substring(0, 500));
+                        
+                        // Check if this is a 501 error from Python's SimpleHTTP server
+                        if (response.status === 501 && text.includes('Unsupported method')) {
+                            showAlert('API endpoints require Vercel deployment. For local testing, use "vercel dev" instead of Python\'s http.server. The login will work when deployed to Vercel.', 'error');
+                            if (loginBtn) {
+                                loginBtn.disabled = false;
+                                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                            }
+                            return;
+                        }
+                        
+                        // Try to parse as JSON in case content-type is wrong
+                        try {
+                            result = JSON.parse(text);
+                        } catch (parseError) {
+                            throw new Error(`Server error (${response.status}): ${text.substring(0, 100)}`);
+                        }
+                    }
+                    
+                    console.log('Login response:', result); // Debug log
+                    
+                    if (result.success) {
+                        try {
+                            localStorage.setItem('admin_session', result.sessionToken);
+                            localStorage.setItem('admin_user', JSON.stringify(result.user));
+                        } catch (storageError) {
+                            console.error('Error saving to localStorage:', storageError);
+                            showAlert('Login successful but unable to save session. Please enable cookies/localStorage.', 'error');
+                            if (loginBtn) {
+                                loginBtn.disabled = false;
+                                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                            }
+                            return;
+                        }
+                        
+                        showAlert('Login successful! Loading admin panel...', 'success');
+                        
+                        // Reload admin panel after a short delay
+                        setTimeout(() => {
+                            self.loadAdminPanel(container, portalContainer);
+                        }, 500);
+                    } else {
+                        showAlert(result.message || 'Login failed. Please check your credentials.', 'error');
+                        if (loginBtn) {
+                            loginBtn.disabled = false;
+                            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    console.error('Error details:', {
+                        message: error.message,
+                        stack: error.stack,
+                        username: username
+                    });
+                    showAlert(error.message || 'An error occurred. Please check the console for details.', 'error');
+                    if (loginBtn) {
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                    }
+                }
+            });
+        }
+    }
+    
+    async loadAdminPanel(container, portalContainer) {
+        // Load admin panel layout (embedded in content area)
+        // Note: We're already inside main.main-content, so don't create another main tag
+        container.innerHTML = `
+            <div class="admin-panel-layout" style="display: flex !important; gap: 20px !important; min-height: 600px !important;">
+                <!-- Sidebar Container -->
+                <div id="sidebarContainer"></div>
+
+                <!-- Admin Main Content (using div instead of main since we're already in main) -->
+                <div class="admin-main-content" id="adminMainContent" style="flex: 1 !important; background: #f5f7fa !important; border-radius: 12px !important; padding: 30px !important;">
+                    <!-- Content will be loaded dynamically -->
+                    <div class="admin-page-header" id="adminPageHeader" style="background: white; padding: 20px 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                        <h1 style="font-size: 28px; color: #333; margin-bottom: 5px;"><i class="fas fa-chart-line"></i> Dashboard Overview</h1>
+                        <p style="color: #666; font-size: 14px;">Quick overview of system statistics and recent activities</p>
+                    </div>
+                    <div id="adminContentArea">
+                        <!-- Admin sections will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Initialize authentication
+        try {
+            if (window.adminAuth && window.adminAuth.init) {
+                await window.adminAuth.init();
+                await window.adminAuth.loadUserPermissions();
+            }
+        } catch (error) {
+            console.error('Error initializing admin auth:', error);
+        }
+        
+        // Initialize sidebar
+        try {
+            if (window.initSidebar) {
+                window.initSidebar();
+            }
+        } catch (error) {
+            console.error('Error initializing sidebar:', error);
+        }
+        
+        // Setup sidebar navigation with embedded mode
+        setTimeout(() => {
+            const sidebarLinks = container.querySelectorAll('.sidebar-menu a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const href = link.getAttribute('href');
+                    let section = 'overview';
+                    if (href && href.includes('requests')) section = 'requests';
+                    else if (href && href.includes('feedback')) section = 'feedback';
+                    else if (href && href.includes('users')) section = 'users';
+                    else if (href && href.includes('audit')) section = 'audit';
+                    
+                    if (window.loadAdminSection) {
+                        window.loadAdminSection(section);
+                    }
+                });
+            });
+            
+            // Override sidebar render to work in embedded mode
+            const originalRenderSidebar = window.renderSidebar;
+            if (originalRenderSidebar) {
+                window.renderSidebar = function() {
+                    const sidebar = originalRenderSidebar();
+                    return sidebar.replace(/href="([^"]+)"/g, function(match, href) {
+                        let section = 'overview';
+                        if (href.includes('requests')) section = 'requests';
+                        else if (href.includes('feedback')) section = 'feedback';
+                        else if (href.includes('users')) section = 'users';
+                        else if (href.includes('audit')) section = 'audit';
+                        return `href="#" data-section="${section}"`;
+                    });
+                };
+                window.initSidebar();
+            }
+        }, 100);
+        
+            // Setup exit function (just reload the section to show login again)
+            window.exitAdminPortal = () => {
+                // Clear session and reload admin portal
+                try {
+                    localStorage.removeItem('admin_session');
+                    localStorage.removeItem('admin_user');
+                } catch (e) {
+                    console.error('Error clearing localStorage:', e);
+                }
+                // Reload the admin portal content
+                const portalContent = document.getElementById('adminPortalContent');
+                if (portalContent) {
+                    this.loadAdminLoginScreen(portalContent, portalContainer);
+                }
+            };
+        
+        // Load overview section by default
+        // Override loadAdminSection to update the correct header element
+        const loadSectionWrapper = () => {
+            if (window.loadAdminSection) {
+                const originalLoadAdminSection = window.loadAdminSection;
+                window.loadAdminSection = function(sectionName) {
+                    const result = originalLoadAdminSection(sectionName);
+                    // Update admin-page-header if it exists
+                    const adminPageHeader = document.getElementById('adminPageHeader');
+                    if (adminPageHeader) {
+                        const sectionTitles = {
+                            'overview': { icon: 'fa-chart-line', title: 'Dashboard Overview', desc: 'Quick overview of system statistics and recent activities' },
+                            'requests': { icon: 'fa-file-alt', title: 'Service Requests', desc: 'Manage all customer service requests' },
+                            'feedback': { icon: 'fa-comments', title: 'Website Feedback', desc: 'View and analyze customer feedback from the website' },
+                            'users': { icon: 'fa-users', title: 'User Management', desc: 'Manage admin users and signup requests' },
+                            'audit': { icon: 'fa-history', title: 'Audit Log', desc: 'Track all administrative actions and system events' }
+                        };
+                        const sectionInfo = sectionTitles[sectionName] || sectionTitles['overview'];
+                        adminPageHeader.innerHTML = `
+                            <h1 style="font-size: 28px; color: #333; margin-bottom: 5px;"><i class="fas ${sectionInfo.icon}"></i> ${sectionInfo.title}</h1>
+                            <p style="color: #666; font-size: 14px;">${sectionInfo.desc}</p>
+                        `;
+                    }
+                    return result;
+                };
+                setTimeout(() => {
+                    window.loadAdminSection('overview');
+                }, 200);
+            } else {
+                // Load admin portal functions if not available
+                this.loadAdminPortalFunctions().then(() => {
+                    loadSectionWrapper();
+                });
+            }
+        };
+        
+        loadSectionWrapper();
+    }
+    
+    async loadAdminPortalFunctions() {
+        // Fetch employee-management.html to extract the admin portal functions
+        try {
+            const response = await fetch('/info/employee-management.html');
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const scripts = doc.querySelectorAll('script');
+            
+            // Execute admin portal initialization scripts
+            scripts.forEach(script => {
+                if (script.textContent && script.textContent.includes('loadAdminSection')) {
+                    try {
+                        // Extract and execute the admin portal functions
+                        const scriptContent = script.textContent;
+                        // Create a function context - wrap in IIFE to avoid scope issues
+                        const wrappedScript = `(function() { ${scriptContent} })();`;
+                        const func = new Function(wrappedScript);
+                        func();
+                    } catch (e) {
+                        console.error('Error loading admin portal functions:', e);
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching admin portal functions:', error);
+        }
     }
     
     executeOrgChartScript(contentSection) {
