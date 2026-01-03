@@ -7,7 +7,15 @@ class ProductCatalog {
         // Direct Google Sheets URL (may have CORS issues)
         this.directCsvUrl = `https://docs.google.com/spreadsheets/d/${this.googleSheetsId}/export?format=csv&gid=0`;
         // API proxy URL (works in production)
-        this.apiProxyUrl = `/api/product-catalog`;
+        // On localhost, try to detect if we're on a different port and use full URL
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const currentPort = window.location.port;
+        // If on localhost and not on port 3000, use full URL to port 3000 (Vercel dev)
+        if (isLocalhost && currentPort && currentPort !== '3000') {
+            this.apiProxyUrl = `http://localhost:3000/api/product-catalog`;
+        } else {
+            this.apiProxyUrl = `/api/product-catalog`;
+        }
         this.lastSyncTime = null;
         this.syncInterval = 5 * 60 * 1000; // Sync every 5 minutes
         this.isLoading = false;
@@ -24,6 +32,39 @@ class ProductCatalog {
         this.setupFilters();
         // Set up auto-refresh
         setInterval(() => this.loadProducts(true), this.syncInterval);
+    }
+
+    // Helper function to check if we're on localhost or private network
+    isLocalOrPrivateNetwork() {
+        const hostname = window.location.hostname;
+        
+        // Check for localhost variants
+        if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
+            return true;
+        }
+        
+        // Check for private IP ranges
+        // 192.168.0.0 - 192.168.255.255
+        if (hostname.startsWith('192.168.')) {
+            return true;
+        }
+        
+        // 10.0.0.0 - 10.255.255.255
+        if (hostname.startsWith('10.')) {
+            return true;
+        }
+        
+        // 172.16.0.0 - 172.31.255.255
+        const parts = hostname.split('.');
+        if (parts.length >= 2) {
+            const firstOctet = parseInt(parts[0], 10);
+            const secondOctet = parseInt(parts[1], 10);
+            if (firstOctet === 172 && secondOctet >= 16 && secondOctet <= 31) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     // Setup filter event listeners
@@ -216,11 +257,7 @@ class ProductCatalog {
             'Description': 'description',
             'Brand': 'brand',
             'Dimensions': 'dimensions',
-            'MRP': 'mrp',
-            'Discount Rate': 'discountRate',
-            'Offered Rate': 'offeredRate',
-            'Taxes Incl.': 'taxesIncl',
-            'Total Amount': 'totalAmount'
+            'MRP': 'mrp'
         };
 
         // Parse data rows with merged cell handling
@@ -254,7 +291,7 @@ class ProductCatalog {
                         }
                         
                         // Convert numeric fields
-                        if (['mrp', 'discountRate', 'offeredRate', 'taxesIncl', 'totalAmount'].includes(mappedKey)) {
+                        if (['mrp'].includes(mappedKey)) {
                             product[mappedKey] = this.parseNumber(value);
                             // Store the original value for merged cell propagation
                             currentRowValues[mappedKey] = value ? this.parseNumber(value) : (previousRowValues[mappedKey] || 0);
@@ -263,6 +300,15 @@ class ProductCatalog {
                             // Store value for merged cell propagation (use current if exists, otherwise previous)
                             const prevValue = previousRowValues[mappedKey];
                             currentRowValues[mappedKey] = value || (prevValue != null ? String(prevValue) : '');
+                            
+                            // Debug: Log image values to help troubleshoot
+                            if (mappedKey === 'image') {
+                                if (value) {
+                                    console.log('Image value found in CSV:', value.substring(0, 100));
+                                } else {
+                                    console.log('Image column is empty for row', i);
+                                }
+                            }
                         }
                     }
                 } catch (error) {
@@ -333,14 +379,12 @@ class ProductCatalog {
             let url = `${this.apiProxyUrl}?t=${Date.now()}`;
             let useDirectUrl = false;
             
-            // On localhost, try direct URL first, then API proxy
-            const isLocalhost = window.location.hostname === 'localhost' || 
-                               window.location.hostname === '127.0.0.1';
+            // On localhost or private network, prefer API proxy (which has image URLs from Column D)
+            // Only use direct CSV as last resort since it doesn't have image data
+            const isLocalhost = this.isLocalOrPrivateNetwork();
             
-            if (isLocalhost) {
-                url = `${this.directCsvUrl}&t=${Date.now()}`;
-                useDirectUrl = true;
-            }
+            // Always try API first to get image URLs from Column D
+            // CSV doesn't contain image data, so we skip it
             
             console.log('Fetching from URL:', url);
             
@@ -351,7 +395,7 @@ class ProductCatalog {
                     mode: 'cors',
                     cache: 'no-cache',
                     headers: {
-                        'Accept': 'text/csv'
+                        'Accept': 'application/json, text/csv, */*'
                     }
                 });
             } catch (fetchError) {
@@ -364,7 +408,7 @@ class ProductCatalog {
                         mode: 'cors',
                         cache: 'no-cache',
                         headers: {
-                            'Accept': 'text/csv'
+                            'Accept': 'application/json, text/csv, */*'
                         }
                     });
                 } else {
@@ -373,6 +417,7 @@ class ProductCatalog {
             }
             
             console.log('Response status:', response.status, response.statusText);
+            console.log('Content-Type:', response.headers.get('content-type'));
             
             if (!response.ok) {
                 const errorText = await response.text().catch(() => 'Unable to read error response');
@@ -380,16 +425,50 @@ class ProductCatalog {
                 throw new Error(`HTTP error! status: ${response.status} - ${errorText.substring(0, 100)}`);
             }
 
-            const csvText = await response.text();
-            console.log('CSV received, length:', csvText.length, 'characters');
-            console.log('First 500 chars:', csvText.substring(0, 500));
+            // Check if response is JSON (from API) or CSV (fallback)
+            const contentType = response.headers.get('content-type') || '';
+            const isJson = contentType.includes('application/json');
             
-            if (!csvText || csvText.trim().length === 0) {
-                throw new Error('Empty CSV response received');
+            if (isJson) {
+                // Handle JSON response from Google Sheets API
+                const jsonData = await response.json();
+                console.log('JSON response received:', jsonData);
+                
+                if (jsonData.success && jsonData.products) {
+                    this.products = jsonData.products;
+                    console.log('Loaded products from API:', this.products.length);
+                    // Debug: Log first product's image
+                    if (this.products.length > 0) {
+                        console.log('First product image:', this.products[0].image);
+                    }
+                } else {
+                    throw new Error('Invalid JSON response format');
+                }
+            } else {
+                // Handle CSV response (fallback)
+                const csvText = await response.text();
+                console.log('CSV received, length:', csvText.length, 'characters');
+                console.log('First 500 chars:', csvText.substring(0, 500));
+                
+                if (!csvText || csvText.trim().length === 0) {
+                    throw new Error('Empty CSV response received');
+                }
+                
+                this.products = this.parseCSV(csvText);
+                console.log('Parsed products from CSV:', this.products.length);
+                // Debug: Log image data from first few products
+                if (this.products.length > 0) {
+                    console.log('Sample products with images:');
+                    this.products.slice(0, 3).forEach((p, i) => {
+                        console.log(`Product ${i + 1}:`, {
+                            name: p.productName,
+                            image: p.image,
+                            hasImage: !!p.image
+                        });
+                    });
+                }
             }
             
-            this.products = this.parseCSV(csvText);
-            console.log('Parsed products:', this.products.length);
             this.lastSyncTime = new Date();
             
             // Populate filter options and apply current filters
@@ -505,9 +584,42 @@ class ProductCatalog {
 
         // Render all rows individually with duplicated merged values
         tbody.innerHTML = productsToRender.map((product) => {
-            const imageUrl = product.image && product.image.trim() 
-                ? product.image.trim() 
-                : 'https://via.placeholder.com/100x100/0ea5e9/ffffff?text=Product';
+            // Convert Google Drive URL to proxy URL to avoid 403 errors
+            let imageUrl = 'https://via.placeholder.com/100x100/0ea5e9/ffffff?text=Product';
+            
+            if (product.image && product.image.trim()) {
+                const originalImage = product.image.trim();
+                const convertedUrl = this.convertGoogleDriveUrl(originalImage);
+                if (convertedUrl) {
+                    // Use proxy API to avoid 403 errors from Google Drive
+                    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                    const currentPort = window.location.port;
+                    let proxyBaseUrl = '/api/image-proxy';
+                    
+                    // If on localhost and not on port 3000, use full URL to port 3000
+                    if (isLocalhost && currentPort && currentPort !== '3000') {
+                        proxyBaseUrl = 'http://localhost:3000/api/image-proxy';
+                    }
+                    
+                    // Encode the image URL for the proxy
+                    imageUrl = `${proxyBaseUrl}?url=${encodeURIComponent(convertedUrl)}`;
+                    
+                    // Debug logging (only log first few to avoid spam)
+                    if (productsToRender.indexOf(product) < 3) {
+                        console.log('Image URL:', { original: originalImage, converted: convertedUrl, proxied: imageUrl });
+                    }
+                } else {
+                    // Debug: Log when conversion fails
+                    if (productsToRender.indexOf(product) < 3) {
+                        console.warn('Image conversion failed for:', originalImage);
+                    }
+                }
+            } else {
+                // Debug: Log when no image is found
+                if (productsToRender.indexOf(product) < 3) {
+                    console.log('No image found for product:', product.productName || product.serialNo);
+                }
+            }
             
             return `
                 <tr>
@@ -517,7 +629,7 @@ class ProductCatalog {
                         <img src="${this.escapeHtml(imageUrl)}" 
                              alt="${this.escapeHtml(product.productName || 'Product')}" 
                              class="product-image" 
-                             onerror="this.src='https://via.placeholder.com/100x100/0ea5e9/ffffff?text=Product'">
+                             onerror="this.src='https://via.placeholder.com/100x100/0ea5e9/ffffff?text=Product'; console.error('Failed to load image:', '${this.escapeHtml(imageUrl)}');">
                     </td>
                     <td>${this.escapeHtml(product.productName || '')}</td>
                     <td>${this.escapeHtml(product.unit || '')}</td>
@@ -525,13 +637,69 @@ class ProductCatalog {
                     <td>${this.escapeHtml(product.brand || '')}</td>
                     <td>${this.escapeHtml(product.dimensions || '')}</td>
                     <td>${product.mrp ? '₹' + this.formatNumber(product.mrp) : ''}</td>
-                    <td>${product.discountRate ? product.discountRate + '%' : ''}</td>
-                    <td>${product.offeredRate ? '₹' + this.formatNumber(product.offeredRate) : ''}</td>
-                    <td>${product.taxesIncl ? '₹' + this.formatNumber(product.taxesIncl) : ''}</td>
-                    <td>${product.totalAmount ? '₹' + this.formatNumber(product.totalAmount) : ''}</td>
                 </tr>
             `;
         }).join('');
+    }
+
+    // Convert Google Drive URL to direct image URL
+    convertGoogleDriveUrl(url) {
+        if (!url || !url.trim()) {
+            return null;
+        }
+        
+        let trimmedUrl = url.trim();
+        
+        // Handle Google Sheets IMAGE formula: =IMAGE("url") or =IMAGE(url)
+        const imageFormulaMatch = trimmedUrl.match(/^=IMAGE\(["']?([^"')]+)["']?\)$/i);
+        if (imageFormulaMatch) {
+            trimmedUrl = imageFormulaMatch[1].trim();
+        }
+        
+        // Remove quotes if present
+        trimmedUrl = trimmedUrl.replace(/^["']|["']$/g, '');
+        
+        // If it's already a direct image URL (with file extension), return as-is
+        if (/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(trimmedUrl)) {
+            return trimmedUrl;
+        }
+        
+        // If it's already in the correct Google Drive view format (from Column D), return as-is
+        if (trimmedUrl.includes('drive.google.com/uc?export=view&id=')) {
+            return trimmedUrl;
+        }
+        
+        // Handle Google Drive file URLs
+        // Format: https://drive.google.com/file/d/FILE_ID/view
+        const fileIdMatch = trimmedUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (fileIdMatch) {
+            return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+        }
+        
+        // Format: https://drive.google.com/open?id=FILE_ID or ?id=FILE_ID or &id=FILE_ID
+        const openIdMatch = trimmedUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (openIdMatch) {
+            return `https://drive.google.com/uc?export=view&id=${openIdMatch[1]}`;
+        }
+        
+        // Format: https://docs.google.com/spreadsheets/d/... (might contain image URL in formula)
+        // Try to extract any URL from the string
+        const urlMatch = trimmedUrl.match(/https?:\/\/[^\s"']+/);
+        if (urlMatch) {
+            return this.convertGoogleDriveUrl(urlMatch[0]); // Recursively process
+        }
+        
+        // If it looks like a file ID (alphanumeric string), try using it directly
+        if (/^[a-zA-Z0-9_-]{20,}$/.test(trimmedUrl)) {
+            return `https://drive.google.com/uc?export=view&id=${trimmedUrl}`;
+        }
+        
+        // Return as-is if it's a valid HTTP/HTTPS URL (might be a valid URL we didn't catch)
+        if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+            return trimmedUrl;
+        }
+        
+        return null;
     }
 
     // Format number with commas

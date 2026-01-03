@@ -9,12 +9,18 @@
     "sync:git": "bash scripts/sync-git.sh",
     "deploy": "bash scripts/deploy.sh",
     "deploy:vercel": "vercel --prod",
-    "test:supabase": "node admin/test-connection.js"
+    "test:supabase": "node admin/test-connection.js",
+    "convert:images": "node scripts/convert-images-to-formulas.js",
+    "test:sheets": "node test-google-sheets-api.js",
+    "extract:images": "node scripts/extract-images-from-xlsx.js",
+    "enable:drive": "node scripts/enable-drive-api.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "bcryptjs": "^2.4.3",
-    "googleapis": "^128.0.0"
+    "googleapis": "^128.0.0",
+    "jszip": "^3.10.1",
+    "xml2js": "^0.6.2"
   },
   "keywords": [
     "website",

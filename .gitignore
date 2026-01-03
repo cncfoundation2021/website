@@ -4,3 +4,9 @@
 node_modules/
 .DS_Store
 *.log
+
+# Google Cloud API Keys and OAuth tokens (sensitive)
+Google Cloud API Keys - Gsheet/oauth2-token.json
+Google Cloud API Keys - Gsheet/oauth2-credentials.json
+Google Cloud API Keys - Gsheet/client_secret*.json
+Google Cloud API Keys - Gsheet/cnc-assam-website-*.json
