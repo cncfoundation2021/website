@@ -32,12 +32,18 @@ class CNCFoundationApp {
             setTimeout(() => {
                 const allContentSections = document.querySelectorAll('.content-section');
                 if (allContentSections.length > 0) {
-                    // Remove active from all first
+                    // Find section that already has active class, or use first one
+                    let activeSection = Array.from(allContentSections).find(section => section.classList.contains('active'));
+                    if (!activeSection) {
+                        // No active section found, activate the first one
+                        activeSection = allContentSections[0];
+                    }
+                    
+                    // Remove active from all
                     allContentSections.forEach(section => section.classList.remove('active'));
-                    // Add active to the first content-section (or one that already had it)
-                    const existingActive = document.querySelector('.content-section[class*="active"]') || allContentSections[0];
-                    if (existingActive) {
-                        existingActive.classList.add('active');
+                    // Add active to the chosen section
+                    if (activeSection) {
+                        activeSection.classList.add('active');
                         console.log('Offering page: Ensured content-section has active class');
                     }
                 }
