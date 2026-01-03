@@ -1182,119 +1182,29 @@ class CNCFoundationApp {
             </div>
             `;
         } else if (sectionSlug === 'employee-management') {
-            // Admin Portal - Match structure of other dynamically loaded sections
+            // Simple redirect to admin panel
             contentBody = `
             <div class="content-header">
                 <h1>${item.title}</h1>
                 <p class="content-summary">Access the comprehensive admin dashboard to manage employees, requests, feedback, and system operations</p>
             </div>
             <div class="content-body">
-                <style>
-                    /* Admin Portal Styles - Match exact positioning of other content */
-                    /* Prevent admin dashboard CSS from affecting main site layout */
-                    /* Override admin-dashboard.css that adds margin-left: 260px to .main-content */
-                    .main-layout .main-content {
-                        margin-left: 0 !important;
-                    }
-                    
-                    /* Ensure admin dashboard .main-content doesn't affect site's main-content */
-                    .main-content:not(.admin-main-content) {
-                        margin-left: 0 !important;
-                    }
-                    
-                    /* Ensure content-section has correct positioning */
-                    #content-employee-management.content-section {
-                        margin-left: 0 !important;
-                        margin-right: 0 !important;
-                    }
-                    
-                    #content-employee-management #adminPortalContainer,
-                    #content-employee-management #adminPortalContent {
-                        width: 100% !important;
-                        min-height: 600px !important;
-                        display: block !important;
-                        background: transparent !important;
-                        position: relative !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        box-sizing: border-box !important;
-                    }
-                    
-                    /* Admin Panel Layout */
-                    #content-employee-management .admin-panel-layout {
-                        display: flex !important;
-                        gap: 20px !important;
-                        min-height: 600px !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        width: 100% !important;
-                        box-sizing: border-box !important;
-                    }
-                    
-                    #content-employee-management #sidebarContainer .sidebar {
-                        position: relative !important;
-                        width: 260px !important;
-                        min-width: 260px !important;
-                        height: auto !important;
-                        min-height: 600px !important;
-                        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%) !important;
-                        color: white !important;
-                        padding: 20px !important;
-                        border-radius: 12px !important;
-                        overflow-y: auto !important;
-                        margin: 0 !important;
-                        box-sizing: border-box !important;
-                    }
-                    
-                    #content-employee-management .admin-main-content {
-                        flex: 1 !important;
-                        background: #f5f7fa !important;
-                        border-radius: 12px !important;
-                        padding: 30px !important;
-                        min-height: 600px !important;
-                        margin: 0 !important;
-                        box-sizing: border-box !important;
-                    }
-                    
-                    /* Login Screen Styles (embedded) */
-                    #content-employee-management .admin-login-container {
-                        display: flex !important;
-                        align-items: center !important;
-                        justify-content: center !important;
-                        min-height: 500px !important;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                        padding: 40px 20px !important;
-                        border-radius: 12px !important;
-                        margin: 0 !important;
-                        width: 100% !important;
-                        box-sizing: border-box !important;
-                    }
-                    
-                    #content-employee-management .admin-login-box {
-                        background: white !important;
-                        border-radius: 16px !important;
-                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
-                        width: 100% !important;
-                        max-width: 420px !important;
-                        overflow: hidden !important;
-                        box-sizing: border-box !important;
-                    }
-                    
-                    @media (max-width: 768px) {
-                        #content-employee-management .admin-panel-layout {
-                            flex-direction: column !important;
-                        }
-                        
-                        #content-employee-management #sidebarContainer .sidebar {
-                            width: 100% !important;
-                            min-height: auto !important;
-                        }
-                    }
-                </style>
-                <div id="adminPortalContainer" class="admin-portal-container">
-                    <!-- Content will be loaded based on authentication status -->
-                    <div id="adminPortalContent">
-                        <!-- Will show login or admin panel based on auth -->
+                <div style="text-align: center; padding: 60px 20px;">
+                    <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: 2px solid rgba(102, 126, 234, 0.3); border-radius: 16px; padding: 50px 30px; max-width: 600px; margin: 0 auto;">
+                        <div style="font-size: 64px; color: #667eea; margin-bottom: 20px;">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h2 style="font-size: 28px; color: var(--text, #eaf2ff); margin-bottom: 15px;">Admin Dashboard</h2>
+                        <p style="font-size: 16px; color: var(--text-muted, #b8c5d6); margin-bottom: 30px; line-height: 1.6;">
+                            Click the button below to access the admin dashboard where you can manage employees, service requests, feedback, and system operations.
+                        </p>
+                        <a href="/admin/pages/login.html" target="_blank" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: 600; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+                            <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
+                            Go to Admin Panel
+                        </a>
+                        <p style="font-size: 14px; color: var(--text-muted, #8a9ba8); margin-top: 20px; opacity: 0.8;">
+                            Opens in a new tab
+                        </p>
                     </div>
                 </div>
             </div>
@@ -1326,17 +1236,10 @@ class CNCFoundationApp {
             this.executeOrgChartScript(section);
         }
         
-        // Initialize admin portal if it's the employee management section
-        if (sectionSlug === 'employee-management') {
-            this.initializeEmployeeManagementPortal(section);
-        }
-        
         return section;
     }
     
-    initializeEmployeeManagementPortal(contentSection) {
-        // Initialize admin portal for employee management section
-        setTimeout(async () => {
+    executeOrgChartScript(contentSection) {
             console.log('Initializing Employee Management Admin Portal...');
             
             // Don't hide main site elements - keep them visible
@@ -2311,12 +2214,6 @@ class CNCFoundationApp {
         } else {
             container.querySelector('#auditLogTable').innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Audit log loading function not available</p>';
         }
-    }
-    
-    async loadAdminPortalFunctions() {
-        // Functions are now implemented directly in this class
-        // This method kept for compatibility
-        console.log('Admin portal functions are implemented directly in main.js');
     }
     
     executeOrgChartScript(contentSection) {
