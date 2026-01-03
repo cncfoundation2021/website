@@ -1827,8 +1827,11 @@ class CNCFoundationApp {
                     sidebarLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
                     
+                    console.log('Switching to section:', section);
                     if (window.loadAdminSection) {
                         window.loadAdminSection(section);
+                    } else {
+                        console.error('loadAdminSection function not available!');
                     }
                 });
             });
@@ -1913,72 +1916,393 @@ class CNCFoundationApp {
                 }
             };
         
-        // Load overview section by default
-        // Override loadAdminSection to update the correct header element
-        const loadSectionWrapper = () => {
-            if (window.loadAdminSection) {
-                const originalLoadAdminSection = window.loadAdminSection;
-                window.loadAdminSection = function(sectionName) {
-                    const result = originalLoadAdminSection(sectionName);
-                    // Update admin-page-header if it exists
-                    const adminPageHeader = document.getElementById('adminPageHeader');
-                    if (adminPageHeader) {
-                        const sectionTitles = {
-                            'overview': { icon: 'fa-chart-line', title: 'Dashboard Overview', desc: 'Quick overview of system statistics and recent activities' },
-                            'requests': { icon: 'fa-file-alt', title: 'Service Requests', desc: 'Manage all customer service requests' },
-                            'feedback': { icon: 'fa-comments', title: 'Website Feedback', desc: 'View and analyze customer feedback from the website' },
-                            'users': { icon: 'fa-users', title: 'User Management', desc: 'Manage admin users and signup requests' },
-                            'audit': { icon: 'fa-history', title: 'Audit Log', desc: 'Track all administrative actions and system events' }
-                        };
-                        const sectionInfo = sectionTitles[sectionName] || sectionTitles['overview'];
-                        adminPageHeader.innerHTML = `
-                            <h1 style="font-size: 28px; color: #333; margin-bottom: 5px;"><i class="fas ${sectionInfo.icon}"></i> ${sectionInfo.title}</h1>
-                            <p style="color: #666; font-size: 14px;">${sectionInfo.desc}</p>
-                        `;
-                    }
-                    return result;
+        // Implement loadAdminSection function directly for embedded portal
+        if (!window.loadAdminSection) {
+            window.loadAdminSection = async function(sectionName) {
+                const contentArea = document.getElementById('adminContentArea');
+                const adminPageHeader = document.getElementById('adminPageHeader');
+                
+                if (!contentArea) {
+                    console.error('adminContentArea not found');
+                    return;
+                }
+                
+                // Update page header
+                const sectionTitles = {
+                    'overview': { icon: 'fa-chart-line', title: 'Dashboard Overview', desc: 'Quick overview of system statistics and recent activities' },
+                    'requests': { icon: 'fa-file-alt', title: 'Service Requests', desc: 'Manage all customer service requests' },
+                    'feedback': { icon: 'fa-comments', title: 'Website Feedback', desc: 'View and analyze customer feedback from the website' },
+                    'users': { icon: 'fa-users', title: 'User Management', desc: 'Manage admin users and signup requests' },
+                    'audit': { icon: 'fa-history', title: 'Audit Log', desc: 'Track all administrative actions and system events' }
                 };
-                setTimeout(() => {
-                    window.loadAdminSection('overview');
-                }, 200);
-            } else {
-                // Load admin portal functions if not available
-                this.loadAdminPortalFunctions().then(() => {
-                    loadSectionWrapper();
-                });
-            }
-        };
+                
+                const sectionInfo = sectionTitles[sectionName] || sectionTitles['overview'];
+                if (adminPageHeader) {
+                    adminPageHeader.innerHTML = `
+                        <h1 style="font-size: 28px; color: #333; margin-bottom: 5px;"><i class="fas ${sectionInfo.icon}"></i> ${sectionInfo.title}</h1>
+                        <p style="color: #666; font-size: 14px;">${sectionInfo.desc}</p>
+                    `;
+                }
+                
+                // Check permission
+                const permissions = {
+                    'overview': 'view_overview',
+                    'requests': 'view_requests',
+                    'feedback': 'view_feedback',
+                    'users': 'view_users',
+                    'audit': 'view_audit'
+                };
+                
+                if (window.adminAuth && !window.adminAuth.hasPermission(permissions[sectionName])) {
+                    contentArea.innerHTML = `
+                        <div class="section-card" style="background: white; padding: 40px; border-radius: 12px; text-align: center;">
+                            <div class="empty-state">
+                                <i class="fas fa-lock" style="font-size: 48px; color: #999; margin-bottom: 20px;"></i>
+                                <h3>Access Denied</h3>
+                                <p>You do not have permission to view this section.</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Show loading state
+                contentArea.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #667eea;"></i>
+                        <p style="margin-top: 20px; color: #666;">Loading ${sectionInfo.title}...</p>
+                    </div>
+                `;
+                
+                try {
+                    // Load section content using the admin scripts
+                    switch(sectionName) {
+                        case 'overview':
+                            await this.loadAdminOverviewSection(contentArea);
+                            break;
+                        case 'requests':
+                            await this.loadAdminRequestsSection(contentArea);
+                            break;
+                        case 'feedback':
+                            await this.loadAdminFeedbackSection(contentArea);
+                            break;
+                        case 'users':
+                            await this.loadAdminUsersSection(contentArea);
+                            break;
+                        case 'audit':
+                            await this.loadAdminAuditSection(contentArea);
+                            break;
+                        default:
+                            await this.loadAdminOverviewSection(contentArea);
+                    }
+                } catch (error) {
+                    console.error('Error loading admin section:', error);
+                    contentArea.innerHTML = `
+                        <div class="section-card" style="background: white; padding: 40px; border-radius: 12px; text-align: center;">
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #e74c3c; margin-bottom: 20px;"></i>
+                                <h3>Error</h3>
+                                <p>Failed to load content. Please try again.</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }.bind(this);
+        } else {
+            // If loadAdminSection exists from employee-management.html, update it to use our header
+            const originalLoadAdminSection = window.loadAdminSection;
+            window.loadAdminSection = async function(sectionName) {
+                const result = await originalLoadAdminSection(sectionName);
+                // Update admin-page-header if it exists
+                const adminPageHeader = document.getElementById('adminPageHeader');
+                if (adminPageHeader) {
+                    const sectionTitles = {
+                        'overview': { icon: 'fa-chart-line', title: 'Dashboard Overview', desc: 'Quick overview of system statistics and recent activities' },
+                        'requests': { icon: 'fa-file-alt', title: 'Service Requests', desc: 'Manage all customer service requests' },
+                        'feedback': { icon: 'fa-comments', title: 'Website Feedback', desc: 'View and analyze customer feedback from the website' },
+                        'users': { icon: 'fa-users', title: 'User Management', desc: 'Manage admin users and signup requests' },
+                        'audit': { icon: 'fa-history', title: 'Audit Log', desc: 'Track all administrative actions and system events' }
+                    };
+                    const sectionInfo = sectionTitles[sectionName] || sectionTitles['overview'];
+                    adminPageHeader.innerHTML = `
+                        <h1 style="font-size: 28px; color: #333; margin-bottom: 5px;"><i class="fas ${sectionInfo.icon}"></i> ${sectionInfo.title}</h1>
+                        <p style="color: #666; font-size: 14px;">${sectionInfo.desc}</p>
+                    `;
+                }
+                return result;
+            };
+        }
         
-        loadSectionWrapper();
+        // Load overview section by default
+        setTimeout(() => {
+            if (window.loadAdminSection) {
+                window.loadAdminSection('overview');
+            }
+        }, 300);
+    }
+    
+    async loadAdminOverviewSection(container) {
+        // Load overview using admin dashboard script
+        if (typeof loadStats === 'function') {
+            loadStats();
+        }
+        
+        // Use the loadRequests function from admin-dashboard.js to get stats
+        const token = window.adminAuth?.sessionToken || localStorage.getItem('admin_session');
+        try {
+            const response = await fetch('/api/service-requests?limit=100', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const result = await response.json();
+            const requests = result.data || result.requests || [];
+            
+            const statsHTML = `
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div class="stat-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 20px;">
+                        <div class="stat-icon total" style="width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 style="font-size: 32px; color: #333; margin: 0;">${requests.length}</h3>
+                            <p style="color: #666; margin: 0;">Total Requests</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 20px;">
+                        <div class="stat-icon pending" style="width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 style="font-size: 32px; color: #333; margin: 0;">${requests.filter(r => r.status === 'pending').length}</h3>
+                            <p style="color: #666; margin: 0;">Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 20px;">
+                        <div class="stat-icon progress" style="width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 style="font-size: 32px; color: #333; margin: 0;">${requests.filter(r => r.status === 'in-progress').length}</h3>
+                            <p style="color: #666; margin: 0;">In Progress</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 20px;">
+                        <div class="stat-icon completed" style="width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 style="font-size: 32px; color: #333; margin: 0;">${requests.filter(r => r.status === 'completed').length}</h3>
+                            <p style="color: #666; margin: 0;">Completed</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const recentRequestsHTML = requests.length > 0 ? `
+                <div class="section-card" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                    <div class="section-header" style="padding: 20px 30px; border-bottom: 1px solid #e1e6ef;">
+                        <h2 style="margin: 0; font-size: 20px; color: #333;">Recent Requests</h2>
+                    </div>
+                    <div class="table-container" style="padding: 20px 30px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e1e6ef; color: #333; font-weight: 600;">Customer</th>
+                                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e1e6ef; color: #333; font-weight: 600;">Service</th>
+                                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e1e6ef; color: #333; font-weight: 600;">Status</th>
+                                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #e1e6ef; color: #333; font-weight: 600;">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${requests.slice(0, 5).map(request => `
+                                    <tr style="border-bottom: 1px solid #f5f7fa;">
+                                        <td style="padding: 15px; color: #555;">${request.customer_name || '-'}</td>
+                                        <td style="padding: 15px; color: #555;">${request.offering_name || '-'}</td>
+                                        <td style="padding: 15px;">
+                                            <span class="status-badge status-${request.status}" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: ${request.status === 'pending' ? '#fff3cd' : request.status === 'in-progress' ? '#d1ecf1' : request.status === 'completed' ? '#d4edda' : '#f8d7da'}; color: ${request.status === 'pending' ? '#856404' : request.status === 'in-progress' ? '#0c5460' : request.status === 'completed' ? '#155724' : '#721c24'};">${request.status}</span>
+                                        </td>
+                                        <td style="padding: 15px; color: #555;">${new Date(request.created_at).toLocaleDateString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            ` : '<div class="section-card" style="background: white; padding: 40px; border-radius: 12px; text-align: center;"><div class="empty-state"><i class="fas fa-inbox" style="font-size: 48px; color: #999; margin-bottom: 20px;"></i><p>No recent requests</p></div></div>';
+            
+            container.innerHTML = statsHTML + recentRequestsHTML;
+        } catch (error) {
+            console.error('Error loading overview:', error);
+            container.innerHTML = '<div style="padding: 40px; text-align: center;"><p>Error loading overview data</p></div>';
+        }
+    }
+    
+    async loadAdminRequestsSection(container) {
+        // Load requests section structure - will use loadRequests from admin-dashboard.js
+        container.innerHTML = `
+            <div class="section-card" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="section-header" style="padding: 20px 30px; border-bottom: 1px solid #e1e6ef; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0; font-size: 20px; color: #333;">All Requests</h2>
+                    <div class="section-controls" style="display: flex; gap: 10px;">
+                        <input type="search" id="searchRequests" placeholder="Search..." style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        <select id="filterStatus" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <select id="filterCategory" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
+                            <option value="all">All Categories</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="if(typeof loadRequests === 'function') loadRequests()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container" id="requestsTable" style="padding: 20px 30px;">
+                    <p class="loading-state" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>
+                </div>
+            </div>
+        `;
+        
+        // Load requests data if function is available
+        if (typeof loadRequests === 'function') {
+            setTimeout(() => {
+                loadRequests();
+            }, 100);
+        } else {
+            container.querySelector('#requestsTable').innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Requests loading function not available</p>';
+        }
+    }
+    
+    async loadAdminFeedbackSection(container) {
+        container.innerHTML = `
+            <div class="section-card" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="section-header" style="padding: 20px 30px; border-bottom: 1px solid #e1e6ef; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0; font-size: 20px; color: #333;">Feedback Analytics</h2>
+                    <button class="btn btn-primary" onclick="if(typeof loadFeedback === 'function') loadFeedback()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+                <div class="feedback-analytics" id="feedbackAnalytics" style="padding: 20px 30px;"></div>
+                <div class="table-container" id="feedbackTableContainer" style="padding: 20px 30px;">
+                    <p class="loading-state" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>
+                </div>
+            </div>
+        `;
+        
+        if (typeof loadFeedback === 'function') {
+            setTimeout(() => {
+                loadFeedback();
+            }, 100);
+        } else {
+            container.querySelector('#feedbackTableContainer').innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Feedback loading function not available</p>';
+        }
+    }
+    
+    async loadAdminUsersSection(container) {
+        container.innerHTML = `
+            <div class="section-card" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="section-header" style="padding: 20px 30px; border-bottom: 1px solid #e1e6ef;">
+                    <h2 style="margin: 0; font-size: 20px; color: #333;">Admin Users</h2>
+                </div>
+                <div class="tabs" style="display: flex; border-bottom: 1px solid #e1e6ef;">
+                    <button class="tab active" onclick="if(typeof window.switchUserTab === 'function') window.switchUserTab('existing', event)" style="padding: 12px 20px; background: transparent; border: none; border-bottom: 3px solid #667eea; color: #667eea; cursor: pointer;">
+                        <i class="fas fa-users"></i> Existing Users
+                    </button>
+                    <button class="tab" onclick="if(typeof window.switchUserTab === 'function') window.switchUserTab('signups', event)" id="signupTab" style="padding: 12px 20px; background: transparent; border: none; border-bottom: 3px solid transparent; color: #666; cursor: pointer;">
+                        <i class="fas fa-user-clock"></i> Signup Requests
+                        <span id="pendingBadge" class="badge-count" style="display: none; background: #dc3545; color: white; border-radius: 10px; padding: 2px 6px; font-size: 11px; margin-left: 5px;"></span>
+                    </button>
+                </div>
+                <div id="existingUsersTab" class="user-tab-content active" style="display: block;">
+                    <div style="padding: 20px 30px; border-bottom: 1px solid #e1e6ef;">
+                        <button class="btn btn-primary" onclick="if(typeof showCreateUserModal === 'function') showCreateUserModal()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            <i class="fas fa-user-plus"></i> Add User
+                        </button>
+                    </div>
+                    <div class="table-container" id="usersTableContainer" style="padding: 20px 30px;">
+                        <p class="loading-state" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>
+                    </div>
+                </div>
+                <div id="signupRequestsTab" class="user-tab-content" style="display: none;">
+                    <div style="padding: 20px 30px; border-bottom: 1px solid #e1e6ef;">
+                        <div class="section-controls" style="display: flex; gap: 10px;">
+                            <select id="filterSignupStatus" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
+                                <option value="all">All Status</option>
+                                <option value="pending" selected>Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="if(typeof loadSignupRequests === 'function') loadSignupRequests()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div id="signupStatsContainer" style="padding: 0 30px;"></div>
+                    <div class="table-container" id="signupRequestsTable" style="padding: 20px 30px;">
+                        <p class="loading-state" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        if (typeof loadUsers === 'function') {
+            setTimeout(() => {
+                loadUsers();
+                if (typeof loadSignupRequests === 'function') {
+                    loadSignupRequests();
+                }
+            }, 100);
+        } else {
+            container.querySelector('#usersTableContainer').innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Users loading function not available</p>';
+        }
+    }
+    
+    async loadAdminAuditSection(container) {
+        container.innerHTML = `
+            <div class="section-card" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="section-header" style="padding: 20px 30px; border-bottom: 1px solid #e1e6ef; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0; font-size: 20px; color: #333;">Recent Activities</h2>
+                    <div class="section-controls" style="display: flex; gap: 10px;">
+                        <select id="filterAction" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
+                            <option value="all">All Actions</option>
+                            <option value="login">Logins</option>
+                            <option value="logout">Logouts</option>
+                            <option value="create_user">User Created</option>
+                            <option value="update_user">User Updated</option>
+                            <option value="delete_user">User Deleted</option>
+                            <option value="update_permissions">Permissions Changed</option>
+                            <option value="approve_signup">Signup Approved</option>
+                            <option value="reject_signup">Signup Rejected</option>
+                        </select>
+                        <input type="date" id="filterDate" title="Filter by date" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px;">
+                        <button class="btn btn-primary" onclick="if(typeof loadAuditLog === 'function') loadAuditLog()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container" id="auditLogTable" style="padding: 20px 30px;">
+                    <p class="loading-state" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>
+                </div>
+            </div>
+        `;
+        
+        if (typeof loadAuditLog === 'function') {
+            setTimeout(() => {
+                loadAuditLog();
+            }, 100);
+        } else {
+            container.querySelector('#auditLogTable').innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Audit log loading function not available</p>';
+        }
     }
     
     async loadAdminPortalFunctions() {
-        // Fetch employee-management.html to extract the admin portal functions
-        try {
-            const response = await fetch('/info/employee-management.html');
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const scripts = doc.querySelectorAll('script');
-            
-            // Execute admin portal initialization scripts
-            scripts.forEach(script => {
-                if (script.textContent && script.textContent.includes('loadAdminSection')) {
-                    try {
-                        // Extract and execute the admin portal functions
-                        const scriptContent = script.textContent;
-                        // Create a function context - wrap in IIFE to avoid scope issues
-                        const wrappedScript = `(function() { ${scriptContent} })();`;
-                        const func = new Function(wrappedScript);
-                        func();
-                    } catch (e) {
-                        console.error('Error loading admin portal functions:', e);
-                    }
-                }
-            });
-        } catch (error) {
-            console.error('Error fetching admin portal functions:', error);
-        }
+        // Functions are now implemented directly in this class
+        // This method kept for compatibility
+        console.log('Admin portal functions are implemented directly in main.js');
     }
     
     executeOrgChartScript(contentSection) {
