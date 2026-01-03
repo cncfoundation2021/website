@@ -209,6 +209,27 @@
         </div>
     </div>
 
+    <!-- Image Lightbox Modal -->
+    <div id="image-lightbox" class="image-lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" style="display: none;">
+        <div class="lightbox-overlay"></div>
+        <div class="lightbox-content">
+            <button class="lightbox-close" aria-label="Close lightbox" title="Close (Esc)">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="lightbox-image-container">
+                <img id="lightbox-image" src="" alt="Product image" class="lightbox-image">
+                <div class="lightbox-loading" id="lightbox-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading image...</span>
+                </div>
+            </div>
+            <div class="lightbox-info" id="lightbox-info">
+                <h3 id="lightbox-title" class="lightbox-title"></h3>
+                <p id="lightbox-description" class="lightbox-description"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="../../lib/menu.js"></script>
     <script src="../../scripts/main.js"></script>

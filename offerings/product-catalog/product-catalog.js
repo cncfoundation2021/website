@@ -621,19 +621,38 @@ class ProductCatalog {
                 }
             }
             
+            const productName = this.escapeHtml(product.productName || 'Product');
+            const productDescription = this.escapeHtml(product.description || '');
+            const fullImageUrl = this.escapeHtml(imageUrl);
+            
+            // Escape for JavaScript string (handle quotes and backslashes)
+            const escapedImageUrl = fullImageUrl.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+            const escapedProductName = productName.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+            const escapedDescription = productDescription.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+            
             return `
                 <tr>
                     <td>${this.escapeHtml(product.serialNo || '')}</td>
                     <td>${this.escapeHtml(product.category || '')}</td>
                     <td class="product-image-cell">
-                        <img src="${this.escapeHtml(imageUrl)}" 
-                             alt="${this.escapeHtml(product.productName || 'Product')}" 
-                             class="product-image" 
-                             onerror="this.src='https://via.placeholder.com/100x100/0ea5e9/ffffff?text=Product'; console.error('Failed to load image:', '${this.escapeHtml(imageUrl)}');">
+                        <div class="product-image-wrapper" 
+                             onclick="productCatalog.openImageLightbox('${escapedImageUrl}', '${escapedProductName}', '${escapedDescription}')"
+                             role="button"
+                             tabindex="0"
+                             aria-label="View full image of ${productName}"
+                             onkeydown="if(event.key === 'Enter' || event.key === ' ') { productCatalog.openImageLightbox('${escapedImageUrl}', '${escapedProductName}', '${escapedDescription}'); event.preventDefault(); }">
+                            <img src="${fullImageUrl}" 
+                                 alt="${productName}" 
+                                 class="product-image" 
+                                 onerror="this.src='https://via.placeholder.com/100x100/0ea5e9/ffffff?text=Product'; console.error('Failed to load image:', '${escapedImageUrl}');">
+                            <div class="product-image-enlarge-icon" aria-hidden="true">
+                                <i class="fas fa-expand"></i>
+                            </div>
+                        </div>
                     </td>
-                    <td>${this.escapeHtml(product.productName || '')}</td>
+                    <td>${productName}</td>
                     <td>${this.escapeHtml(product.unit || '')}</td>
-                    <td>${this.escapeHtml(product.description || '')}</td>
+                    <td>${productDescription}</td>
                     <td>${this.escapeHtml(product.brand || '')}</td>
                     <td>${this.escapeHtml(product.dimensions || '')}</td>
                     <td>${product.mrp ? '₹' + this.formatNumber(product.mrp) : ''}</td>
@@ -729,6 +748,74 @@ class ProductCatalog {
     // Manual refresh
     async refresh() {
         await this.loadProducts(false);
+    }
+
+    // Open image lightbox
+    openImageLightbox(imageUrl, productName, description) {
+        const lightbox = document.getElementById('image-lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxTitle = document.getElementById('lightbox-title');
+        const lightboxDescription = document.getElementById('lightbox-description');
+        const lightboxLoading = document.getElementById('lightbox-loading');
+        const lightboxInfo = document.getElementById('lightbox-info');
+
+        if (!lightbox || !lightboxImage) return;
+
+        // Set product info
+        lightboxTitle.textContent = productName || 'Product Image';
+        lightboxDescription.textContent = description || '';
+        
+        // Show loading state
+        lightboxLoading.style.display = 'flex';
+        lightboxImage.style.display = 'none';
+        lightboxInfo.style.display = 'none';
+
+        // Show lightbox
+        lightbox.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+
+        // Load image
+        const img = new Image();
+        img.onload = () => {
+            lightboxImage.src = imageUrl;
+            lightboxImage.style.display = 'block';
+            lightboxLoading.style.display = 'none';
+            lightboxInfo.style.display = 'block';
+        };
+        img.onerror = () => {
+            lightboxImage.src = 'https://via.placeholder.com/800x600/0ea5e9/ffffff?text=Image+Not+Available';
+            lightboxImage.style.display = 'block';
+            lightboxLoading.style.display = 'none';
+            lightboxInfo.style.display = 'block';
+        };
+        img.src = imageUrl;
+
+        // Close handlers
+        const closeLightbox = () => {
+            lightbox.style.display = 'none';
+            document.body.style.overflow = '';
+        };
+
+        // Close button
+        const closeBtn = lightbox.querySelector('.lightbox-close');
+        if (closeBtn) {
+            closeBtn.onclick = closeLightbox;
+        }
+
+        // Overlay click
+        const overlay = lightbox.querySelector('.lightbox-overlay');
+        if (overlay) {
+            overlay.onclick = closeLightbox;
+        }
+
+        // ESC key
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
     }
 }
 
