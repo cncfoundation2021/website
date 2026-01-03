@@ -28,8 +28,8 @@ class CNCFoundationApp {
             this.showHomeContent();
         } else {
             // On offering/sub pages, ensure content-section has active class
-            // Use MutationObserver to watch for any attempts to remove active class
-            setTimeout(() => {
+            // Do this immediately and also protect it from being removed
+            const ensureActiveSection = () => {
                 const allContentSections = document.querySelectorAll('.content-section');
                 if (allContentSections.length > 0) {
                     // Find section that already has active class, or use first one
@@ -40,7 +40,7 @@ class CNCFoundationApp {
                         activeSection.classList.add('active');
                     }
                     
-                    // Set up observer to re-add active class if it's removed
+                    // Set up observer to immediately re-add active class if it's removed
                     const observer = new MutationObserver((mutations) => {
                         mutations.forEach((mutation) => {
                             if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -48,12 +48,10 @@ class CNCFoundationApp {
                                 if (target.classList.contains('content-section') && 
                                     !target.classList.contains('active') && 
                                     target === activeSection) {
-                                    // Active class was removed, re-add it
-                                    setTimeout(() => {
-                                        if (!target.classList.contains('active')) {
-                                            target.classList.add('active');
-                                        }
-                                    }, 0);
+                                    // Active class was removed, re-add it immediately (synchronously)
+                                    if (!target.classList.contains('active')) {
+                                        target.classList.add('active');
+                                    }
                                 }
                             }
                         });
@@ -68,7 +66,11 @@ class CNCFoundationApp {
                         console.log('Offering page: Content section active and protected');
                     }
                 }
-            }, 100);
+            };
+            
+            // Run immediately and also after a short delay to catch late removals
+            ensureActiveSection();
+            setTimeout(ensureActiveSection, 100);
         }
         console.log('CnC App initialized');
     }
@@ -683,6 +685,12 @@ class CNCFoundationApp {
     }
 
     showContentSection(sectionSlug) {
+        // Only run on homepage - don't interfere with offering pages
+        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('/index.html');
+        if (!isHomePage) {
+            return; // Don't touch content sections on offering pages
+        }
+        
         // Hide home content
         const homeContent = document.getElementById('home-content');
         if (homeContent) {
@@ -1765,6 +1773,12 @@ class CNCFoundationApp {
     }
 
     showHomeContent() {
+        // Only run on homepage - don't interfere with offering pages
+        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('/index.html');
+        if (!isHomePage) {
+            return; // Don't touch content sections on offering pages
+        }
+        
         // Hide all other content sections
         document.querySelectorAll('.content-section').forEach(section => {
             section.classList.remove('active');
