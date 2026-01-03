@@ -26,6 +26,14 @@ class CNCFoundationApp {
         const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('/index.html');
         if (isHomePage) {
             this.showHomeContent();
+        } else {
+            // On offering/sub pages, ensure any existing content-section with 'active' class stays active
+            // Don't interfere with pages that already have their content sections set up
+            const existingActiveSection = document.querySelector('.content-section.active');
+            if (existingActiveSection && !isHomePage) {
+                // Keep it active - don't touch it
+                console.log('Offering page detected - preserving active content section');
+            }
         }
         console.log('CnC App initialized');
     }
