@@ -629,8 +629,8 @@ class CNCFoundationApp {
             // On homepage: switch content instead of navigating
             this.showContentSection(section);
         } else {
-            // On other pages: navigate to the left pane page
-            window.location.href = `/left-pane/${section}.html`;
+            // On other pages: navigate to the info page
+            window.location.href = `/info/${section}.html`;
         }
     }
 
@@ -661,6 +661,14 @@ class CNCFoundationApp {
             }
             if (this.backgroundManager) {
                 this.backgroundManager.setBackground(sectionSlug);
+            }
+            
+            // Initialize charts if this is marketing-research section
+            if (sectionSlug === 'marketing-research') {
+                // Re-initialize charts when section becomes active (in case it was created earlier)
+                setTimeout(() => {
+                    this.initializeMarketingResearchCharts(contentSection);
+                }, 100);
             }
         }
     }
@@ -1042,17 +1050,29 @@ class CNCFoundationApp {
             `;
         } else if (sectionSlug === 'marketing-research') {
             contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary" style="color: #eaf2ff !important; font-size: 1.125rem;">Understanding market dynamics and consumer needs to deliver value-driven solutions</p>
+            </div>
             <div class="content-body">
                 <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
-                    <h2>Marketing Research</h2>
-                    <p class="content-summary" style="color: #eaf2ff !important; font-size: 1.125rem;">Understanding market dynamics and consumer needs to deliver value-driven solutions</p>
-                    
                     <div class="research-section" style="margin-top: 2rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(30, 41, 59, 0.95)); border: 1px solid var(--border, rgba(255, 255, 255, 0.16)); border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); margin-bottom: 2rem;">
                         <h3 style="color: var(--primary, #0ea5e9); margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 700;">Consumer Needs & Affordability Research</h3>
                         <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-bottom: 1.5rem;">
                             At CnC Foundation, we conduct comprehensive research to understand consumer needs, their budget constraints, and affordability levels across Northeast India. Our dedicated research team analyzes market segments, purchasing patterns, and economic factors to identify what products and services are most needed and accessible to our target audience.
                         </p>
-                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                        
+                        <div class="chart-container" style="margin: 2rem 0; padding: 1.5rem; background: rgba(11, 18, 32, 0.6); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; height: 350px; overflow: hidden; width: 100%; box-sizing: border-box;">
+                            <h4 style="color: var(--accent, #10b981); margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600; text-align: center;">Consumer Affordability Distribution Analysis</h4>
+                            <canvas id="affordabilityChart-home" style="max-width: 100%; max-height: 280px; width: 100%; height: auto; display: block; box-sizing: border-box;"></canvas>
+                        </div>
+                        
+                        <div class="chart-container" style="margin: 2rem 0; padding: 1.5rem; background: rgba(11, 18, 32, 0.6); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; height: 350px; overflow: hidden; width: 100%; box-sizing: border-box;">
+                            <h4 style="color: var(--accent, #10b981); margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600; text-align: center;">Market Segment Analysis by Product Category</h4>
+                            <canvas id="segmentChart-home" style="max-width: 100%; max-height: 280px; width: 100%; height: auto; display: block; box-sizing: border-box;"></canvas>
+                        </div>
+                        
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-top: 1.5rem; margin-bottom: 0;">
                             We carefully evaluate consumer spending capacity and design our product and service offerings to align with their financial capabilities. This ensures that we provide value-driven solutions that are not only high-quality but also affordable and accessible to a wide range of customers, from individual consumers to institutional clients.
                         </p>
                     </div>
@@ -1062,7 +1082,18 @@ class CNCFoundationApp {
                         <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-bottom: 1.5rem;">
                             We continuously monitor market prices across various product categories and service sectors to ensure we remain competitive while maintaining our commitment to quality. Our pricing strategy is informed by real-time market analysis, allowing us to offer competitive rates without compromising on the excellence of our products and services.
                         </p>
-                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                        
+                        <div class="chart-container" style="margin: 2rem 0; padding: 1.5rem; background: rgba(11, 18, 32, 0.6); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; height: 350px; overflow: hidden; width: 100%; box-sizing: border-box;">
+                            <h4 style="color: var(--accent, #10b981); margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600; text-align: center;">Price Trend Analysis (Last 6 Months)</h4>
+                            <canvas id="priceTrendChart-home" style="max-width: 100%; max-height: 280px; width: 100%; height: auto; display: block; box-sizing: border-box;"></canvas>
+                        </div>
+                        
+                        <div class="chart-container" style="margin: 2rem 0; padding: 1.5rem; background: rgba(11, 18, 32, 0.6); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; height: 350px; overflow: hidden; width: 100%; box-sizing: border-box;">
+                            <h4 style="color: var(--accent, #10b981); margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600; text-align: center;">Competitive Price Comparison by Category</h4>
+                            <canvas id="priceComparisonChart-home" style="max-width: 100%; max-height: 280px; width: 100%; height: auto; display: block; box-sizing: border-box;"></canvas>
+                        </div>
+                        
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-top: 1.5rem; margin-bottom: 0;">
                             Through systematic price tracking and competitive intelligence, we adjust our offerings to provide the best value proposition to our customers. This approach enables us to stay ahead in the market while ensuring that quality, reliability, and customer satisfaction remain our top priorities.
                         </p>
                     </div>
@@ -1072,7 +1103,18 @@ class CNCFoundationApp {
                         <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-bottom: 1.5rem;">
                             We maintain a rigorous evaluation process for brands and suppliers, consistently assessing their quality standards, supply chain reliability, and commitment to excellence. Only those brands and suppliers that meet our stringent quality benchmarks and demonstrate consistent supply capabilities are onboarded into our network.
                         </p>
-                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                        
+                        <div class="chart-container" style="margin: 2rem 0; padding: 1.5rem; background: rgba(11, 18, 32, 0.6); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; height: 350px; overflow: hidden; width: 100%; box-sizing: border-box;">
+                            <h4 style="color: var(--accent, #10b981); margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600; text-align: center;">Supplier Evaluation Metrics</h4>
+                            <canvas id="supplierRadarChart-home" style="max-width: 100%; max-height: 280px; width: 100%; height: auto; display: block; box-sizing: border-box;"></canvas>
+                        </div>
+                        
+                        <div class="chart-container" style="margin: 2rem 0; padding: 1.5rem; background: rgba(11, 18, 32, 0.6); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; height: 350px; overflow: hidden; width: 100%; box-sizing: border-box;">
+                            <h4 style="color: var(--accent, #10b981); margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600; text-align: center;">Supplier Performance Distribution</h4>
+                            <canvas id="supplierPerformanceChart-home" style="max-width: 100%; max-height: 280px; width: 100%; height: auto; display: block; box-sizing: border-box;"></canvas>
+                        </div>
+                        
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-top: 1.5rem; margin-bottom: 0;">
                             Our evaluation criteria include product quality, manufacturing standards, delivery timelines, after-sales support, and long-term reliability. This meticulous selection process ensures that our customers receive only the best products and services, backed by dependable supply chains and trusted partnerships.
                         </p>
                     </div>
@@ -1082,7 +1124,18 @@ class CNCFoundationApp {
                         <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-bottom: 1.5rem;">
                             Customer feedback and repeat buying trends are continuously monitored and analyzed to drive improvements in our service delivery and enhance customer satisfaction. We track customer purchase patterns, satisfaction scores, and feedback across all touchpoints to identify areas for enhancement.
                         </p>
-                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                        
+                        <div class="chart-container" style="margin: 2rem 0; padding: 1.5rem; background: rgba(11, 18, 32, 0.6); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; height: 350px; overflow: hidden; width: 100%; box-sizing: border-box;">
+                            <h4 style="color: var(--accent, #10b981); margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600; text-align: center;">Customer Satisfaction Trends</h4>
+                            <canvas id="satisfactionChart-home" style="max-width: 100%; max-height: 280px; width: 100%; height: auto; display: block; box-sizing: border-box;"></canvas>
+                        </div>
+                        
+                        <div class="chart-container" style="margin: 2rem 0; padding: 1.5rem; background: rgba(11, 18, 32, 0.6); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; height: 350px; overflow: hidden; width: 100%; box-sizing: border-box;">
+                            <h4 style="color: var(--accent, #10b981); margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600; text-align: center;">Repeat Purchase Rate Analysis</h4>
+                            <canvas id="repeatPurchaseChart-home" style="max-width: 100%; max-height: 280px; width: 100%; height: auto; display: block; box-sizing: border-box;"></canvas>
+                        </div>
+                        
+                        <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin-top: 1.5rem; margin-bottom: 0;">
                             This data-driven approach allows us to refine our product offerings, improve service quality, and strengthen customer relationships. By understanding what drives repeat purchases and customer loyalty, we can better serve our clients and build long-term partnerships based on trust and satisfaction.
                         </p>
                     </div>
@@ -1236,7 +1289,502 @@ class CNCFoundationApp {
             this.executeOrgChartScript(section);
         }
         
+        // Initialize charts for marketing research
+        if (sectionSlug === 'marketing-research') {
+            this.initializeMarketingResearchCharts(section);
+        }
+        
         return section;
+    }
+    
+    initializeMarketingResearchCharts(section) {
+        // Wait a bit for the DOM to be ready
+        setTimeout(() => {
+            if (typeof Chart === 'undefined') {
+                console.error('❌ Chart.js not loaded');
+                return;
+            }
+            
+            console.log('📊 Initializing marketing research charts on homepage...');
+            
+            // Check if charts already exist and destroy them first
+            if (window.homeMarketingCharts) {
+                Object.values(window.homeMarketingCharts).forEach(chart => {
+                    if (chart && typeof chart.destroy === 'function') {
+                        chart.destroy();
+                    }
+                });
+                window.homeMarketingCharts = {};
+            }
+            
+            // Chart colors
+            const chartColors = {
+                primary: '#0ea5e9',
+                accent: '#10b981',
+                accentLight: '#34d399',
+                warning: '#f59e0b',
+                danger: '#ef4444',
+                text: '#eaf2ff',
+                textMuted: '#b9c5d8',
+                bg: 'rgba(11, 18, 32, 0.6)',
+                grid: 'rgba(255, 255, 255, 0.1)'
+            };
+            
+            // Set Chart.js defaults
+            if (Chart.defaults) {
+                Chart.defaults.color = chartColors.textMuted;
+                Chart.defaults.borderColor = chartColors.grid;
+                Chart.defaults.backgroundColor = chartColors.bg;
+            }
+            
+            // Store chart instances
+            if (!window.homeMarketingCharts) {
+                window.homeMarketingCharts = {};
+            }
+            
+            // 1. Consumer Affordability Chart
+            const affordabilityCtx = section.querySelector('#affordabilityChart-home');
+            if (affordabilityCtx && !window.homeMarketingCharts.affordability) {
+                // Set explicit canvas dimensions with proper constraints
+                const container = affordabilityCtx.parentElement;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    if (rect.width > 0) {
+                        const maxWidth = Math.min(rect.width - 48, 800);
+                        affordabilityCtx.width = maxWidth;
+                        affordabilityCtx.height = 280;
+                        affordabilityCtx.style.maxWidth = '100%';
+                        affordabilityCtx.style.height = 'auto';
+                    }
+                }
+                window.homeMarketingCharts.affordability = new Chart(affordabilityCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Budget (₹0-10K)', 'Economy (₹10-25K)', 'Mid-Range (₹25-50K)', 'Premium (₹50-100K)', 'Luxury (₹100K+)'],
+                        datasets: [{
+                            label: 'Consumer Distribution (%)',
+                            data: [28, 35, 22, 12, 3],
+                            backgroundColor: [chartColors.primary, chartColors.accent, chartColors.accentLight, chartColors.warning, chartColors.danger],
+                            borderColor: chartColors.primary,
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        resizeDelay: 100,
+                        animation: {
+                            duration: 750,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                                titleColor: chartColors.text,
+                                bodyColor: chartColors.text,
+                                borderColor: chartColors.primary,
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                maxWidth: 300
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: 40, ticks: { callback: v => v + '%', color: chartColors.textMuted }, grid: { color: chartColors.grid } },
+                            x: { ticks: { color: chartColors.textMuted, maxRotation: 45, minRotation: 45, font: { size: 10 } }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            // 2. Market Segment Chart
+            const segmentCtx = section.querySelector('#segmentChart-home');
+            if (segmentCtx && !window.homeMarketingCharts.segment) {
+                const container = segmentCtx.parentElement;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    if (rect.width > 0) {
+                        const maxWidth = Math.min(rect.width - 48, 600);
+                        segmentCtx.width = maxWidth;
+                        segmentCtx.height = 280;
+                        segmentCtx.style.maxWidth = '100%';
+                        segmentCtx.style.height = 'auto';
+                    }
+                }
+                window.homeMarketingCharts.segment = new Chart(segmentCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Electronics', 'Home & Kitchen', 'Automotive', 'Healthcare', 'Construction', 'Services'],
+                        datasets: [{
+                            data: [25, 20, 18, 15, 12, 10],
+                            backgroundColor: [chartColors.primary, chartColors.accent, chartColors.accentLight, chartColors.warning, '#8b5cf6', chartColors.danger],
+                            borderColor: 'rgba(11, 18, 32, 0.8)',
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        resizeDelay: 100,
+                        animation: {
+                            duration: 750,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: {
+                            legend: { 
+                                position: 'right', 
+                                labels: { 
+                                    color: chartColors.textMuted, 
+                                    padding: 10,
+                                    font: { size: 11 },
+                                    boxWidth: 12
+                                } 
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                                titleColor: chartColors.text,
+                                bodyColor: chartColors.text,
+                                borderColor: chartColors.primary,
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                maxWidth: 300
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 3. Price Trend Chart
+            const priceTrendCtx = section.querySelector('#priceTrendChart-home');
+            if (priceTrendCtx && !window.homeMarketingCharts.priceTrend) {
+                const container = priceTrendCtx.parentElement;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    if (rect.width > 0) {
+                        const maxWidth = Math.min(rect.width - 48, 800);
+                        priceTrendCtx.width = maxWidth;
+                        priceTrendCtx.height = 280;
+                        priceTrendCtx.style.maxWidth = '100%';
+                        priceTrendCtx.style.height = 'auto';
+                    }
+                }
+                window.homeMarketingCharts.priceTrend = new Chart(priceTrendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [
+                            { label: 'Market Average', data: [100, 102, 98, 105, 103, 107], borderColor: chartColors.textMuted, backgroundColor: 'rgba(185, 197, 216, 0.1)', borderWidth: 2, tension: 0.4, fill: true },
+                            { label: 'CnC Pricing', data: [95, 97, 94, 99, 97, 100], borderColor: chartColors.primary, backgroundColor: 'rgba(14, 165, 233, 0.1)', borderWidth: 3, tension: 0.4, fill: true }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        resizeDelay: 100,
+                        animation: {
+                            duration: 750,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: { 
+                            legend: { labels: { color: chartColors.textMuted } },
+                            tooltip: {
+                                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                                titleColor: chartColors.text,
+                                bodyColor: chartColors.text,
+                                borderColor: chartColors.primary,
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                maxWidth: 300
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: false, ticks: { callback: v => '₹' + v, color: chartColors.textMuted }, grid: { color: chartColors.grid } },
+                            x: { ticks: { color: chartColors.textMuted }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            // 4. Price Comparison Chart
+            const priceComparisonCtx = section.querySelector('#priceComparisonChart-home');
+            if (priceComparisonCtx && !window.homeMarketingCharts.priceComparison) {
+                const container = priceComparisonCtx.parentElement;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    if (rect.width > 0) {
+                        const maxWidth = Math.min(rect.width - 48, 800);
+                        priceComparisonCtx.width = maxWidth;
+                        priceComparisonCtx.height = 280;
+                        priceComparisonCtx.style.maxWidth = '100%';
+                        priceComparisonCtx.style.height = 'auto';
+                    }
+                }
+                window.homeMarketingCharts.priceComparison = new Chart(priceComparisonCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Electronics', 'Home Appliances', 'Automotive', 'Healthcare', 'Construction'],
+                        datasets: [
+                            { label: 'Competitor Avg', data: [100, 100, 100, 100, 100], backgroundColor: 'rgba(185, 197, 216, 0.5)', borderColor: chartColors.textMuted, borderWidth: 2 },
+                            { label: 'CnC Pricing', data: [92, 88, 90, 85, 93], backgroundColor: chartColors.primary, borderColor: chartColors.primary, borderWidth: 2, borderRadius: 6 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        resizeDelay: 100,
+                        animation: {
+                            duration: 750,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: { 
+                            legend: { labels: { color: chartColors.textMuted } },
+                            tooltip: {
+                                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                                titleColor: chartColors.text,
+                                bodyColor: chartColors.text,
+                                borderColor: chartColors.primary,
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                maxWidth: 300
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: 110, ticks: { callback: v => v + '%', color: chartColors.textMuted }, grid: { color: chartColors.grid } },
+                            x: { ticks: { color: chartColors.textMuted }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            // 5. Supplier Radar Chart
+            const supplierRadarCtx = section.querySelector('#supplierRadarChart-home');
+            if (supplierRadarCtx && !window.homeMarketingCharts.supplierRadar) {
+                const container = supplierRadarCtx.parentElement;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    if (rect.width > 0) {
+                        const maxWidth = Math.min(rect.width - 48, 600);
+                        supplierRadarCtx.width = maxWidth;
+                        supplierRadarCtx.height = 280;
+                        supplierRadarCtx.style.maxWidth = '100%';
+                        supplierRadarCtx.style.height = 'auto';
+                    }
+                }
+                window.homeMarketingCharts.supplierRadar = new Chart(supplierRadarCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Quality', 'Delivery Time', 'Price Competitiveness', 'After-Sales Support', 'Reliability', 'Innovation'],
+                        datasets: [
+                            { label: 'Top Suppliers Avg', data: [92, 88, 85, 90, 93, 87], borderColor: chartColors.primary, backgroundColor: 'rgba(14, 165, 233, 0.2)', borderWidth: 3 },
+                            { label: 'Industry Standard', data: [75, 70, 80, 75, 78, 72], borderColor: chartColors.textMuted, backgroundColor: 'rgba(185, 197, 216, 0.1)', borderWidth: 2, borderDash: [5, 5] }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        resizeDelay: 100,
+                        animation: {
+                            duration: 750,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: { 
+                            legend: { labels: { color: chartColors.textMuted } },
+                            tooltip: {
+                                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                                titleColor: chartColors.text,
+                                bodyColor: chartColors.text,
+                                borderColor: chartColors.primary,
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                maxWidth: 300
+                            }
+                        },
+                        scales: {
+                            r: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: chartColors.textMuted }, grid: { color: chartColors.grid }, pointLabels: { color: chartColors.textMuted } }
+                        }
+                    }
+                });
+            }
+            
+            // 6. Supplier Performance Chart
+            const supplierPerformanceCtx = section.querySelector('#supplierPerformanceChart-home');
+            if (supplierPerformanceCtx && !window.homeMarketingCharts.supplierPerformance) {
+                const container = supplierPerformanceCtx.parentElement;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    if (rect.width > 0) {
+                        const maxWidth = Math.min(rect.width - 48, 800);
+                        supplierPerformanceCtx.width = maxWidth;
+                        supplierPerformanceCtx.height = 280;
+                        supplierPerformanceCtx.style.maxWidth = '100%';
+                        supplierPerformanceCtx.style.height = 'auto';
+                    }
+                }
+                window.homeMarketingCharts.supplierPerformance = new Chart(supplierPerformanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Excellent (90-100)', 'Good (80-89)', 'Satisfactory (70-79)', 'Needs Improvement (<70)'],
+                        datasets: [{
+                            label: 'Number of Suppliers',
+                            data: [12, 28, 15, 5],
+                            backgroundColor: [chartColors.accent, chartColors.primary, chartColors.warning, chartColors.danger],
+                            borderColor: [chartColors.accent, chartColors.primary, chartColors.warning, chartColors.danger],
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        resizeDelay: 100,
+                        animation: {
+                            duration: 750,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                                titleColor: chartColors.text,
+                                bodyColor: chartColors.text,
+                                borderColor: chartColors.primary,
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                maxWidth: 300
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { stepSize: 5, color: chartColors.textMuted }, grid: { color: chartColors.grid } },
+                            x: { ticks: { color: chartColors.textMuted, maxRotation: 45, minRotation: 45 }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            // 7. Satisfaction Chart
+            const satisfactionCtx = section.querySelector('#satisfactionChart-home');
+            if (satisfactionCtx && !window.homeMarketingCharts.satisfaction) {
+                const container = satisfactionCtx.parentElement;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    if (rect.width > 0) {
+                        const maxWidth = Math.min(rect.width - 48, 800);
+                        satisfactionCtx.width = maxWidth;
+                        satisfactionCtx.height = 280;
+                        satisfactionCtx.style.maxWidth = '100%';
+                        satisfactionCtx.style.height = 'auto';
+                    }
+                }
+                window.homeMarketingCharts.satisfaction = new Chart(satisfactionCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Q1 2023', 'Q2 2023', 'Q3 2023', 'Q4 2023', 'Q1 2024', 'Q2 2024'],
+                        datasets: [{
+                            label: 'Satisfaction Score',
+                            data: [82, 85, 87, 89, 91, 93],
+                            borderColor: chartColors.accent,
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        resizeDelay: 100,
+                        animation: {
+                            duration: 750,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: { 
+                            legend: { labels: { color: chartColors.textMuted } },
+                            tooltip: {
+                                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                                titleColor: chartColors.text,
+                                bodyColor: chartColors.text,
+                                borderColor: chartColors.primary,
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                maxWidth: 300
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: false, min: 75, max: 100, ticks: { callback: v => v + '/100', color: chartColors.textMuted }, grid: { color: chartColors.grid } },
+                            x: { ticks: { color: chartColors.textMuted }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            // 8. Repeat Purchase Chart
+            const repeatPurchaseCtx = section.querySelector('#repeatPurchaseChart-home');
+            if (repeatPurchaseCtx && !window.homeMarketingCharts.repeatPurchase) {
+                const container = repeatPurchaseCtx.parentElement;
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    if (rect.width > 0) {
+                        const maxWidth = Math.min(rect.width - 48, 800);
+                        repeatPurchaseCtx.width = maxWidth;
+                        repeatPurchaseCtx.height = 280;
+                        repeatPurchaseCtx.style.maxWidth = '100%';
+                        repeatPurchaseCtx.style.height = 'auto';
+                    }
+                }
+                window.homeMarketingCharts.repeatPurchase = new Chart(repeatPurchaseCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Electronics', 'Home & Kitchen', 'Automotive', 'Healthcare', 'Construction', 'Services'],
+                        datasets: [{
+                            label: 'Repeat Purchase Rate (%)',
+                            data: [68, 72, 75, 80, 65, 70],
+                            backgroundColor: [chartColors.primary, chartColors.accent, chartColors.accentLight, chartColors.warning, '#8b5cf6', chartColors.primary],
+                            borderColor: chartColors.primary,
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        resizeDelay: 100,
+                        animation: {
+                            duration: 750,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                                titleColor: chartColors.text,
+                                bodyColor: chartColors.text,
+                                borderColor: chartColors.primary,
+                                borderWidth: 1,
+                                padding: 12,
+                                boxPadding: 6,
+                                maxWidth: 300
+                            }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', color: chartColors.textMuted }, grid: { color: chartColors.grid } },
+                            x: { ticks: { color: chartColors.textMuted }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            console.log('✅ Marketing research charts initialized on homepage');
+        }, 300);
     }
     
     executeOrgChartScript(contentSection) {
@@ -1687,7 +2235,7 @@ class CNCFoundationApp {
         
         // Extract the page name from the path
         let activeSection = '';
-        if (currentPath.includes('/left-pane/')) {
+        if (currentPath.includes('/info/')) {
             const pathParts = currentPath.split('/');
             const pageName = pathParts[pathParts.length - 1].replace('.html', '');
             activeSection = pageName;

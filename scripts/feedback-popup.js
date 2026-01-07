@@ -7,15 +7,91 @@ class FeedbackPopup {
         this.minTimeOnSite = 30000; // 30 seconds
         this.checkInterval = 5000; // Check every 5 seconds
         this.cooldownPeriod = 0; // No cooldown - show once per visit only
+        this.storageAvailable = this.checkStorageAvailability();
         
         this.init();
+    }
+
+    // Check if storage APIs are available
+    checkStorageAvailability() {
+        try {
+            const test = '__storage_test__';
+            sessionStorage.setItem(test, test);
+            sessionStorage.removeItem(test);
+            return true;
+        } catch (e) {
+            console.warn('FeedbackPopup: sessionStorage is not available:', e.message);
+            return false;
+        }
+    }
+
+    // Safe sessionStorage getter
+    getSessionStorage(key) {
+        if (!this.storageAvailable) {
+            return null;
+        }
+        try {
+            return sessionStorage.getItem(key);
+        } catch (e) {
+            console.warn('FeedbackPopup: Error reading from sessionStorage:', e.message);
+            return null;
+        }
+    }
+
+    // Safe sessionStorage setter
+    setSessionStorage(key, value) {
+        if (!this.storageAvailable) {
+            return false;
+        }
+        try {
+            sessionStorage.setItem(key, value);
+            return true;
+        } catch (e) {
+            console.warn('FeedbackPopup: Error writing to sessionStorage:', e.message);
+            return false;
+        }
+    }
+
+    // Safe sessionStorage remover
+    removeSessionStorage(key) {
+        if (!this.storageAvailable) {
+            return false;
+        }
+        try {
+            sessionStorage.removeItem(key);
+            return true;
+        } catch (e) {
+            console.warn('FeedbackPopup: Error removing from sessionStorage:', e.message);
+            return false;
+        }
+    }
+
+    // Safe localStorage getter
+    getLocalStorage(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            console.warn('FeedbackPopup: Error reading from localStorage:', e.message);
+            return null;
+        }
+    }
+
+    // Safe localStorage setter
+    setLocalStorage(key, value) {
+        try {
+            localStorage.setItem(key, value);
+            return true;
+        } catch (e) {
+            console.warn('FeedbackPopup: Error writing to localStorage:', e.message);
+            return false;
+        }
     }
 
     init() {
         console.log('FeedbackPopup: Initializing...');
         
         // Check if feedback has been shown in this session
-        const sessionFeedbackShown = sessionStorage.getItem('cnc_feedback_session_shown');
+        const sessionFeedbackShown = this.getSessionStorage('cnc_feedback_session_shown');
         console.log('FeedbackPopup: Session feedback shown:', sessionFeedbackShown);
         
         // Allow bypassing with URL parameter ?showFeedback=true for testing
@@ -24,7 +100,7 @@ class FeedbackPopup {
         
         if (forceShow) {
             console.log('FeedbackPopup: Force show enabled via URL parameter');
-            sessionStorage.removeItem('cnc_feedback_session_shown');
+            this.removeSessionStorage('cnc_feedback_session_shown');
         }
         
         if (sessionFeedbackShown === 'true' && !forceShow) {
@@ -220,7 +296,7 @@ class FeedbackPopup {
         if (!this.isVisible) return;
         
         // Mark as shown in this session when popup is closed
-        sessionStorage.setItem('cnc_feedback_session_shown', 'true');
+        this.setSessionStorage('cnc_feedback_session_shown', 'true');
         
         const popup = document.getElementById('feedback-popup');
         popup.classList.remove('show');
@@ -310,17 +386,19 @@ class FeedbackPopup {
                 }
 
                 // Store locally as backup
-                const existingFeedback = JSON.parse(localStorage.getItem('cnc_feedback') || '[]');
+                const existingFeedbackStr = this.getLocalStorage('cnc_feedback') || '[]';
+                const existingFeedback = JSON.parse(existingFeedbackStr);
                 existingFeedback.push({...feedbackData, databaseId: result.id});
-                localStorage.setItem('cnc_feedback', JSON.stringify(existingFeedback));
+                this.setLocalStorage('cnc_feedback', JSON.stringify(existingFeedback));
 
             } else {
                 console.error('Failed to store feedback in database:', response.statusText);
                 
                 // Fallback to localStorage
-                const existingFeedback = JSON.parse(localStorage.getItem('cnc_feedback') || '[]');
+                const existingFeedbackStr = this.getLocalStorage('cnc_feedback') || '[]';
+                const existingFeedback = JSON.parse(existingFeedbackStr);
                 existingFeedback.push(feedbackData);
-                localStorage.setItem('cnc_feedback', JSON.stringify(existingFeedback));
+                this.setLocalStorage('cnc_feedback', JSON.stringify(existingFeedback));
 
                 // Track database failure
                 if (window.va) {
@@ -335,9 +413,10 @@ class FeedbackPopup {
             console.error('Error storing feedback:', error);
             
             // Fallback to localStorage
-            const existingFeedback = JSON.parse(localStorage.getItem('cnc_feedback') || '[]');
+            const existingFeedbackStr = this.getLocalStorage('cnc_feedback') || '[]';
+            const existingFeedback = JSON.parse(existingFeedbackStr);
             existingFeedback.push(feedbackData);
-            localStorage.setItem('cnc_feedback', JSON.stringify(existingFeedback));
+            this.setLocalStorage('cnc_feedback', JSON.stringify(existingFeedback));
 
             // Track error
             if (window.va) {
@@ -349,7 +428,7 @@ class FeedbackPopup {
         }
 
         // Mark as shown in this session
-        sessionStorage.setItem('cnc_feedback_session_shown', 'true');
+        this.setSessionStorage('cnc_feedback_session_shown', 'true');
 
         // Show thank you message
         this.showThankYou();
@@ -357,7 +436,7 @@ class FeedbackPopup {
 
     skipFeedback() {
         // Mark as shown in this session
-        sessionStorage.setItem('cnc_feedback_session_shown', 'true');
+        this.setSessionStorage('cnc_feedback_session_shown', 'true');
         this.hidePopup();
     }
 

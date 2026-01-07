@@ -2194,6 +2194,46 @@ a:hover {
     }
 }
 
+/* Chart Container Styles - Prevent Overflow and Optimize Performance */
+.chart-container {
+    overflow: hidden !important;
+    position: relative;
+    contain: layout style paint;
+    will-change: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.chart-container canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    display: block;
+    box-sizing: border-box;
+}
+
+/* Optimize scrolling performance for content sections with charts */
+.content-section {
+    contain: layout style;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+/* Prevent chart tooltips from causing overflow */
+.chartjs-tooltip {
+    max-width: 90vw;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Smooth scrolling optimization */
+.main-content {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
     * {
@@ -2207,5 +2247,9 @@ a:hover {
     .announcement-card:hover,
     .service-card:hover {
         transform: none;
+    }
+    
+    .main-content {
+        scroll-behavior: auto;
     }
 }
