@@ -47,8 +47,8 @@
         "slug": "organisational-chart"
       },
       {
-        "title": "MISSION & VISSION",
-        "slug": "mission-vission"
+        "title": "VISION & MISSION",
+        "slug": "vision-mission"
       },
       {
         "title": "ONLINE MARKETING",
@@ -365,7 +365,7 @@
     "/info/about-us",
     "/info/key-contacts",
     "/info/organisational-chart",
-    "/info/mission-vission",
+    "/info/vision-mission",
     "/info/online-marketing",
     "/info/marketing-research",
     "/info/social-media",

@@ -300,11 +300,12 @@ p {
     opacity: 1;
 }
 
-/* Crop right logo from top */
+/* Right logo - transparent background */
 .logo-right .logo {
-    object-fit: cover;
-    object-position: center 20%;
+    object-fit: contain;
+    object-position: center;
     height: 180px;
+    background: transparent;
 }
 
 .logo:hover {
@@ -2252,4 +2253,46 @@ a:hover {
     .main-content {
         scroll-behavior: auto;
     }
+}
+
+/* Social Media Platform Links */
+.social-platform-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    background: rgba(14, 165, 233, 0.1);
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.social-platform-link:hover {
+    background: rgba(14, 165, 233, 0.2);
+    border-color: rgba(14, 165, 233, 0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(14, 165, 233, 0.3);
+}
+
+.social-platform-link i {
+    transition: transform 0.3s ease;
+}
+
+.social-platform-link:hover i {
+    transform: scale(1.1);
+}
+
+.social-platform-link h3 {
+    margin: 0;
+    color: #eaf2ff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.social-platform-link:hover h3 {
+    color: #ffffff;
 }

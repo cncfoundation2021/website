@@ -308,6 +308,11 @@ class CNCFoundationApp {
 
         const announcements = [
             {
+                day: '20', month: 'Jan',
+                title: 'Comprehensive Services Now Available',
+                content: 'We are pleased to announce our expanded range of services including product catalogue, services, construction and repairing works, and much more. Explore our complete offerings!'
+            },
+            {
                 day: '15', month: 'Dec',
                 title: 'New Manufacturing Facility Inauguration',
                 content: 'CnC opens new state-of-the-art manufacturing facility in Guwahati'
@@ -406,7 +411,7 @@ class CNCFoundationApp {
             'about-us': 'fas fa-info-circle',
             'key-contacts': 'fas fa-address-book',
             'organisational-chart': 'fas fa-sitemap',
-            'mission-vission': 'fas fa-bullseye',
+            'vision-mission': 'fas fa-bullseye',
             'online-marketing': 'fas fa-globe',
             'marketing-research': 'fas fa-chart-line',
             'social-media': 'fab fa-facebook',
@@ -937,7 +942,7 @@ class CNCFoundationApp {
                 </div>
             </div>
             `;
-        } else if (sectionSlug === 'mission-vission') {
+        } else if (sectionSlug === 'vision-mission') {
             contentBody = `
             <div class="content-header">
                 <h1>${item.title}</h1>
@@ -963,6 +968,11 @@ class CNCFoundationApp {
             `;
         } else if (sectionSlug === 'announcements') {
             const announcements = [
+                {
+                    day: '20', month: 'Jan',
+                    title: 'Comprehensive Services Now Available',
+                    content: 'We are pleased to announce our expanded range of services including product catalogue, services, construction and repairing works, and much more. Explore our complete offerings!'
+                },
                 {
                     day: '15', month: 'Dec',
                     title: 'New Manufacturing Facility Inauguration',
@@ -1146,34 +1156,22 @@ class CNCFoundationApp {
             contentBody = `
             <div class="content-header">
                 <h1>${item.title}</h1>
-                <p class="content-summary">Connect with us on social platforms. Links will be added soon.</p>
+                <p class="content-summary">Connect with us for updates, announcements, and support.</p>
             </div>
             <div class="content-body">
-                <div class="social-grid" style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 0.9rem;">
-                        <i class="fab fa-facebook" aria-hidden="true" style="font-size: 28px; color: #1877f2;"></i>
-                        <div>
-                            <p style="margin: 0; font-weight: 700;">Facebook</p>
-                        </div>
-                    </div>
-                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 0.9rem;">
-                        <i class="fab fa-instagram" aria-hidden="true" style="font-size: 28px; color: #e4405f;"></i>
-                        <div>
-                            <p style="margin: 0; font-weight: 700;">Instagram</p>
-                        </div>
-                    </div>
-                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 0.9rem;">
-                        <i class="fab fa-twitter" aria-hidden="true" style="font-size: 28px; color: #1da1f2;"></i>
-                        <div>
-                            <p style="margin: 0; font-weight: 700;">Twitter</p>
-                        </div>
-                    </div>
-                    <div class="contact-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 0.9rem;">
-                        <i class="fab fa-whatsapp" aria-hidden="true" style="font-size: 28px; color: #25d366;"></i>
-                        <div>
-                            <p style="margin: 0; font-weight: 700;">WhatsApp</p>
-                        </div>
-                    </div>
+                <div class="social-icons-grid" style="display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-top: 32px;">
+                    <a href="https://x.com/cnc_foundation" target="_blank" rel="noopener noreferrer" class="social-platform-link">
+                        <i class="fab fa-twitter" aria-hidden="true" style="font-size: 64px; color: #1da1f2;"></i>
+                        <h3 style="margin: 0; color: #eaf2ff; font-size: 1.25rem; font-weight: 600;">Twitter/X</h3>
+                    </a>
+                    <a href="https://www.instagram.com/cnc__foundation?igsh=ODVpbmQwN292N2Uy" target="_blank" rel="noopener noreferrer" class="social-platform-link">
+                        <i class="fab fa-instagram" aria-hidden="true" style="font-size: 64px; color: #e4405f;"></i>
+                        <h3 style="margin: 0; color: #eaf2ff; font-size: 1.25rem; font-weight: 600;">Instagram</h3>
+                    </a>
+                    <a href="https://wa.me/9387102011" target="_blank" rel="noopener noreferrer" class="social-platform-link">
+                        <i class="fab fa-whatsapp" aria-hidden="true" style="font-size: 64px; color: #25d366;"></i>
+                        <h3 style="margin: 0; color: #eaf2ff; font-size: 1.25rem; font-weight: 600;">WhatsApp</h3>
+                    </a>
                 </div>
             </div>
             `;
