@@ -34,328 +34,121 @@
       }
     },
     "leftPane": [
-      {
-        "title": "ABOUT US",
-        "slug": "about-us"
-      },
-      {
-        "title": "KEY CONTACTS",
-        "slug": "key-contacts"
-      },
-      {
-        "title": "ORGANISATIONAL CHART",
-        "slug": "organisational-chart"
-      },
-      {
-        "title": "VISION & MISSION",
-        "slug": "vision-mission"
-      },
-      {
-        "title": "ONLINE MARKETING",
-        "slug": "online-marketing"
-      },
-      {
-        "title": "MARKETING RESEARCH",
-        "slug": "marketing-research"
-      },
-      {
-        "title": "SOCIAL MEDIA",
-        "slug": "social-media"
-      },
-      {
-        "title": "EMPLOYEE MANAGEMENT",
-        "slug": "employee-management"
-      },
-      {
-        "title": "BUSINESS TIE UPS",
-        "slug": "business-tie-ups"
-      },
-      {
-        "title": "GRIEVANCES",
-        "slug": "grievances"
-      },
-      {
-        "title": "GALLERY & PUBLICATIONS",
-        "slug": "gallery-publications"
-      },
-      {
-        "title": "ANNOUNCEMENTS",
-        "slug": "announcements"
-      },
-      {
-        "title": "CONTACT US",
-        "slug": "contact-us"
-      }
+      { "title": "ABOUT US", "slug": "about-us" },
+      { "title": "VISION & MISSION", "slug": "mission-vission" },
+      { "title": "KEY CONTACTS", "slug": "key-contacts" },
+      { "title": "ONLINE MARKETING", "slug": "online-marketing" },
+      { "title": "EMPLOYEE MANAGEMENT", "slug": "employee-management" },
+      { "title": "ORGANISATIONAL CHART", "slug": "organisational-chart" },
+      { "title": "SOCIAL MEDIA", "slug": "social-media" },
+      { "title": "BUSINESS TIE UPS", "slug": "business-tie-ups" },
+      { "title": "GRIEVANCES", "slug": "grievances" },
+      { "title": "GALLERY & PUBLICATIONS", "slug": "gallery-publications" },
+      { "title": "CONTACT US", "slug": "contact-us" },
+      { "title": "ANNOUNCEMENTS", "slug": "announcements" }
     ],
     "topNav": [
-      {
-        "title": "HOME",
-        "slug": "home",
-        "children": []
-      },
+      { "title": "HOME", "slug": "home", "children": [] },
       {
         "title": "MANUFACTURING & RESELLING",
         "slug": "manufacturing-of-products",
         "children": [
-          {
-            "title": "Sweets",
-            "slug": "sweets"
-          },
-          {
-            "title": "Namkeen",
-            "slug": "namkeen"
-          },
-          {
-            "title": "Puffed Rice",
-            "slug": "puffed-rice"
-          },
-          {
-            "title": "Flattened Rice",
-            "slug": "flattened-rice"
-          }
+          { "title": "Sweets", "slug": "sweets" },
+          { "title": "Namkeen", "slug": "namkeen" },
+          { "title": "Puffed Rice", "slug": "puffed-rice" },
+          { "title": "Flattened Rice", "slug": "flattened-rice" }
         ]
       },
       {
         "title": "SUPPLY OF PRODUCTS",
         "slug": "supply-of-products",
         "children": [
-          {
-            "title": "Supply of General Products",
-            "slug": "supply-of-general-products"
-          },
-          {
-            "title": "Supply of Machineries",
-            "slug": "supply-of-machinaries"
-          },
-          {
-            "title": "Supply of Instruments",
-            "slug": "supply-of-instruments"
-          },
-          {
-            "title": "Supply of Office Stationery Items",
-            "slug": "supply-of-office-stationeries"
-          },
-          {
-            "title": "Supply of Printing Materials Etc.",
-            "slug": "supply-of-printing-materials-etc"
-          }
+          { "title": "Supply of General Products", "slug": "supply-of-general-products" },
+          { "title": "Supply of Machineries", "slug": "supply-of-machinaries" },
+          { "title": "Supply of Instruments", "slug": "supply-of-instruments" },
+          { "title": "Supply of Office Stationery Items", "slug": "supply-of-office-stationeries" },
+          { "title": "Supply of Printing Materials Etc.", "slug": "supply-of-printing-materials-etc" }
         ]
       },
       {
         "title": "SERVICES",
         "slug": "services",
         "children": [
-          {
-            "title": "Home Maintenance",
-            "slug": "home-maintenance"
-          },
-          {
-            "title": "Vehicle Services",
-            "slug": "vehicle-services"
-          },
-          {
-            "title": "Manpower Services",
-            "slug": "manpower-services"
-          },
-          {
-            "title": "Event Organizing",
-            "slug": "event-organizing"
-          },
-          {
-            "title": "Catering Services",
-            "slug": "catering-services"
-          },
-          {
-            "title": "Photography",
-            "slug": "photography"
-          },
-          {
-            "title": "Videography",
-            "slug": "videography"
-          },
-          {
-            "title": "Web Development",
-            "slug": "web-development"
-          },
-          {
-            "title": "Graphic Design",
-            "slug": "graphic-design"
-          },
-          {
-            "title": "Email Marketing",
-            "slug": "email-marketing"
-          },
-          {
-            "title": "Paid Advertizing",
-            "slug": "paid-advertizing"
-          },
-          {
-            "title": "Online Apply Services",
-            "slug": "online-apply-services"
-          }
+          { "title": "Home Maintenance", "slug": "home-maintenance" },
+          { "title": "Vehicle Services", "slug": "vehicle-services" },
+          { "title": "Manpower Services", "slug": "manpower-services" },
+          { "title": "Event Organizing", "slug": "event-organizing" },
+          { "title": "Catering Services", "slug": "catering-services" },
+          { "title": "Photography", "slug": "photography" },
+          { "title": "Videography", "slug": "videography" },
+          { "title": "Web Development", "slug": "web-development" },
+          { "title": "Graphic Design", "slug": "graphic-design" },
+          { "title": "Email Marketing", "slug": "email-marketing" },
+          { "title": "Paid Advertizing", "slug": "paid-advertizing" },
+          { "title": "Online Apply Services", "slug": "online-apply-services" }
         ]
       },
-      {
-        "title": "CnC BAZAR",
-        "slug": "https://vyaparapp.in/store/cncbazar",
-        "children": []
-      },
-      {
-        "title": "PRODUCT CATALOG",
-        "slug": "product-catalog",
-        "children": []
-      },
+      { "title": "CnC BAZAR", "slug": "https://vyaparapp.in/store/cncbazar", "children": [] },
+      { "title": "PRODUCT CATALOG", "slug": "product-catalog", "children": [] },
       {
         "title": "E-BUSSINESS",
         "slug": "e-bussiness",
-        "children": [
-          {
-            "title": "Govt. E- Marketplace",
-            "slug": "govt-e-marketplace"
-          }
-        ]
+        "children": [ { "title": "Govt. E- Marketplace", "slug": "govt-e-marketplace" } ]
       },
-      {
-        "title": "DISTRIBUTORS",
-        "slug": "distributors",
-        "children": []
-      },
+      { "title": "DISTRIBUTORS", "slug": "distributors", "children": [] },
       {
         "title": "DEALERS",
         "slug": "dealers",
-        "children": [
-          {
-            "title": "Kangayam Coir Products",
-            "slug": "kangayam-coir"
-          }
-        ]
+        "children": [ { "title": "Kangayam Coir Products", "slug": "kangayam-coir" } ]
       },
       {
         "title": "SERVICE CENTRE",
         "slug": "service-centre",
-        "children": [
-          {
-            "title": "BenQ",
-            "slug": "benq"
-          }
-        ]
+        "children": [ { "title": "BenQ", "slug": "benq" } ]
       },
       {
         "title": "AUTHORIZED RESELLER",
         "slug": "authorized-reseller",
         "children": [
-          {
-            "title": "LG",
-            "slug": "lg"
-          },
-          {
-            "title": "Blue Star",
-            "slug": "blue-star"
-          },
-          {
-            "title": "Luminous",
-            "slug": "luminous"
-          },
-          {
-            "title": "Acer",
-            "slug": "acer"
-          },
-          {
-            "title": "Uniline",
-            "slug": "uniline"
-          },
-          {
-            "title": "Microtek",
-            "slug": "microtek"
-          },
-          {
-            "title": "Cello",
-            "slug": "cello"
-          },
-          {
-            "title": "Supreme Furniture",
-            "slug": "supreme-furniture"
-          },
-          {
-            "title": "Eezy",
-            "slug": "eezy"
-          },
-          {
-            "title": "BluPrints",
-            "slug": "bluprints"
-          },
-          {
-            "title": "Decowell",
-            "slug": "decowell"
-          },
-          {
-            "title": "BenQ",
-            "slug": "benq"
-          },
-          {
-            "title": "Gym Creation",
-            "slug": "gym-creation"
-          },
-          {
-            "title": "Kent",
-            "slug": "kent"
-          },
-          {
-            "title": "Euronics",
-            "slug": "euronics"
-          },
-          {
-            "title": "Zebronics",
-            "slug": "zebronics"
-          },
+          { "title": "LG", "slug": "lg" },
+          { "title": "Blue Star", "slug": "blue-star" },
+          { "title": "Luminous", "slug": "luminous" },
+          { "title": "Acer", "slug": "acer" },
+          { "title": "Uniline", "slug": "uniline" },
+          { "title": "Microtek", "slug": "microtek" },
+          { "title": "Cello", "slug": "cello" },
+          { "title": "Supreme Furniture", "slug": "supreme-furniture" },
+          { "title": "Eezy", "slug": "eezy" },
+          { "title": "BluPrints", "slug": "bluprints" },
+          { "title": "Decowell", "slug": "decowell" },
+          { "title": "BenQ", "slug": "benq" },
+          { "title": "Gym Creation", "slug": "gym-creation" },
+          { "title": "Kent", "slug": "kent" },
+          { "title": "Euronics", "slug": "euronics" },
+          { "title": "Zebronics", "slug": "zebronics" },
           { "title": "Dr. Shred", "slug": "dr-shred" },
-          { "title": "Orient",   "slug": "orient"   },
-          { "title": "CP Plus",  "slug": "cp-plus"  }
+          { "title": "Orient", "slug": "orient" },
+          { "title": "CP Plus", "slug": "cp-plus" }
         ]
       },
-      {
-        "title": "PRODUCT MARKETING",
-        "slug": "product-marketing",
-        "children": []
-      },
+      { "title": "PRODUCT MARKETING", "slug": "product-marketing", "children": [] },
       {
         "title": "CONSTRUCTION & REPAIRING",
         "slug": "construction-repairing",
         "children": [
-          {
-            "title": "Civil",
-            "slug": "civil"
-          },
-          {
-            "title": "Electrical",
-            "slug": "electrical"
-          },
-          {
-            "title": "Maintenance",
-            "slug": "maintenance"
-          }
+          { "title": "Civil", "slug": "civil" },
+          { "title": "Electrical", "slug": "electrical" },
+          { "title": "Maintenance", "slug": "maintenance" }
         ]
       },
       {
         "title": "DONATION",
         "slug": "donation",
         "children": [
-          {
-            "title": "CSR",
-            "slug": "csr"
-          },
-          {
-            "title": "Relief Fund",
-            "slug": "relief-fund"
-          },
-          {
-            "title": "Zakat",
-            "slug": "zakat"
-          },
-          {
-            "title": "Charity Fund",
-            "slug": "charity-fund"
-          }
+          { "title": "CSR", "slug": "csr" },
+          { "title": "Relief Fund", "slug": "relief-fund" },
+          { "title": "Zakat", "slug": "zakat" },
+          { "title": "Charity Fund", "slug": "charity-fund" }
         ]
       }
     ]
@@ -365,9 +158,8 @@
     "/info/about-us",
     "/info/key-contacts",
     "/info/organisational-chart",
-    "/info/vision-mission",
+    "/info/mission-vission",
     "/info/online-marketing",
-    "/info/marketing-research",
     "/info/social-media",
     "/info/employee-management",
     "/info/business-tie-ups",

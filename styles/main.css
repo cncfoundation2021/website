@@ -1,4 +1,4 @@
-﻿/* CnC - Government Style CSS */
+/* CnC - Government Style CSS */
 /* Based on ui-tokens.md and government UX guidelines */
 
 /* Import Visual Effects */
@@ -412,10 +412,16 @@ p {
 
 .nav-list {
     list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .nav-list li {
-    margin-bottom: var(--space-1);
+    margin-bottom: var(--space-2);
+}
+
+.nav-list li:last-child {
+    margin-bottom: 0;
 }
 
 .nav-link {
@@ -426,31 +432,129 @@ p {
     background: rgba(17, 24, 39, 0.96);
     backdrop-filter: none;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 4px;
+    border-radius: 6px;
     text-decoration: none;
     color: #eaf2ff;
     font-weight: 500;
+    font-size: 0.875rem;
     box-shadow: 0 2px 4px var(--shadow);
     transition: all var(--transition-fast) ease;
-    min-height: 44px;
+    min-height: 40px;
+    line-height: 1.4;
 }
 
 .nav-link:hover {
     background: rgba(14,165,233,0.25);
     color: #ffffff;
     transform: translateX(2px);
+    border-color: rgba(14,165,233,0.4);
 }
 
 .nav-link.active {
     background: rgba(14,165,233,0.35);
     color: #ffffff;
     border-color: #38bdf8;
+    font-weight: 600;
+}
+
+/* Sidebar dropdowns for offerings */
+.sidebar-dropdown {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    background: rgba(17, 24, 39, 0.96);
+    overflow: hidden;
+    box-shadow: 0 2px 4px var(--shadow);
+    margin-bottom: var(--space-2);
+}
+
+.sidebar-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: 0;
+}
+
+.sidebar-dropdown-toggle .nav-link {
+    flex: 1;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.sidebar-dropdown-toggle .nav-link:hover {
+    transform: none;
+}
+
+.sidebar-dropdown-btn {
+    background: none;
+    border: none;
+    color: #eaf2ff;
+    cursor: pointer;
+    padding: var(--space-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--transition-fast) ease;
+    flex-shrink: 0;
+    width: 32px;
+    height: 40px;
+}
+
+.sidebar-dropdown-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-dropdown-btn i {
+    font-size: 0.75rem;
+}
+
+.sidebar-dropdown.open .sidebar-dropdown-btn i {
+    transform: rotate(180deg);
+}
+
+.sidebar-dropdown-menu {
+    display: none;
+    flex-direction: column;
+    padding: var(--space-2) 0;
+    background: rgba(13, 19, 32, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-dropdown.open .sidebar-dropdown-menu {
+    display: flex;
+}
+
+.sidebar-sublink {
+    display: flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-4) var(--space-2) calc(var(--space-4) + 12px);
+    color: #cbd5e1;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    transition: all var(--transition-fast) ease;
+    line-height: 1.4;
+}
+
+.sidebar-sublink:hover {
+    background: rgba(255,255,255,0.06);
+    border-left-color: var(--primary);
+    color: #ffffff;
 }
 
 .nav-link i {
-    width: 20px;
+    width: 18px;
     text-align: center;
-    font-size: var(--font-size-sm);
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.sidebar-sublink i {
+    display: none;
 }
 
 /* Main Content */
@@ -950,6 +1054,14 @@ p {
 
 .content-section.active {
     display: block;
+}
+
+/* Show content-section by default on info and offering pages (standalone pages with page-header) */
+main .page-header + .content-section,
+main .content-section:not(#home-content):not(#content-sections .content-section) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* Hero Section */
@@ -1527,8 +1639,12 @@ a:hover {
 }
 
 /* Sub-page Layout Styles */
+.main-layout.has-sidebar {
+    display: flex;
+}
+
 .sub-page-layout {
-    display: block;
+    display: flex;
 }
 
 .sub-page-layout .main-content {

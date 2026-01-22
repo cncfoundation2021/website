@@ -19,9 +19,33 @@ class CNCFoundationApp {
             await this.loadBackgroundManager();
         }
         this.setInitialBackground();
+        this.ensureLeftSidebar();
         this.initializeNavigation();
         this.initializeSearch();
         this.updateLastUpdated();
+        
+        // Check if we came from another page with a section parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const sectionParam = urlParams.get('section');
+        if (sectionParam && (window.location.pathname === '/' || window.location.pathname === '/index.html')) {
+            // Show the requested section on homepage
+            setTimeout(() => {
+                this.showContentSection(sectionParam);
+                // Update active state
+                const navItem = document.querySelector(`.nav-item[data-section="${sectionParam}"]`);
+                if (navItem) {
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                    navItem.classList.add('active');
+                }
+                // Update background
+                if (this.backgroundManager) {
+                    this.backgroundManager.setBackground(sectionParam);
+                }
+                // Clean up URL (remove query parameter)
+                window.history.replaceState({}, '', '/');
+            }, 100);
+        }
+        
         console.log('CnC App initialized');
     }
 
@@ -55,16 +79,65 @@ class CNCFoundationApp {
         const leftPaneNav = document.getElementById('left-pane-nav');
         if (!leftPaneNav || !this.menuManager) return;
 
-        const leftPaneItems = this.menuManager.getLeftPane();
-        
-        leftPaneNav.innerHTML = leftPaneItems.map(item => {
-            const icon = this.getIconForSlug(item.slug);
+        // Sidebar now shows offerings (original topNav) with dropdowns for children
+        const offeringItems = this.menuManager.getTopTabs();
+        console.log('Left nav - Offering items:', offeringItems);
+
+        const buildChildLinks = (parent) => {
+            if (!parent.children || parent.children.length === 0) return '';
             return `
-                <li>
-                    <a href="/info/${item.slug}.html" class="nav-link" data-section="${item.slug}">
-                        <i class="${icon}" aria-hidden="true"></i>
-                        <span>${item.title}</span>
-                    </a>
+                <div class="sidebar-dropdown-menu" role="menu">
+                    ${parent.children.map(child => {
+                        const isExternal = parent.slug === 'e-bussiness' && child.slug === 'govt-e-marketplace';
+                        const href = isExternal ? child.route : `/offerings/${parent.slug}/${child.slug}.html`;
+                        const target = isExternal ? ' target="_blank" rel="noopener"' : '';
+                        return `<a class="sidebar-sublink" href="${href}" data-section="${child.slug}"${target}>${child.title}</a>`;
+                    }).join('')}
+                </div>
+            `;
+        };
+
+        leftPaneNav.innerHTML = offeringItems.map(item => {
+            const icon = this.getIconForSlug(item.slug);
+            const hasChildren = item.children && item.children.length > 0;
+            
+            // Fix route for HOME - should go to root
+            let parentRoute;
+            if (item.slug === 'home') {
+                parentRoute = '/';
+            } else if (item.external) {
+                parentRoute = item.route;
+            } else if (hasChildren) {
+                parentRoute = `/offerings/${item.slug}/index.html`;
+            } else {
+                parentRoute = item.route;
+            }
+            
+            const targetAttr = item.external ? ' target="_blank" rel="noopener"' : '';
+
+            if (!hasChildren) {
+                return `
+                    <li>
+                        <a href="${parentRoute}" class="nav-link" data-section="${item.slug}"${targetAttr}>
+                            <i class="${icon}" aria-hidden="true"></i>
+                            <span>${item.title}</span>
+                        </a>
+                    </li>
+                `;
+            }
+
+            return `
+                <li class="sidebar-dropdown" data-dropdown="${item.slug}">
+                    <div class="sidebar-dropdown-toggle" data-section="${item.slug}">
+                        <a href="${parentRoute}" class="nav-link"${targetAttr}>
+                            <i class="${icon}" aria-hidden="true"></i>
+                            <span>${item.title}</span>
+                        </a>
+                        <button class="sidebar-dropdown-btn" aria-label="Toggle ${item.title} menu" aria-expanded="false">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    ${buildChildLinks(item)}
                 </li>
             `;
         }).join('');
@@ -74,51 +147,41 @@ class CNCFoundationApp {
         const topNavLinks = document.getElementById('top-nav-links');
         if (!topNavLinks || !this.menuManager) return;
 
-        const topNavItems = this.menuManager.getTopTabs();
-        console.log('Top nav items:', topNavItems);
-        
-        // Separate fixed items (HOME and CnC BAZAR) from scrollable items
-        const fixedItems = [];
-        const scrollableItems = [];
-        
-        topNavItems.forEach(item => {
-            const isFixed = item.slug === 'home' || 
-                          item.title === 'CnC BAZAR' || 
-                          item.slug.includes('cncbazar') || 
-                          item.slug.includes('cnc-bazar');
-            
-            if (isFixed) {
-                fixedItems.push(item);
-            } else {
-                scrollableItems.push(item);
-            }
-        });
-        
-        // Create fixed items HTML
-        const fixedHtml = fixedItems.map(item => {
-            if (item.children && item.children.length > 0) {
-                return this.createDropdownNavItem(item);
-            } else {
-                return this.createSimpleNavItem(item);
-            }
-        }).join('');
-        
-        // Create scrollable items HTML
-        const scrollableHtml = scrollableItems.map(item => {
-            if (item.children && item.children.length > 0) {
-                return this.createDropdownNavItem(item);
-            } else {
-                return this.createSimpleNavItem(item);
-            }
-        }).join('');
-        
-        // Combine with fixed section and scrollable section
+        // Top nav now shows info pages (original leftPane) in specified order
+        const infoOrder = [
+            'about-us',
+            'mission-vission',
+            'key-contacts',
+            'online-marketing',
+            'employee-management',
+            'organisational-chart',
+            'social-media',
+            'business-tie-ups',
+            'grievances',
+            'gallery-publications',
+            'contact-us',
+            'announcements'
+        ];
+
+        const infoItems = this.menuManager.getLeftPane()
+            .slice()
+            .sort((a, b) => infoOrder.indexOf(a.slug) - infoOrder.indexOf(b.slug))
+            .map(item => ({
+                ...item,
+                route: `/info/${item.slug}.html`,
+                children: []
+            }));
+
+        console.log('Top nav - Info items:', infoItems);
+
         const html = `
-            <div class="nav-fixed-items">${fixedHtml}</div>
-            <div class="nav-scrollable-items">${scrollableHtml}</div>
+            <div class="nav-fixed-items"></div>
+            <div class="nav-scrollable-items">
+                ${infoItems.map(item => this.createSimpleNavItem(item)).join('')}
+            </div>
         `;
-        
-        console.log('Generated HTML:', html);
+
+        console.log('Top nav - Generated HTML:', html);
         topNavLinks.innerHTML = html;
 
         // Ensure scroll zones and custom scrollbar exist on every page
@@ -529,19 +592,60 @@ class CNCFoundationApp {
         });
     }
 
+    ensureLeftSidebar() {
+        const existingNav = document.getElementById('left-pane-nav');
+        const mainLayout = document.querySelector('.main-layout');
+        const mainContent = document.querySelector('.main-content');
+
+        if (mainLayout) {
+            mainLayout.classList.add('has-sidebar');
+        }
+
+        // Update existing sidebar heading if it exists
+        if (existingNav) {
+            const sidebar = existingNav.closest('.left-sidebar');
+            const heading = existingNav.closest('.nav-section')?.querySelector('h2');
+            if (heading && heading.textContent !== 'Our Offerings') {
+                heading.textContent = 'Our Offerings';
+            }
+            if (sidebar) {
+                sidebar.setAttribute('aria-label', 'Our Offerings');
+                const nav = sidebar.querySelector('.sidebar-navigation');
+                if (nav) {
+                    nav.setAttribute('aria-label', 'Our Offerings');
+                }
+            }
+            return;
+        }
+        if (!mainLayout || !mainContent) return;
+
+        const aside = document.createElement('aside');
+        aside.className = 'left-sidebar injected-sidebar';
+        aside.id = 'left-sidebar';
+        aside.setAttribute('aria-label', 'Our Offerings');
+
+        const nav = document.createElement('nav');
+        nav.className = 'sidebar-navigation';
+        nav.setAttribute('role', 'navigation');
+        nav.setAttribute('aria-label', 'Our Offerings');
+
+        nav.innerHTML = `
+            <div class="nav-section">
+                <h2>Our Offerings</h2>
+                <ul class="nav-list" id="left-pane-nav" role="list"></ul>
+            </div>
+        `;
+
+        aside.appendChild(nav);
+        mainLayout.insertBefore(aside, mainContent);
+    }
+
     setupNavigationEventListeners() {
         // Left pane navigation - handle based on current page
         document.addEventListener('click', (e) => {
             if (e.target.closest('.nav-link[data-section]')) {
-                // Check if we're on the homepage
-                const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html';
-                
-                if (isHomePage) {
-                    // On homepage: switch content instead of navigating
-                    e.preventDefault();
-                    this.handleLeftPaneNavigation(e.target.closest('.nav-link'));
-                }
-                // On other pages: allow normal navigation (no preventDefault)
+                // Offerings sidebar: allow normal navigation
+                return;
             }
             
             if (e.target.closest('.quick-link-card[data-section]')) {
@@ -550,7 +654,25 @@ class CNCFoundationApp {
             }
         });
 
-        // Top navigation - simple items
+        // Sidebar dropdown toggles
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.sidebar-dropdown-btn');
+            const dropdown = e.target.closest('.sidebar-dropdown');
+            const link = e.target.closest('.nav-link');
+            
+            // If clicking the dropdown button, toggle the dropdown
+            if (btn && dropdown && !link) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.classList.toggle('open');
+                const expanded = dropdown.classList.contains('open');
+                btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            }
+            // If clicking the link inside dropdown, allow normal navigation
+            // (don't prevent default)
+        });
+
+        // Top navigation - simple items (now info pages)
         document.addEventListener('click', (e) => {
             if (e.target.closest('.nav-item[data-section]') && !e.target.closest('.dropdown-toggle')) {
                 const navItem = e.target.closest('.nav-item');
@@ -561,19 +683,31 @@ class CNCFoundationApp {
                 }
                 
                 const section = navItem.getAttribute('data-section');
-                if (this.backgroundManager) {
-                    this.backgroundManager.setBackground(section);
-                }
                 
-                if (section === 'home') {
-                    // Allow normal navigation to home
-                    window.location.href = '/';
-                } else {
-                    // Allow normal navigation to offerings
-                    const href = navItem.getAttribute('href');
-                    if (href) {
-                        window.location.href = href;
+                // Check if we're on the homepage
+                const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html';
+                
+                if (isHomePage) {
+                    // On homepage: switch content instead of navigating
+                    e.preventDefault();
+                    
+                    // Update background only on homepage
+                    if (this.backgroundManager) {
+                        this.backgroundManager.setBackground(section);
                     }
+                    
+                    // Switch content section
+                    this.showContentSection(section);
+                    
+                    // Update active state
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                    navItem.classList.add('active');
+                } else {
+                    // On info/offering pages: Always navigate to homepage with section parameter
+                    // This will trigger content switching on homepage
+                    // DO NOT navigate to /info/* routes - always go to homepage
+                    e.preventDefault();
+                    window.location.href = '/?section=' + section;
                 }
             }
         });
@@ -626,16 +760,11 @@ class CNCFoundationApp {
         
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         link.classList.add('active');
-        
-        // Check if we're on homepage - if so, switch content
-        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html';
-        
-        if (isHomePage) {
-            // On homepage: switch content instead of navigating
-            this.showContentSection(section);
-        } else {
-            // On other pages: navigate to the info page
-            window.location.href = `/info/${section}.html`;
+
+        // Navigate to offering page
+        const href = link.getAttribute('href');
+        if (href) {
+            window.location.href = href;
         }
     }
 
@@ -2231,17 +2360,16 @@ class CNCFoundationApp {
         // Get current page path
         const currentPath = window.location.pathname;
         
-        // Extract the page name from the path
+        // Extract the offering section from the path
         let activeSection = '';
-        if (currentPath.includes('/info/')) {
-            const pathParts = currentPath.split('/');
-            const pageName = pathParts[pathParts.length - 1].replace('.html', '');
-            activeSection = pageName;
+        if (currentPath.includes('/offerings/')) {
+            const pathParts = currentPath.replace('/offerings/', '').split('/');
+            activeSection = pathParts[0].replace('.html', '').replace('index.html', '');
         }
         
         // Highlight the active item in left pane
         if (activeSection) {
-            document.querySelectorAll('.sidebar-link').forEach(link => {
+            document.querySelectorAll('.nav-link[data-section]').forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('data-section') === activeSection) {
                     link.classList.add('active');
