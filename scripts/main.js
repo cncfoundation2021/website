@@ -71,6 +71,10 @@ class CNCFoundationApp {
         this.populateAnnouncements();
         this.populateServices();
         this.populateOfferings();
+        // Load featured products first, then suggested (to avoid duplicates)
+        this.populateFeaturedProducts().then(() => {
+            this.populateSuggestedProducts();
+        });
         this.setupNavigationEventListeners();
         this.highlightActiveLeftPaneItem();
     }
@@ -466,6 +470,256 @@ class CNCFoundationApp {
                 </div>
             `;
         }).join('');
+    }
+
+    // Cache for products data to avoid multiple API calls
+    productsCache = null;
+
+    async fetchProductsData() {
+        if (this.productsCache) {
+            return this.productsCache;
+        }
+
+        try {
+            const apiUrl = '/api/product-catalog';
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (!data.success || !data.products || data.products.length === 0) {
+                throw new Error('No products available');
+            }
+
+            // Filter valid products
+            const allProducts = data.products.filter(product => 
+                product.productName && 
+                product.productName.trim() !== '' &&
+                product.serialNo
+            );
+
+            this.productsCache = allProducts;
+            return allProducts;
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            throw error;
+        }
+    }
+
+    selectProductsForSection(allProducts, count = 8, excludeIds = []) {
+        // Filter out excluded products
+        const availableProducts = allProducts.filter(p => !excludeIds.includes(p.serialNo));
+        
+        // Prioritize products with images
+        const productsWithImages = availableProducts.filter(p => p.image && p.image.trim() !== '');
+        const productsWithoutImages = availableProducts.filter(p => !p.image || p.image.trim() === '');
+        
+        let selectedProducts = [];
+        if (productsWithImages.length >= count) {
+            // Randomly select from products with images
+            selectedProducts = this.shuffleArray([...productsWithImages]).slice(0, count);
+        } else {
+            // Take all products with images, then fill with products without images
+            selectedProducts = [...productsWithImages];
+            const remaining = count - selectedProducts.length;
+            if (remaining > 0 && productsWithoutImages.length > 0) {
+                selectedProducts.push(...this.shuffleArray([...productsWithoutImages]).slice(0, remaining));
+            }
+        }
+
+        return selectedProducts.slice(0, count);
+    }
+
+    convertGoogleDriveUrl(url) {
+        if (!url) return null;
+        
+        // If it's already a direct image URL (with file extension), return as-is
+        if (/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(url)) {
+            return url;
+        }
+        
+        // If it's already in the correct Google Drive view format, return as-is
+        if (url.includes('drive.google.com/uc?export=view&id=')) {
+            return url;
+        }
+        
+        // Handle Google Drive file URLs
+        // Format: https://drive.google.com/file/d/FILE_ID/view
+        const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (fileIdMatch) {
+            return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+        }
+        
+        // Format: https://drive.google.com/open?id=FILE_ID or ?id=FILE_ID or &id=FILE_ID
+        const openIdMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (openIdMatch) {
+            return `https://drive.google.com/uc?export=view&id=${openIdMatch[1]}`;
+        }
+        
+        // If it looks like a file ID (alphanumeric string), try using it directly
+        if (/^[a-zA-Z0-9_-]{20,}$/.test(url)) {
+            return `https://drive.google.com/uc?export=view&id=${url}`;
+        }
+        
+        // Return as-is if no conversion needed
+        return url;
+    }
+
+    getImageProxyUrl(imageUrl) {
+        if (!imageUrl) return null;
+        
+        const convertedUrl = this.convertGoogleDriveUrl(imageUrl);
+        if (!convertedUrl) return imageUrl;
+        
+        // Use proxy API to avoid 403 errors from Google Drive
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const currentPort = window.location.port;
+        let proxyBaseUrl = '/api/image-proxy';
+        
+        // If on localhost and not on port 3000, use full URL to port 3000
+        if (isLocalhost && currentPort && currentPort !== '3000') {
+            proxyBaseUrl = 'http://localhost:3000/api/image-proxy';
+        }
+        
+        // Encode the image URL for the proxy
+        return `${proxyBaseUrl}?url=${encodeURIComponent(convertedUrl)}`;
+    }
+
+    renderProductCard(product, cardClass = 'featured-product-card') {
+        const productName = this.escapeHtml(product.productName || 'Unnamed Product');
+        const brand = this.escapeHtml(product.brand || '');
+        const description = this.escapeHtml(product.description || '');
+        const mrp = product.mrp || 0;
+        const unit = this.escapeHtml(product.unit || '');
+        const originalImageUrl = product.image && product.image.trim() !== '' 
+            ? product.image.trim() 
+            : null;
+        
+        // Use image proxy for Google Drive images
+        const imageUrl = originalImageUrl ? this.getImageProxyUrl(originalImageUrl) : null;
+
+        return `
+            <a href="/offerings/product-catalog/" class="${cardClass}" 
+               aria-label="View ${productName} in product catalog">
+                <div class="featured-product-image-container">
+                    ${imageUrl 
+                        ? `<img src="${imageUrl}" 
+                                alt="${productName}" 
+                                class="featured-product-image"
+                                loading="lazy"
+                                onerror="this.parentElement.innerHTML='<div class=\\'featured-product-image-placeholder\\'><i class=\\'fas fa-image\\'></i></div>'">`
+                        : `<div class="featured-product-image-placeholder">
+                            <i class="fas fa-image"></i>
+                           </div>`
+                    }
+                </div>
+                <div class="featured-product-info">
+                    ${brand ? `<div class="featured-product-brand">${brand}</div>` : ''}
+                    <div class="featured-product-name">${productName}</div>
+                    ${description ? `<div class="featured-product-description">${description}</div>` : ''}
+                </div>
+            </a>
+        `;
+    }
+
+    async populateProductSection(sectionId, loadingId, errorId, cardClass, count = 8, excludeIds = []) {
+        const productsGrid = document.getElementById(sectionId);
+        const loadingEl = document.getElementById(loadingId);
+        const errorEl = document.getElementById(errorId);
+        
+        if (!productsGrid) return;
+
+        try {
+            // Show loading state
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (errorEl) errorEl.style.display = 'none';
+            productsGrid.style.display = 'none';
+
+            // Fetch products
+            const allProducts = await this.fetchProductsData();
+            
+            // Hide loading
+            if (loadingEl) loadingEl.style.display = 'none';
+
+            // Select products for this section
+            const selectedProducts = this.selectProductsForSection(allProducts, count, excludeIds);
+
+            if (selectedProducts.length === 0) {
+                throw new Error('No products to display');
+            }
+
+            // Render products
+            productsGrid.innerHTML = selectedProducts.map(product => 
+                this.renderProductCard(product, cardClass)
+            ).join('');
+
+            // Show grid
+            productsGrid.style.display = 'grid';
+            
+            console.log(`${sectionId} loaded: ${selectedProducts.length} products`);
+            return selectedProducts.map(p => p.serialNo);
+        } catch (error) {
+            console.error(`Error loading ${sectionId}:`, error);
+            
+            // Hide loading, show error
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (errorEl) errorEl.style.display = 'block';
+            productsGrid.style.display = 'none';
+            return [];
+        }
+    }
+
+    async populateFeaturedProducts() {
+        const featuredIds = await this.populateProductSection(
+            'featured-products-grid',
+            'featured-products-loading',
+            'featured-products-error',
+            'featured-product-card',
+            8,
+            []
+        );
+        
+        // Store featured IDs for suggested products to exclude
+        this.featuredProductIds = featuredIds;
+        return featuredIds;
+    }
+
+    async populateSuggestedProducts() {
+        // Populate suggested products excluding featured ones
+        const excludeIds = this.featuredProductIds || [];
+        return await this.populateProductSection(
+            'suggested-products-grid',
+            'suggested-products-loading',
+            'suggested-products-error',
+            'suggested-product-card',
+            8,
+            excludeIds
+        );
+    }
+
+    // Helper function to shuffle array (Fisher-Yates algorithm)
+    shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
+    // Helper function to escape HTML
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     getIconForSlug(slug) {

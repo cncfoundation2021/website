@@ -1303,6 +1303,276 @@ main .content-section:not(#home-content):not(#content-sections .content-section)
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
 }
 
+/* Featured Products Section */
+.featured-products-section,
+.suggested-products-section {
+    margin: var(--space-8) 0;
+    padding: var(--space-6) 0;
+}
+
+.featured-products-header,
+.suggested-products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+    flex-wrap: wrap;
+    gap: var(--space-4);
+}
+
+.featured-products-header h2,
+.suggested-products-header h2 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    color: var(--text);
+    font-weight: 700;
+}
+
+.view-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    transition: all var(--transition-normal) ease;
+}
+
+.view-all-link:hover {
+    color: var(--primary-light);
+    gap: var(--space-3);
+}
+
+.view-all-link i {
+    transition: transform var(--transition-normal) ease;
+}
+
+.view-all-link:hover i {
+    transform: translateX(4px);
+}
+
+.featured-products-container,
+.suggested-products-container {
+    position: relative;
+    min-height: 300px;
+}
+
+.featured-products-grid,
+.suggested-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-6);
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.featured-product-card,
+.suggested-product-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: var(--space-3);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    transition: all var(--transition-normal) ease;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.featured-product-card:hover,
+.suggested-product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(14, 165, 233, 0.3);
+    border-color: var(--primary);
+    background: rgba(17, 24, 39, 0.95);
+}
+
+.featured-product-image-container {
+    width: 100%;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-3);
+    overflow: hidden;
+    position: relative;
+    padding: var(--space-2);
+}
+
+.featured-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform var(--transition-normal) ease;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.featured-product-card:hover .featured-product-image,
+.suggested-product-card:hover .featured-product-image {
+    transform: scale(1.05);
+}
+
+.featured-product-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 3rem;
+}
+
+.featured-product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.featured-product-brand {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.featured-product-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.6em;
+    margin: var(--space-1) 0;
+}
+
+.featured-product-description {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: var(--space-1);
+}
+
+.featured-product-price {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-light);
+}
+
+.featured-product-price-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.featured-product-price-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.featured-product-price-value .currency {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.featured-product-unit {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: 2px;
+}
+
+.featured-products-loading,
+.featured-products-error,
+.suggested-products-loading,
+.suggested-products-error {
+    text-align: center;
+    padding: var(--space-8);
+    color: var(--text-muted);
+    font-size: var(--font-size-lg);
+}
+
+.featured-products-loading i,
+.suggested-products-loading i {
+    margin-right: var(--space-2);
+    color: var(--primary);
+}
+
+.featured-products-error i,
+.suggested-products-error i {
+    margin-right: var(--space-2);
+    color: var(--warning);
+}
+
+/* Responsive adjustments for featured products */
+@media (max-width: 768px) {
+    .featured-products-grid,
+    .suggested-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: var(--space-4);
+    }
+    
+    .featured-product-image-container {
+        height: 150px;
+    }
+    
+    .featured-products-header,
+    .suggested-products-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .featured-products-grid,
+    .suggested-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .featured-product-image-container {
+        height: 120px;
+    }
+    
+    .featured-product-name {
+        font-size: 12px;
+        min-height: 2.4em;
+    }
+}
+
 .service-card .service-icon {
     font-size: 2.5rem;
     color: var(--primary);
