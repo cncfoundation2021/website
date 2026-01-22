@@ -1555,6 +1555,10 @@ class CNCFoundationApp {
                         <i class="fab fa-whatsapp" aria-hidden="true" style="font-size: 64px; color: #25d366;"></i>
                         <h3 style="margin: 0; color: #eaf2ff; font-size: 1.25rem; font-weight: 600;">WhatsApp</h3>
                     </a>
+                    <a href="https://www.facebook.com/people/CnC-Foundation-Assam/61586933394609/?ref=1" target="_blank" rel="noopener noreferrer" class="social-platform-link">
+                        <i class="fab fa-facebook" aria-hidden="true" style="font-size: 64px; color: #1877f2;"></i>
+                        <h3 style="margin: 0; color: #eaf2ff; font-size: 1.25rem; font-weight: 600;">Facebook</h3>
+                    </a>
                 </div>
             </div>
             `;
