@@ -541,6 +541,9 @@ class CNCFoundationApp {
     convertGoogleDriveUrl(url) {
         if (!url) return null;
         
+        // Trim whitespace
+        url = url.trim();
+        
         // If it's already a direct image URL (with file extension), return as-is
         if (/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(url)) {
             return url;
@@ -552,7 +555,7 @@ class CNCFoundationApp {
         }
         
         // Handle Google Drive file URLs
-        // Format: https://drive.google.com/file/d/FILE_ID/view
+        // Format: https://drive.google.com/file/d/FILE_ID/view or /view?usp=...
         const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
         if (fileIdMatch) {
             return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
@@ -579,7 +582,13 @@ class CNCFoundationApp {
         const convertedUrl = this.convertGoogleDriveUrl(imageUrl);
         if (!convertedUrl) return imageUrl;
         
-        // Use proxy API to avoid 403 errors from Google Drive
+        // If URL is already in the correct Google Drive view format and files are public,
+        // use direct URL first (faster and simpler)
+        if (convertedUrl.includes('drive.google.com/uc?export=view&id=')) {
+            return convertedUrl;
+        }
+        
+        // For other formats, use proxy API to avoid 403 errors from Google Drive
         const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const currentPort = window.location.port;
         let proxyBaseUrl = '/api/image-proxy';
@@ -614,8 +623,29 @@ class CNCFoundationApp {
                         ? `<img src="${imageUrl}" 
                                 alt="${productName}" 
                                 class="featured-product-image"
+                                data-original-url="${originalImageUrl ? this.escapeHtml(originalImageUrl).replace(/"/g, '&quot;') : ''}"
                                 loading="lazy"
-                                onerror="this.parentElement.innerHTML='<div class=\\'featured-product-image-placeholder\\'><i class=\\'fas fa-image\\'></i></div>'">`
+                                onerror="(function() {
+                                    const img = this;
+                                    const originalUrl = img.getAttribute('data-original-url');
+                                    const currentSrc = img.src;
+                                    
+                                    // If direct URL failed and we have original URL, try proxy
+                                    if (originalUrl && currentSrc.includes('drive.google.com/uc?export=view') && !currentSrc.includes('/api/image-proxy')) {
+                                        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                                        const currentPort = window.location.port;
+                                        let proxyBaseUrl = '/api/image-proxy';
+                                        if (isLocalhost && currentPort && currentPort !== '3000') {
+                                            proxyBaseUrl = 'http://localhost:3000/api/image-proxy';
+                                        }
+                                        img.src = proxyBaseUrl + '?url=' + encodeURIComponent(currentSrc);
+                                        img.onerror = function() {
+                                            this.parentElement.innerHTML='<div class=\\'featured-product-image-placeholder\\'><i class=\\'fas fa-image\\'></i></div>';
+                                        };
+                                    } else {
+                                        this.parentElement.innerHTML='<div class=\\'featured-product-image-placeholder\\'><i class=\\'fas fa-image\\'></i></div>';
+                                    }
+                                }).call(this)">`
                         : `<div class="featured-product-image-placeholder">
                             <i class="fas fa-image"></i>
                            </div>`
