@@ -102,7 +102,11 @@ class CNCFoundationApp {
         };
 
         leftPaneNav.innerHTML = offeringItems.map(item => {
-            const icon = this.getIconForSlug(item.slug);
+            // Check for CnC Bazar by slug or title to ensure logo is used
+            let icon = this.getIconForSlug(item.slug);
+            if ((item.title === 'CnC BAZAR' || item.slug.includes('cncbazar')) && !icon.startsWith('image:')) {
+                icon = 'image:Assets/CNC Bazar Logo.png';
+            }
             const hasChildren = item.children && item.children.length > 0;
             
             // Fix route for HOME - should go to root
@@ -119,11 +123,28 @@ class CNCFoundationApp {
             
             const targetAttr = item.external ? ' target="_blank" rel="noopener"' : '';
 
+            // Check if icon is an image path or Font Awesome class
+            const isImageIcon = icon && icon.startsWith('image:');
+            let iconPath = isImageIcon ? icon.replace('image:', '') : null;
+            if (iconPath) {
+                // Remove leading slash to match pattern used in index.html
+                if (iconPath.startsWith('/')) {
+                    iconPath = iconPath.substring(1);
+                }
+                // Encode spaces in the path - split by / and encode each part
+                iconPath = iconPath.split('/').map(part => encodeURIComponent(part)).join('/');
+            }
+            
+            // Create icon element - use image for image icons, Font Awesome for others
+            const iconElement = isImageIcon 
+                ? `<img src="${iconPath}" alt="${item.title} icon" class="nav-item-icon-image" aria-hidden="true" style="width: 18px; height: 18px; object-fit: contain; display: block; flex-shrink: 0;">`
+                : `<i class="${icon}" aria-hidden="true"></i>`;
+
             if (!hasChildren) {
                 return `
                     <li>
                         <a href="${parentRoute}" class="nav-link" data-section="${item.slug}"${targetAttr}>
-                            <i class="${icon}" aria-hidden="true"></i>
+                            ${iconElement}
                             <span>${item.title}</span>
                         </a>
                     </li>
@@ -134,7 +155,7 @@ class CNCFoundationApp {
                 <li class="sidebar-dropdown" data-dropdown="${item.slug}">
                     <div class="sidebar-dropdown-toggle" data-section="${item.slug}">
                         <a href="${parentRoute}" class="nav-link"${targetAttr}>
-                            <i class="${icon}" aria-hidden="true"></i>
+                            ${iconElement}
                             <span>${item.title}</span>
                         </a>
                         <button class="sidebar-dropdown-btn" aria-label="Toggle ${item.title} menu" aria-expanded="false">
@@ -723,6 +744,12 @@ class CNCFoundationApp {
     }
 
     getIconForSlug(slug) {
+        // Check for CnC Bazar by URL pattern or title - use exact logo file
+        if (slug && (slug.includes('cncbazar') || slug.includes('cnc-bazar') || slug === 'https://vyaparapp.in/store/cncbazar')) {
+            // Use the exact file path matching the pattern used in index.html
+            return 'image:Assets/CNC Bazar Logo.png';
+        }
+        
         const iconMap = {
             'home': 'fas fa-home',
             'about-us': 'fas fa-info-circle',
@@ -742,7 +769,6 @@ class CNCFoundationApp {
             'manufacturing-of-products': 'fas fa-industry',
             'supply-of-products': 'fas fa-truck',
             'services': 'fas fa-cogs',
-            'cnc-bazar': 'fas fa-shopping-cart',
             'e-bussiness': 'fas fa-laptop',
             'distributors': 'fas fa-warehouse',
             'dealers': 'fas fa-store',
@@ -750,7 +776,8 @@ class CNCFoundationApp {
             'authorized-reseller': 'fas fa-handshake',
             'product-marketing': 'fas fa-chart-line',
             'construction-repairing': 'fas fa-hammer',
-            'donation': 'fas fa-heart'
+            'donation': 'fas fa-heart',
+            'product-catalog': 'fas fa-clipboard-list'
         };
         
         return iconMap[slug] || 'fas fa-circle';
