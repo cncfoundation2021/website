@@ -49,27 +49,8 @@
     ],
     "topNav": [
       { "title": "HOME", "slug": "home", "children": [] },
-      {
-        "title": "MANUFACTURING & RESELLING",
-        "slug": "manufacturing-of-products",
-        "children": [
-          { "title": "Sweets", "slug": "sweets" },
-          { "title": "Namkeen", "slug": "namkeen" },
-          { "title": "Puffed Rice", "slug": "puffed-rice" },
-          { "title": "Flattened Rice", "slug": "flattened-rice" }
-        ]
-      },
-      {
-        "title": "SUPPLY OF PRODUCTS",
-        "slug": "supply-of-products",
-        "children": [
-          { "title": "Supply of General Products", "slug": "supply-of-general-products" },
-          { "title": "Supply of Machineries", "slug": "supply-of-machinaries" },
-          { "title": "Supply of Instruments", "slug": "supply-of-instruments" },
-          { "title": "Supply of Office Stationery Items", "slug": "supply-of-office-stationeries" },
-          { "title": "Supply of Printing Materials Etc.", "slug": "supply-of-printing-materials-etc" }
-        ]
-      },
+      { "title": "PRODUCT CATALOG", "slug": "product-catalog", "children": [] },
+      { "title": "CnC BAZAR", "slug": "https://vyaparapp.in/store/cncbazar", "children": [] },
       {
         "title": "SERVICES",
         "slug": "services",
@@ -87,24 +68,6 @@
           { "title": "Paid Advertizing", "slug": "paid-advertizing" },
           { "title": "Online Apply Services", "slug": "online-apply-services" }
         ]
-      },
-      { "title": "CnC BAZAR", "slug": "https://vyaparapp.in/store/cncbazar", "children": [] },
-      { "title": "PRODUCT CATALOG", "slug": "product-catalog", "children": [] },
-      {
-        "title": "E-BUSSINESS",
-        "slug": "e-bussiness",
-        "children": [ { "title": "Govt. E- Marketplace", "slug": "govt-e-marketplace" } ]
-      },
-      { "title": "DISTRIBUTORS", "slug": "distributors", "children": [] },
-      {
-        "title": "DEALERS",
-        "slug": "dealers",
-        "children": [ { "title": "Kangayam Coir Products", "slug": "kangayam-coir" } ]
-      },
-      {
-        "title": "SERVICE CENTRE",
-        "slug": "service-centre",
-        "children": [ { "title": "BenQ", "slug": "benq" } ]
       },
       {
         "title": "AUTHORIZED RESELLER",
@@ -131,7 +94,6 @@
           { "title": "CP Plus", "slug": "cp-plus" }
         ]
       },
-      { "title": "PRODUCT MARKETING", "slug": "product-marketing", "children": [] },
       {
         "title": "CONSTRUCTION & REPAIRING",
         "slug": "construction-repairing",
@@ -140,6 +102,44 @@
           { "title": "Electrical", "slug": "electrical" },
           { "title": "Maintenance", "slug": "maintenance" }
         ]
+      },
+      { "title": "PRODUCT MARKETING", "slug": "product-marketing", "children": [] },
+      {
+        "title": "DEALERS",
+        "slug": "dealers",
+        "children": [ { "title": "Kangayam Coir Products", "slug": "kangayam-coir" } ]
+      },
+      { "title": "DISTRIBUTORS", "slug": "distributors", "children": [] },
+      {
+        "title": "SUPPLY OF PRODUCTS",
+        "slug": "supply-of-products",
+        "children": [
+          { "title": "Supply of General Products", "slug": "supply-of-general-products" },
+          { "title": "Supply of Machineries", "slug": "supply-of-machinaries" },
+          { "title": "Supply of Instruments", "slug": "supply-of-instruments" },
+          { "title": "Supply of Office Stationery Items", "slug": "supply-of-office-stationeries" },
+          { "title": "Supply of Printing Materials Etc.", "slug": "supply-of-printing-materials-etc" }
+        ]
+      },
+      {
+        "title": "MANUFACTURING & RESELLING",
+        "slug": "manufacturing-of-products",
+        "children": [
+          { "title": "Sweets", "slug": "sweets" },
+          { "title": "Namkeen", "slug": "namkeen" },
+          { "title": "Puffed Rice", "slug": "puffed-rice" },
+          { "title": "Flattened Rice", "slug": "flattened-rice" }
+        ]
+      },
+      {
+        "title": "E-BUSSINESS",
+        "slug": "e-bussiness",
+        "children": [ { "title": "Govt. E- Marketplace", "slug": "govt-e-marketplace" } ]
+      },
+      {
+        "title": "SERVICE CENTRE",
+        "slug": "service-centre",
+        "children": [ { "title": "BenQ", "slug": "benq" } ]
       },
       {
         "title": "DONATION",
