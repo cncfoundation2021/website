@@ -75,32 +75,12 @@ export default async function handler(req, res) {
 
       console.log('Proxying image:', imageUrl);
 
-      // Extract file ID from URL - try multiple formats
+      // Extract file ID from URL
       let fileId = null;
-      
-      // Method 1: Extract from ?id= or &id= parameter (most common)
       const idMatch = imageUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
       if (idMatch) {
         fileId = idMatch[1];
       }
-      
-      // Method 2: Extract from /file/d/FILE_ID format (fallback)
-      if (!fileId) {
-        const fileIdMatch = imageUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-        if (fileIdMatch) {
-          fileId = fileIdMatch[1];
-        }
-      }
-      
-      // Method 3: Extract from /open?id= format (fallback)
-      if (!fileId) {
-        const openIdMatch = imageUrl.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
-        if (openIdMatch) {
-          fileId = openIdMatch[1];
-        }
-      }
-      
-      console.log('Extracted file ID:', fileId);
 
       let imageBuffer = null;
       let contentType = 'image/jpeg';
@@ -152,44 +132,24 @@ export default async function handler(req, res) {
             contentType = response.headers.get('content-type') || 'image/jpeg';
             success = true;
             console.log('Successfully fetched via direct URL');
-            } else if (fileId) {
-              // Method 3: Try alternative URL format (download)
-              const altUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-              const altResponse = await fetch(altUrl, {
-                method: 'GET',
-                headers: {
-                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                  'Referer': 'https://drive.google.com/'
-                },
-                redirect: 'follow'
-              });
-              
-              if (altResponse.ok) {
-                imageBuffer = await altResponse.arrayBuffer();
-                imageBuffer = Buffer.from(imageBuffer);
-                contentType = altResponse.headers.get('content-type') || 'image/jpeg';
-                success = true;
-                console.log('Successfully fetched via alternative URL (download)');
-              } else if (fileId) {
-                // Method 4: Try view format if download failed
-                const viewUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
-                const viewResponse = await fetch(viewUrl, {
-                  method: 'GET',
-                  headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Referer': 'https://drive.google.com/'
-                  },
-                  redirect: 'follow'
-                });
-                
-                if (viewResponse.ok) {
-                  imageBuffer = await viewResponse.arrayBuffer();
-                  imageBuffer = Buffer.from(imageBuffer);
-                  contentType = viewResponse.headers.get('content-type') || 'image/jpeg';
-                  success = true;
-                  console.log('Successfully fetched via view URL');
-                }
-              }
+          } else if (fileId) {
+            // Method 3: Try alternative URL format
+            const altUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            const altResponse = await fetch(altUrl, {
+              method: 'GET',
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Referer': 'https://drive.google.com/'
+              },
+              redirect: 'follow'
+            });
+            
+            if (altResponse.ok) {
+              imageBuffer = await altResponse.arrayBuffer();
+              imageBuffer = Buffer.from(imageBuffer);
+              contentType = altResponse.headers.get('content-type') || 'image/jpeg';
+              success = true;
+              console.log('Successfully fetched via alternative URL');
             }
           }
         } catch (fetchError) {
