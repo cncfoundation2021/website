@@ -1366,7 +1366,6 @@ class CNCFoundationApp {
             contentBody = `
             <div class="content-header">
                 <h1>${item.title}</h1>
-                <p class="content-summary">Access the comprehensive admin dashboard to manage employees, requests, feedback, and system operations</p>
             </div>
             <div class="content-body">
                 <div style="text-align: center; padding: 60px 20px;">
@@ -1374,17 +1373,11 @@ class CNCFoundationApp {
                         <div style="font-size: 64px; color: #667eea; margin-bottom: 20px;">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <h2 style="font-size: 28px; color: var(--text, #eaf2ff); margin-bottom: 15px;">Admin Dashboard</h2>
-                        <p style="font-size: 16px; color: var(--text-muted, #b8c5d6); margin-bottom: 30px; line-height: 1.6;">
-                            Click the button below to access the admin dashboard where you can manage employees, service requests, feedback, and system operations.
-                        </p>
+                        <h2 style="font-size: 28px; color: var(--text, #eaf2ff); margin-bottom: 30px;">Admin Dashboard</h2>
                         <a href="/admin/pages/login.html" target="_blank" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: 600; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
                             <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
                             Go to Admin Panel
                         </a>
-                        <p style="font-size: 14px; color: var(--text-muted, #8a9ba8); margin-top: 20px; opacity: 0.8;">
-                            Opens in a new tab
-                        </p>
                     </div>
                 </div>
             </div>
