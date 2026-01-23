@@ -730,7 +730,7 @@ p {
     overflow: hidden; /* Hide overflow from parent */
 }
 
-/* Fixed navigation items (HOME and CnC BAZAR) */
+/* Fixed navigation items (About Us and Vision Mission) */
 .nav-fixed-items {
     display: flex;
     gap: var(--space-1);
@@ -739,6 +739,25 @@ p {
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     margin-right: var(--space-2);
     white-space: nowrap;
+}
+
+/* Highlighted navigation items (About Us and Vision Mission) */
+.nav-item-highlighted {
+    background: rgba(14, 165, 233, 0.2) !important;
+    border: 1px solid rgba(14, 165, 233, 0.4) !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+}
+
+.nav-item-highlighted:hover {
+    background: rgba(14, 165, 233, 0.3) !important;
+    border-color: rgba(14, 165, 233, 0.6) !important;
+    transform: translateY(-1px);
+}
+
+.nav-item-highlighted.active {
+    background: rgba(14, 165, 233, 0.4) !important;
+    border-color: #38bdf8 !important;
 }
 
 /* Scrollable navigation items */

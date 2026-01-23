@@ -199,10 +199,17 @@ class CNCFoundationApp {
 
         console.log('Top nav - Info items:', infoItems);
 
+        // Separate fixed items (About Us and Vision Mission) from scrollable items
+        const fixedSlugs = ['about-us', 'mission-vission'];
+        const fixedItems = infoItems.filter(item => fixedSlugs.includes(item.slug));
+        const scrollableItems = infoItems.filter(item => !fixedSlugs.includes(item.slug));
+
         const html = `
-            <div class="nav-fixed-items"></div>
+            <div class="nav-fixed-items">
+                ${fixedItems.map(item => this.createSimpleNavItem(item, 'nav-item-highlighted')).join('')}
+            </div>
             <div class="nav-scrollable-items">
-                ${infoItems.map(item => this.createSimpleNavItem(item)).join('')}
+                ${scrollableItems.map(item => this.createSimpleNavItem(item)).join('')}
             </div>
         `;
 
@@ -282,7 +289,7 @@ class CNCFoundationApp {
         `;
     }
 
-    createSimpleNavItem(item) {
+    createSimpleNavItem(item, additionalClass = '') {
         const icon = this.getIconForSlug(item.slug);
         const href = item.external ? item.route : (item.slug === 'home' ? '/' : item.route);
         const target = item.external ? ' target="_blank" rel="noopener"' : '';
@@ -295,10 +302,8 @@ class CNCFoundationApp {
                           item.slug.includes('cnc-bazar');
         const featuredClass = isFeatured ? ' nav-item-featured' : '';
         
-        // Debug logging
-        if (isFeatured) {
-            console.log('Featured item detected:', item.title, item.slug, 'Class:', featuredClass);
-        }
+        // Combine all classes
+        const allClasses = `nav-item${featuredClass}${additionalClass ? ' ' + additionalClass : ''}`;
         
         // Special handling for CNC Bazar - use logo image instead of icon
         if (item.title === 'CnC BAZAR' || item.slug.includes('cncbazar') || item.slug.includes('cnc-bazar')) {
@@ -316,7 +321,7 @@ class CNCFoundationApp {
             }
             
             return `
-                <a href="${href}" class="nav-item${featuredClass}" data-section="${item.slug}"${target}>
+                <a href="${href}" class="${allClasses}" data-section="${item.slug}"${target}>
                     <img src="${logoPath}" alt="CnC Bazar Logo" class="cnc-bazar-nav-logo" style="width: 16px; height: 16px; object-fit: contain; margin-right: 0.5rem;">
                     <span>${item.title}</span>
                 </a>
@@ -324,7 +329,7 @@ class CNCFoundationApp {
         }
         
         return `
-            <a href="${href}" class="nav-item${featuredClass}" data-section="${item.slug}"${target}>
+            <a href="${href}" class="${allClasses}" data-section="${item.slug}"${target}>
                 <i class="${icon}" aria-hidden="true"></i>
                 <span>${item.title}</span>
             </a>
