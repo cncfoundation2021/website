@@ -709,7 +709,7 @@ class CNCFoundationApp {
             'featured-products-loading',
             'featured-products-error',
             'featured-product-card',
-            8,
+            10,
             []
         );
         
@@ -726,7 +726,7 @@ class CNCFoundationApp {
             'suggested-products-loading',
             'suggested-products-error',
             'suggested-product-card',
-            8,
+            10,
             excludeIds
         );
     }
