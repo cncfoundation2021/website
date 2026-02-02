@@ -101,18 +101,24 @@ class CNCFoundationApp {
             `;
         };
 
-        leftPaneNav.innerHTML = offeringItems.map(item => {
+        leftPaneNav.innerHTML = offeringItems.map((item, index) => {
             // Check for CnC Bazar by slug or title to ensure logo is used
             let icon = this.getIconForSlug(item.slug);
             if ((item.title === 'CnC BAZAR' || item.slug.includes('cncbazar')) && !icon.startsWith('image:')) {
                 icon = 'image:Assets/CNC Bazar Logo.png';
             }
-            const hasChildren = item.children && item.children.length > 0;
+            const isEBusiness = item.slug === 'e-bussiness';
+            const hasChildren = item.children && item.children.length > 0 && !isEBusiness;
+            const isFeaturedLeft = index < 4; // Highlight first four options in sidebar
             
             // Fix route for HOME - should go to root
             let parentRoute;
             if (item.slug === 'home') {
                 parentRoute = '/';
+            } else if (isEBusiness) {
+                // For E-BUSINESS, link directly to Govt. E-Marketplace (child route) instead of showing dropdown
+                const gemChild = item.children && item.children.find(child => child.slug === 'govt-e-marketplace');
+                parentRoute = gemChild && gemChild.route ? gemChild.route : (this.menuManager?.getRouteForSlug ? this.menuManager.getRouteForSlug('e-bussiness') : item.route);
             } else if (item.external) {
                 parentRoute = item.route;
             } else if (hasChildren) {
@@ -121,7 +127,7 @@ class CNCFoundationApp {
                 parentRoute = item.route;
             }
             
-            const targetAttr = item.external ? ' target="_blank" rel="noopener"' : '';
+            const targetAttr = (item.external || isEBusiness) ? ' target="_blank" rel="noopener"' : '';
 
             // Check if icon is an image path or Font Awesome class
             const isImageIcon = icon && icon.startsWith('image:');
@@ -140,10 +146,12 @@ class CNCFoundationApp {
                 ? `<img src="${iconPath}" alt="${item.title} icon" class="nav-item-icon-image" aria-hidden="true" style="width: 18px; height: 18px; object-fit: contain; display: block; flex-shrink: 0;">`
                 : `<i class="${icon}" aria-hidden="true"></i>`;
 
+            const baseLinkClass = `nav-link${isFeaturedLeft ? ' nav-link-featured' : ''}`;
+
             if (!hasChildren) {
                 return `
                     <li>
-                        <a href="${parentRoute}" class="nav-link" data-section="${item.slug}"${targetAttr}>
+                        <a href="${parentRoute}" class="${baseLinkClass}" data-section="${item.slug}"${targetAttr}>
                             ${iconElement}
                             <span>${item.title}</span>
                         </a>
@@ -154,7 +162,7 @@ class CNCFoundationApp {
             return `
                 <li class="sidebar-dropdown" data-dropdown="${item.slug}">
                     <div class="sidebar-dropdown-toggle" data-section="${item.slug}">
-                        <a href="${parentRoute}" class="nav-link"${targetAttr}>
+                        <a href="${parentRoute}" class="${baseLinkClass}"${targetAttr}>
                             ${iconElement}
                             <span>${item.title}</span>
                         </a>
@@ -940,22 +948,29 @@ class CNCFoundationApp {
             }
         });
 
-        // Sidebar dropdown toggles
+        // Sidebar dropdown toggles - clicking anywhere on the parent toggles the menu; only one open at a time
         document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.sidebar-dropdown-btn');
+            const toggle = e.target.closest('.sidebar-dropdown-toggle');
             const dropdown = e.target.closest('.sidebar-dropdown');
-            const link = e.target.closest('.nav-link');
             
-            // If clicking the dropdown button, toggle the dropdown
-            if (btn && dropdown && !link) {
+            if (toggle && dropdown) {
                 e.preventDefault();
                 e.stopPropagation();
+                // Close any other open sidebar dropdowns
+                document.querySelectorAll('.sidebar-dropdown.open').forEach((other) => {
+                    if (other !== dropdown) {
+                        other.classList.remove('open');
+                        const otherBtn = other.querySelector('.sidebar-dropdown-btn');
+                        if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
                 dropdown.classList.toggle('open');
                 const expanded = dropdown.classList.contains('open');
-                btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+                const btn = dropdown.querySelector('.sidebar-dropdown-btn');
+                if (btn) {
+                    btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+                }
             }
-            // If clicking the link inside dropdown, allow normal navigation
-            // (don't prevent default)
         });
 
         // Top navigation - simple items (now info pages)
@@ -1083,8 +1098,8 @@ class CNCFoundationApp {
                 this.backgroundManager.setBackground(sectionSlug);
             }
             
-            // Initialize charts if this is marketing-research section
-            if (sectionSlug === 'marketing-research') {
+            // Initialize charts if this is marketing-research / online-marketing section
+            if (sectionSlug === 'marketing-research' || sectionSlug === 'online-marketing') {
                 // Re-initialize charts when section becomes active (in case it was created earlier)
                 setTimeout(() => {
                     this.initializeMarketingResearchCharts(contentSection);
@@ -1473,7 +1488,7 @@ class CNCFoundationApp {
                 </div>
             </div>
             `;
-        } else if (sectionSlug === 'marketing-research') {
+        } else if (sectionSlug === 'marketing-research' || sectionSlug === 'online-marketing') {
             contentBody = `
             <div class="content-header">
                 <h1>${item.title}</h1>
@@ -1579,7 +1594,7 @@ class CNCFoundationApp {
                         <i class="fab fa-twitter" aria-hidden="true" style="font-size: 64px; color: #1da1f2;"></i>
                         <h3 style="margin: 0; color: #eaf2ff; font-size: 1.25rem; font-weight: 600;">Twitter/X</h3>
                     </a>
-                    <a href="https://www.instagram.com/cnc__foundation?igsh=ODVpbmQwN292N2Uy" target="_blank" rel="noopener noreferrer" class="social-platform-link">
+                    <a href="https://www.instagram.com/cncfoundationassam" target="_blank" rel="noopener noreferrer" class="social-platform-link">
                         <i class="fab fa-instagram" aria-hidden="true" style="font-size: 64px; color: #e4405f;"></i>
                         <h3 style="margin: 0; color: #eaf2ff; font-size: 1.25rem; font-weight: 600;">Instagram</h3>
                     </a>
@@ -1638,6 +1653,48 @@ class CNCFoundationApp {
                 </div>
             </div>
             `;
+        } else if (sectionSlug === 'key-contacts') {
+            contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary">Important contact persons for CnC Foundation Assam</p>
+            </div>
+            <div class="content-body">
+                <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <div class="contact-card" style="display: block !important; visibility: visible !important; opacity: 1 !important; margin-bottom: 1.75rem;">
+                        <img src="Assets/WhatsApp Image 2025-12-23 at 11.26.29.jpeg" alt="Amir Sohail Choudhury" style="width: 120px; height: 120px; object-fit: cover; object-position: center top; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 12px;">
+                        <h3>Amir Sohail Choudhury</h3>
+                        <p><strong>B. Sc, M.A, B. Ed* — General Manager</strong></p>
+                        <div class="contact-info">
+                            <p>
+                                <i class="fas fa-phone" aria-hidden="true"></i>
+                                <strong>Contact:</strong> <a href="tel:+919101759991">+919101759991</a>
+                            </p>
+                            <p>
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                                <strong>Email:</strong> <a href="mailto:amirsohail.biz@gmail.com">amirsohail.biz@gmail.com</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                        <img src="Assets/WhatsApp Image 2025-12-23 at 11.26.28.jpeg" alt="Yamin Mustafa Barbhuiya" style="width: 120px; height: 120px; object-fit: cover; object-position: center top; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 12px;">
+                        <h3>Yamin Mustafa Barbhuiya</h3>
+                        <p><strong>B. Com — General Accounts Manager</strong></p>
+                        <div class="contact-info">
+                            <p>
+                                <i class="fas fa-phone" aria-hidden="true"></i>
+                                <strong>Contact:</strong> <a href="tel:+916002610858">+916002610858</a>
+                            </p>
+                            <p>
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                                <strong>Email:</strong> <a href="mailto:yaminbarbhuiya123@gmail.com">yaminbarbhuiya123@gmail.com</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
         } else if (sectionSlug === 'grievances') {
             contentBody = `
             <div class="content-header">
@@ -1648,6 +1705,21 @@ class CNCFoundationApp {
                 <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
                     <p style="color: #ffffff !important; font-size: 1.125rem !important; line-height: 1.7 !important; margin-bottom: 1.5rem !important;">If you have any concerns, complaints, or grievances regarding our services, please feel free to reach out. Our team will review and address your issue at the earliest.</p>
                     <p style="color: var(--text, #eaf2ff) !important; font-size: 1.125rem !important; line-height: 1.7 !important; margin-bottom: 0 !important;"><strong>Grievance Email:</strong> <a href="mailto:ccare4001@gmail.com" style="color: var(--primary, #0ea5e9) !important; text-decoration: none;">ccare4001@gmail.com</a></p>
+                </div>
+            </div>
+            `;
+        } else if (sectionSlug === 'business-tie-ups') {
+            contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary">Discover our strategic partnerships and business collaborations across Northeast India</p>
+            </div>
+            <div class="content-body">
+                <div class="default-section">
+                    <div class="coming-soon">
+                        <h3>More Details Coming Soon</h3>
+                        <p>We're compiling information about our business partnerships. Check back soon for our collaboration details.</p>
+                    </div>
                 </div>
             </div>
             `;
@@ -1669,6 +1741,88 @@ class CNCFoundationApp {
                             Go to Admin Panel
                         </a>
                     </div>
+                </div>
+            </div>
+            `;
+        } else if (sectionSlug === 'mission-vission') {
+            contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary">Our commitment to excellence and our vision for North East India</p>
+            </div>
+            <div class="content-body">
+                <div class="vision-section" style="margin-top: 2rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(30, 41, 59, 0.95)); border: 1px solid var(--border, rgba(255, 255, 255, 0.16)); border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);">
+                    <h3 style="color: var(--primary, #0ea5e9); margin-bottom: 1.5rem; font-size: 1.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Vision:</h3>
+                    <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                        To be a leading and trusted organization across North East India, providing comprehensive, high-quality products and services that support institutional development and end users, while ensuring transparency, efficiency, and meaningful value addition in every partnership. We aspire to contribute to regional growth by creating sustainable employment opportunities and empowering local communities.
+                    </p>
+                </div>
+                
+                <div class="mission-section" style="margin-top: 2rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(30, 41, 59, 0.95)); border: 1px solid var(--border, rgba(255, 255, 255, 0.16)); border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);">
+                    <h3 style="color: var(--primary, #0ea5e9); margin-bottom: 1.5rem; font-size: 1.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Mission :</h3>
+                    <p style="line-height: 1.9; color: var(--text, #eaf2ff); font-size: 1.125rem; margin: 0;">
+                        To manufacture, resell and provide comprehensive services with reliability and commitment to the government organization and end users across North East India effectively and efficiently in a time-bound manner while upholding the highest standards of integrity and professionalism as per our tagline- <strong style="color: var(--primary, #0ea5e9); font-weight: 600;">"Once and Always!"</strong>
+                    </p>
+                </div>
+            </div>
+            `;
+        } else if (sectionSlug === 'gallery-publications') {
+            contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary">Browse our photo gallery and explore our publications and resources</p>
+            </div>
+            <div class="content-body">
+                <div class="default-section">
+                    <div class="coming-soon">
+                        <h3>More Details Coming Soon</h3>
+                        <p>We're organizing our media gallery and publications. Stay tuned for visual content and resources.</p>
+                    </div>
+                </div>
+            </div>
+            `;
+        } else if (sectionSlug === 'announcements') {
+            contentBody = `
+            <div class="content-header">
+                <h1>${item.title}</h1>
+                <p class="content-summary">Stay updated with our latest news, updates, and important announcements</p>
+            </div>
+            <div class="content-body">
+                <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <section class="announcements-section" aria-labelledby="announcements-title" style="margin-top: 2rem;">
+                        <div class="announcements-grid">
+                            <div class="announcement-card">
+                                <div class="announcement-date">
+                                    <span class="day">15</span>
+                                    <span class="month">Dec</span>
+                                </div>
+                                <div class="announcement-content">
+                                    <h3>New Manufacturing Facility Inauguration</h3>
+                                    <p>CnC opens new state-of-the-art manufacturing facility in Guwahati.</p>
+                                </div>
+                            </div>
+                            <div class="announcement-card">
+                                <div class="announcement-date">
+                                    <span class="day">10</span>
+                                    <span class="month">Dec</span>
+                                </div>
+                                <div class="announcement-content">
+                                    <h3>Partnership with Leading Brands</h3>
+                                    <p>New partnerships with LG, Blue Star, and other major brands announced.</p>
+                                </div>
+                            </div>
+                            <div class="announcement-card">
+                                <div class="announcement-date">
+                                    <span class="day">05</span>
+                                    <span class="month">Dec</span>
+                                </div>
+                                <div class="announcement-content">
+                                    <h3>CSR Initiative Launch</h3>
+                                    <p>New Corporate Social Responsibility programs for community development.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
             `;
@@ -1699,8 +1853,8 @@ class CNCFoundationApp {
             this.executeOrgChartScript(section);
         }
         
-        // Initialize charts for marketing research
-        if (sectionSlug === 'marketing-research') {
+        // Initialize charts for marketing / online marketing
+        if (sectionSlug === 'marketing-research' || sectionSlug === 'online-marketing') {
             this.initializeMarketingResearchCharts(section);
         }
         
@@ -1784,6 +1938,11 @@ class CNCFoundationApp {
                         responsive: true,
                         maintainAspectRatio: false,
                         resizeDelay: 100,
+                        layout: {
+                            padding: {
+                                bottom: 28
+                            }
+                        },
                         animation: {
                             duration: 750,
                             easing: 'easeInOutQuart'
@@ -1803,7 +1962,16 @@ class CNCFoundationApp {
                         },
                         scales: {
                             y: { beginAtZero: true, max: 40, ticks: { callback: v => v + '%', color: chartColors.textMuted }, grid: { color: chartColors.grid } },
-                            x: { ticks: { color: chartColors.textMuted, maxRotation: 45, minRotation: 45, font: { size: 10 } }, grid: { display: false } }
+                            x: { 
+                                ticks: { 
+                                    color: chartColors.textMuted, 
+                                    maxRotation: 35, 
+                                    minRotation: 35, 
+                                    padding: 8,
+                                    font: { size: 11 } 
+                                }, 
+                                grid: { display: false } 
+                            }
                         }
                     }
                 });
@@ -1946,6 +2114,11 @@ class CNCFoundationApp {
                         responsive: true,
                         maintainAspectRatio: false,
                         resizeDelay: 100,
+                        layout: {
+                            padding: {
+                                bottom: 20
+                            }
+                        },
                         animation: {
                             duration: 750,
                             easing: 'easeInOutQuart'
@@ -1965,7 +2138,15 @@ class CNCFoundationApp {
                         },
                         scales: {
                             y: { beginAtZero: true, max: 110, ticks: { callback: v => v + '%', color: chartColors.textMuted }, grid: { color: chartColors.grid } },
-                            x: { ticks: { color: chartColors.textMuted }, grid: { display: false } }
+                            x: { 
+                                ticks: { 
+                                    color: chartColors.textMuted,
+                                    maxRotation: 0,
+                                    minRotation: 0,
+                                    padding: 6
+                                }, 
+                                grid: { display: false } 
+                            }
                         }
                     }
                 });
