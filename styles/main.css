@@ -1120,7 +1120,6 @@ main .content-section:not(#home-content):not(#content-sections .content-section)
 
 /* Hero Section */
 .hero-section {
-    text-align: center;
     padding: var(--space-16) var(--space-12);
     background: linear-gradient(135deg, rgba(2, 132, 199, 0.4), rgba(14, 165, 233, 0.35));
     color: #ffffff;
@@ -1133,6 +1132,7 @@ main .content-section:not(#home-content):not(#content-sections .content-section)
 }
 
 .hero-section h1 {
+    text-align: center;
     font-size: var(--font-size-3xl);
     font-weight: 700;
     margin-bottom: var(--space-4);
@@ -1144,11 +1144,11 @@ main .content-section:not(#home-content):not(#content-sections .content-section)
 .hero-subtitle {
     font-size: var(--font-size-lg);
     margin-bottom: var(--space-6);
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 42rem;
+    margin-left: var(--space-8);
+    white-space: nowrap;
     opacity: 1;
     color: #ffffff;
+    text-align: left;
     text-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
 
@@ -1192,6 +1192,10 @@ main .content-section:not(#home-content):not(#content-sections .content-section)
         flex-direction: column;
         gap: var(--space-2);
         align-items: center;
+    }
+    .hero-subtitle {
+        margin-left: var(--space-4);
+        white-space: normal;
     }
 }
 

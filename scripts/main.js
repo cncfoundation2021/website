@@ -180,48 +180,18 @@ class CNCFoundationApp {
         const topNavLinks = document.getElementById('top-nav-links');
         if (!topNavLinks || !this.menuManager) return;
 
-        // Top nav now shows info pages (original leftPane) in specified order
-        const infoOrder = [
-            'about-us',
-            'mission-vission',
-            'key-contacts',
-            'online-marketing',
-            'employee-management',
-            'organisational-chart',
-            'social-media',
-            'business-tie-ups',
-            'grievances',
-            'gallery-publications',
-            'contact-us',
-            'announcements'
-        ];
-
-        const infoItems = this.menuManager.getLeftPane()
-            .slice()
-            .sort((a, b) => infoOrder.indexOf(a.slug) - infoOrder.indexOf(b.slug))
-            .map(item => ({
-                ...item,
-                route: `/info/${item.slug}.html`,
-                children: []
-            }));
-
-        console.log('Top nav - Info items:', infoItems);
-
-        // Separate fixed items (About Us and Vision Mission) from scrollable items
-        const fixedSlugs = ['about-us', 'mission-vission'];
-        const fixedItems = infoItems.filter(item => fixedSlugs.includes(item.slug));
-        const scrollableItems = infoItems.filter(item => !fixedSlugs.includes(item.slug));
-
+        // Top nav shows single "Company profile" link with right arrow (links to about-us)
         const html = `
             <div class="nav-fixed-items">
-                ${fixedItems.map(item => this.createSimpleNavItem(item, 'nav-item-highlighted')).join('')}
+                <a href="/info/about-us.html" class="nav-item nav-item-highlighted" data-section="about-us">
+                    <span>Company profile</span>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </a>
             </div>
-            <div class="nav-scrollable-items">
-                ${scrollableItems.map(item => this.createSimpleNavItem(item)).join('')}
-            </div>
+            <div class="nav-scrollable-items"></div>
         `;
 
-        console.log('Top nav - Generated HTML:', html);
+        console.log('Top nav - Company profile link');
         topNavLinks.innerHTML = html;
 
         // Ensure scroll zones and custom scrollbar exist on every page
@@ -370,16 +340,6 @@ class CNCFoundationApp {
         if (!quickLinksGrid) return;
 
         const latestUpdates = [
-            {
-                icon: 'fas fa-industry',
-                title: 'New Manufacturing Facility',
-                description: 'State-of-the-art facility now operational in Guwahati'
-            },
-            {
-                icon: 'fas fa-handshake',
-                title: 'Brand Partnerships',
-                description: 'New partnerships with LG, Blue Star, and major brands'
-            },
             {
                 icon: 'fas fa-heart',
                 title: 'CSR Initiatives',
@@ -899,8 +859,8 @@ class CNCFoundationApp {
         if (existingNav) {
             const sidebar = existingNav.closest('.left-sidebar');
             const heading = existingNav.closest('.nav-section')?.querySelector('h2');
-            if (heading && heading.textContent !== 'Our Offerings') {
-                heading.textContent = 'Our Offerings';
+            if (heading && !heading.textContent.trim().startsWith('Our Offerings')) {
+                heading.innerHTML = 'Our Offerings <i class="fas fa-chevron-down" aria-hidden="true"></i>';
             }
             if (sidebar) {
                 sidebar.setAttribute('aria-label', 'Our Offerings');
@@ -925,7 +885,7 @@ class CNCFoundationApp {
 
         nav.innerHTML = `
             <div class="nav-section">
-                <h2>Our Offerings</h2>
+                <h2>Our Offerings <i class="fas fa-chevron-down" aria-hidden="true"></i></h2>
                 <ul class="nav-list" id="left-pane-nav" role="list"></ul>
             </div>
         `;
