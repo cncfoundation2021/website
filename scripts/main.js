@@ -180,18 +180,58 @@ class CNCFoundationApp {
         const topNavLinks = document.getElementById('top-nav-links');
         if (!topNavLinks || !this.menuManager) return;
 
-        // Top nav shows single "Company profile" link with right arrow (links to about-us)
-        const html = `
-            <div class="nav-fixed-items">
-                <a href="/info/about-us.html" class="nav-item nav-item-highlighted" data-section="about-us">
+        // Company profile dropdown: About Us and Vision & Mission
+        const companyProfileDropdown = `
+            <div class="nav-dropdown" data-dropdown="company-profile">
+                <a href="/info/about-us.html" class="nav-item nav-item-highlighted dropdown-toggle" aria-expanded="false">
                     <span>Company profile</span>
-                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    <i class="fas fa-arrow-right dropdown-arrow" aria-hidden="true"></i>
                 </a>
+                <div class="nav-dropdown-menu" role="menu">
+                    <a href="/info/about-us.html" class="nav-dropdown-item">About Us</a>
+                    <a href="/info/mission-vission.html" class="nav-dropdown-item">Vision & Mission</a>
+                </div>
             </div>
-            <div class="nav-scrollable-items"></div>
         `;
 
-        console.log('Top nav - Company profile link');
+        // Top nav: Company profile (dropdown) + all other info pages
+        const infoOrder = [
+            'about-us',
+            'mission-vission',
+            'key-contacts',
+            'online-marketing',
+            'employee-management',
+            'organisational-chart',
+            'social-media',
+            'business-tie-ups',
+            'grievances',
+            'gallery-publications',
+            'contact-us',
+            'announcements'
+        ];
+
+        const infoItems = this.menuManager.getLeftPane()
+            .slice()
+            .sort((a, b) => infoOrder.indexOf(a.slug) - infoOrder.indexOf(b.slug))
+            .map(item => ({
+                ...item,
+                route: `/info/${item.slug}.html`,
+                children: []
+            }));
+
+        // Exclude about-us and mission-vission (they're under Company profile)
+        const otherItems = infoItems.filter(item => !['about-us', 'mission-vission'].includes(item.slug));
+
+        const html = `
+            <div class="nav-fixed-items">
+                ${companyProfileDropdown}
+            </div>
+            <div class="nav-scrollable-items">
+                ${otherItems.map(item => this.createSimpleNavItem(item)).join('')}
+            </div>
+        `;
+
+        console.log('Top nav - Company profile + info items');
         topNavLinks.innerHTML = html;
 
         // Ensure scroll zones and custom scrollbar exist on every page
