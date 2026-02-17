@@ -110,7 +110,7 @@ class CNCFoundationApp {
             }
             const isEBusiness = item.slug === 'e-bussiness';
             const hasChildren = item.children && item.children.length > 0 && !isEBusiness;
-            const isFeaturedLeft = index < 4; // Highlight first four options in sidebar
+            const isFeaturedLeft = index < 4 || item.slug === 'authorized-reseller'; // Highlight first four + Authorised Seller
             
             // Fix route for HOME - should go to root
             let parentRoute;
@@ -215,7 +215,7 @@ class CNCFoundationApp {
             .sort((a, b) => infoOrder.indexOf(a.slug) - infoOrder.indexOf(b.slug))
             .map(item => ({
                 ...item,
-                route: `/info/${item.slug}.html`,
+                route: item.slug === 'gallery-publications' ? '/?section=gallery-publications' : `/info/${item.slug}.html`,
                 children: []
             }));
 
@@ -1751,17 +1751,31 @@ class CNCFoundationApp {
             </div>
             `;
         } else if (sectionSlug === 'gallery-publications') {
+            const galleryImages = [
+                { id: '15bJ7SeUgAlLsuBd09e8F757y0WImvc0q', alt: 'CnC Gallery 1' },
+                { id: '1OfPeWXQK31hUX_Zfbwklg1BEad8L1kEV', alt: 'CnC Gallery 2' },
+                { id: '18SfbCA_6yTiYNU3EKt2BFe7jdGg329Tz', alt: 'CnC Gallery 3' },
+                { id: '1QhKFcSgttAjxf5f8ozGbowXkJQk38G87', alt: 'CnC Gallery 4' },
+                { id: '1_Wy3OoE9ESx81uZEZF7E1GOuk0Tbv7ff', alt: 'CnC Gallery 5' },
+                { id: '1JiW3_AsXAcClhx-tDVTk-YoV6bBqlKbw', alt: 'CnC Gallery 6' }
+            ];
+            const galleryHTML = galleryImages.map(img => {
+                const proxyUrl = '/api/image-proxy?url=' + encodeURIComponent('https://drive.google.com/uc?export=view&id=' + img.id);
+                const directUrl = 'https://drive.google.com/uc?export=view&id=' + img.id;
+                return `<a href="${directUrl}" target="_blank" rel="noopener noreferrer" class="gallery-item" style="display:block;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:transform 0.2s,box-shadow 0.2s"><img src="${proxyUrl}" alt="${img.alt}" loading="lazy" data-fallback="${directUrl}" style="width:100%;height:220px;object-fit:cover;display:block" onerror="this.src=this.dataset.fallback||this.src"></a>`;
+            }).join('');
             contentBody = `
             <div class="content-header">
                 <h1>${item.title}</h1>
                 <p class="content-summary">Browse our photo gallery and explore our publications and resources</p>
             </div>
             <div class="content-body">
-                <div class="default-section">
-                    <div class="coming-soon">
-                        <h3>More Details Coming Soon</h3>
-                        <p>We're organizing our media gallery and publications. Stay tuned for visual content and resources.</p>
+                <div class="default-section" style="display:block!important;visibility:visible!important;opacity:1!important">
+                    <div class="gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin:2rem 0">
+                        ${galleryHTML}
                     </div>
+                    <p style="margin-top:1.5rem;color:var(--text-muted,#666);font-size:0.9rem">Click on any image to view in full size.</p>
+                    <p style="margin-top:1rem;color:var(--primary,#0ea5e9);font-size:1rem;font-weight:600">More Coming Soon!!</p>
                 </div>
             </div>
             `;

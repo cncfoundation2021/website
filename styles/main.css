@@ -2764,6 +2764,20 @@ a:hover {
     font-size: 0.9em;
 }
 
+/* Gallery & Publications section (homepage) */
+.gallery-grid .gallery-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-grid .gallery-item img {
+    transition: opacity 0.2s;
+}
+
+.gallery-grid .gallery-item:hover img {
+    opacity: 0.95;
+}
+
 /* Responsive adjustments for sub-pages */
 @media (max-width: 768px) {
     .features-grid {
