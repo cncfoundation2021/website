@@ -70,7 +70,7 @@
         ]
       },
       {
-        "title": "AUTHORIZED RESELLER",
+        "title": "AUTHORISED SELLER",
         "slug": "authorized-reseller",
         "children": [
           { "title": "LG", "slug": "lg" },
@@ -91,7 +91,18 @@
           { "title": "Zebronics", "slug": "zebronics" },
           { "title": "Dr. Shred", "slug": "dr-shred" },
           { "title": "Orient", "slug": "orient" },
-          { "title": "CP Plus", "slug": "cp-plus" }
+          { "title": "CP Plus", "slug": "cp-plus" },
+          { "title": "Havells", "slug": "havells" },
+          { "title": "Ahuja", "slug": "ahuja" },
+          { "title": "Bajaj", "slug": "bajaj" },
+          { "title": "Nilkamal", "slug": "nilkamal" },
+          { "title": "MiPhi", "slug": "miphi" },
+          { "title": "Bit Defender", "slug": "bit-defender" },
+          { "title": "Image King", "slug": "image-king" },
+          { "title": "Halonix", "slug": "halonix" },
+          { "title": "Vgyaan", "slug": "vgyaan" },
+          { "title": "STAG", "slug": "stag" },
+          { "title": "HPL", "slug": "hpl" }
         ]
       },
       {
@@ -218,6 +229,17 @@
     "/offerings/authorized-reseller/dr-shred",
     "/offerings/authorized-reseller/orient",
     "/offerings/authorized-reseller/cp-plus",
+    "/offerings/authorized-reseller/havells",
+    "/offerings/authorized-reseller/ahuja",
+    "/offerings/authorized-reseller/bajaj",
+    "/offerings/authorized-reseller/nilkamal",
+    "/offerings/authorized-reseller/miphi",
+    "/offerings/authorized-reseller/bit-defender",
+    "/offerings/authorized-reseller/image-king",
+    "/offerings/authorized-reseller/halonix",
+    "/offerings/authorized-reseller/vgyaan",
+    "/offerings/authorized-reseller/stag",
+    "/offerings/authorized-reseller/hpl",
     "/offerings/product-marketing",
     "/offerings/construction-repairing",
     "/offerings/construction-repairing/civil",

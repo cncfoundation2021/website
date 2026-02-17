@@ -65,6 +65,7 @@ class CNCFoundationApp {
 
     initializeNavigation() {
         this.populateLeftPaneNavigation();
+        this.populateCompanyProfileHeader();
         this.populateTopNavigation();
         this.populateBreadcrumbs();
         this.populateQuickLinks();
@@ -176,25 +177,24 @@ class CNCFoundationApp {
         }).join('');
     }
 
+    populateCompanyProfileHeader() {
+        const row = document.getElementById('company-profile-header-row');
+        if (!row || !this.menuManager) return;
+
+        row.innerHTML = `
+            <div class="nav-profile-group">
+                <span class="nav-profile-header nav-profile-header-block-arrow">
+                    <span class="nav-profile-arrow-text">Company profile</span>
+                </span>
+            </div>
+        `;
+    }
+
     populateTopNavigation() {
         const topNavLinks = document.getElementById('top-nav-links');
         if (!topNavLinks || !this.menuManager) return;
 
-        // Company profile dropdown: About Us and Vision & Mission
-        const companyProfileDropdown = `
-            <div class="nav-dropdown" data-dropdown="company-profile">
-                <a href="/info/about-us.html" class="nav-item nav-item-highlighted dropdown-toggle" aria-expanded="false">
-                    <span>Company profile</span>
-                    <i class="fas fa-arrow-right dropdown-arrow" aria-hidden="true"></i>
-                </a>
-                <div class="nav-dropdown-menu" role="menu">
-                    <a href="/info/about-us.html" class="nav-dropdown-item">About Us</a>
-                    <a href="/info/mission-vission.html" class="nav-dropdown-item">Vision & Mission</a>
-                </div>
-            </div>
-        `;
-
-        // Top nav: Company profile (dropdown) + all other info pages
+        // Top nav: only info pages (Company profile is in header row above)
         const infoOrder = [
             'about-us',
             'mission-vission',
@@ -219,19 +219,21 @@ class CNCFoundationApp {
                 children: []
             }));
 
-        // Exclude about-us and mission-vission (they're under Company profile)
-        const otherItems = infoItems.filter(item => !['about-us', 'mission-vission'].includes(item.slug));
+        // Include all info items in top nav (About Us and Vision & Mission as static buttons)
+        const fixedSlugs = ['about-us', 'mission-vission'];
+        const fixedItems = infoItems.filter(item => fixedSlugs.includes(item.slug));
+        const scrollableItems = infoItems.filter(item => !fixedSlugs.includes(item.slug));
 
         const html = `
             <div class="nav-fixed-items">
-                ${companyProfileDropdown}
+                ${fixedItems.map(item => this.createSimpleNavItem(item, 'nav-item-highlighted')).join('')}
             </div>
             <div class="nav-scrollable-items">
-                ${otherItems.map(item => this.createSimpleNavItem(item)).join('')}
+                ${scrollableItems.map(item => this.createSimpleNavItem(item)).join('')}
             </div>
         `;
 
-        console.log('Top nav - Company profile + info items');
+        console.log('Top nav - Company profile header + info items');
         topNavLinks.innerHTML = html;
 
         // Ensure scroll zones and custom scrollbar exist on every page
@@ -360,9 +362,9 @@ class CNCFoundationApp {
 
         const breadcrumbs = this.menuManager.getBreadcrumbs(this.currentPath);
         
-        // Add Home breadcrumb if not present
+        // Add Home breadcrumb if not present - always link to main homepage
         if (breadcrumbs.length === 0 || breadcrumbs[0].title !== 'Home') {
-            breadcrumbs.unshift({ title: 'Home', route: '../' });
+            breadcrumbs.unshift({ title: 'Home', route: '/' });
         }
         
         breadcrumbList.innerHTML = breadcrumbs.map((crumb, index) => {
@@ -769,6 +771,7 @@ class CNCFoundationApp {
             'key-contacts': 'fas fa-address-book',
             'organisational-chart': 'fas fa-sitemap',
             'vision-mission': 'fas fa-bullseye',
+            'mission-vission': 'fas fa-bullseye',
             'online-marketing': 'fas fa-globe',
             'marketing-research': 'fas fa-chart-line',
             'social-media': 'fab fa-facebook',
@@ -899,8 +902,9 @@ class CNCFoundationApp {
         if (existingNav) {
             const sidebar = existingNav.closest('.left-sidebar');
             const heading = existingNav.closest('.nav-section')?.querySelector('h2');
-            if (heading && !heading.textContent.trim().startsWith('Our Offerings')) {
-                heading.innerHTML = 'Our Offerings <i class="fas fa-chevron-down" aria-hidden="true"></i>';
+            if (heading && !heading.classList.contains('sidebar-offerings-header')) {
+                heading.className = 'sidebar-offerings-header';
+                heading.innerHTML = '<span class="sidebar-offerings-arrow-text">Our Offerings</span>';
             }
             if (sidebar) {
                 sidebar.setAttribute('aria-label', 'Our Offerings');
@@ -925,7 +929,9 @@ class CNCFoundationApp {
 
         nav.innerHTML = `
             <div class="nav-section">
-                <h2>Our Offerings <i class="fas fa-chevron-down" aria-hidden="true"></i></h2>
+                <h2 class="sidebar-offerings-header">
+                    <span class="sidebar-offerings-arrow-text">Our Offerings</span>
+                </h2>
                 <ul class="nav-list" id="left-pane-nav" role="list"></ul>
             </div>
         `;
@@ -1397,52 +1403,30 @@ class CNCFoundationApp {
             </div>
             `;
         } else if (sectionSlug === 'announcements') {
-            const announcements = [
-                {
-                    day: '20', month: 'Jan',
-                    title: 'Comprehensive Services Now Available',
-                    content: 'We are pleased to announce our expanded range of services including product catalogue, services, construction and repairing works, and much more. Explore our complete offerings!'
-                },
-                {
-                    day: '15', month: 'Dec',
-                    title: 'New Manufacturing Facility Inauguration',
-                    content: 'CnC opens new state-of-the-art manufacturing facility in Guwahati'
-                },
-                {
-                    day: '10', month: 'Dec',
-                    title: 'Partnership with Leading Brands',
-                    content: 'New partnerships with LG, Blue Star, and other major brands announced'
-                },
-                {
-                    day: '05', month: 'Dec',
-                    title: 'CSR Initiative Launch',
-                    content: 'New Corporate Social Responsibility programs for community development'
-                }
+            const latestUpdates = [
+                { icon: 'fas fa-heart', title: 'CSR Initiatives', description: 'Community development programs launched' },
+                { icon: 'fas fa-shopping-cart', title: 'CnC Bazar Expansion', description: 'Now offering hardware fittings and clothing items' }
             ];
-
-            const announcementsHTML = announcements.map(announcement => `
-                <div class="announcement-card">
-                    <div class="announcement-date">
-                        <span class="day">${announcement.day}</span>
-                        <span class="month">${announcement.month}</span>
-                    </div>
-                    <div class="announcement-content">
-                        <h3>${announcement.title}</h3>
-                        <p>${announcement.content}</p>
-                    </div>
-                </div>
-            `).join('');
-
+            const announcements = [
+                { day: '20', month: 'Jan', title: 'Comprehensive Services Now Available', content: 'We are pleased to announce our expanded range of services including product catalogue, services, construction and repairing works, and much more. Explore our complete offerings!' },
+                { day: '15', month: 'Dec', title: 'New Manufacturing Facility Inauguration', content: 'CnC opens new state-of-the-art manufacturing facility in Guwahati' },
+                { day: '10', month: 'Dec', title: 'Partnership with Leading Brands', content: 'New partnerships with LG, Blue Star, and other major brands announced' },
+                { day: '05', month: 'Dec', title: 'CSR Initiative Launch', content: 'New Corporate Social Responsibility programs for community development' }
+            ];
+            const latestUpdatesHTML = latestUpdates.map(u => `<div class="quick-link-card"><i class="${u.icon}" aria-hidden="true"></i><div class="update-content"><h4>${u.title}</h4><p>${u.description}</p></div></div>`).join('');
+            const announcementsHTML = announcements.map(a => `<div class="announcement-card"><div class="announcement-date"><span class="day">${a.day}</span><span class="month">${a.month}</span></div><div class="announcement-content"><h3>${a.title}</h3><p>${a.content}</p></div></div>`).join('');
             contentBody = `
             <div class="content-body">
                 <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
                     <h2>Announcements</h2>
                     <p class="content-summary">Stay updated with our latest news, updates, and important announcements.</p>
-                    
+                    <section class="quick-links-section" aria-labelledby="quick-links-title" style="margin-top: 2rem;">
+                        <h2 id="quick-links-title">Latest Updates</h2>
+                        <div class="quick-links-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4);">${latestUpdatesHTML}</div>
+                    </section>
                     <section class="announcements-section" aria-labelledby="announcements-title" style="margin-top: 2rem; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: var(--space-6); border-radius: 12px; border: 1px solid var(--border-light);">
-                        <div class="announcements-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4);">
-                            ${announcementsHTML}
-                        </div>
+                        <h2 id="announcements-title">Latest Announcements</h2>
+                        <div class="announcements-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4);">${announcementsHTML}</div>
                     </section>
                 </div>
             </div>
@@ -1782,6 +1766,18 @@ class CNCFoundationApp {
             </div>
             `;
         } else if (sectionSlug === 'announcements') {
+            const latestUpdates = [
+                { icon: 'fas fa-heart', title: 'CSR Initiatives', description: 'Community development programs launched' },
+                { icon: 'fas fa-shopping-cart', title: 'CnC Bazar Expansion', description: 'Now offering hardware fittings and clothing items' }
+            ];
+            const announcements = [
+                { day: '20', month: 'Jan', title: 'Comprehensive Services Now Available', content: 'We are pleased to announce our expanded range of services including product catalogue, services, construction and repairing works, and much more. Explore our complete offerings!' },
+                { day: '15', month: 'Dec', title: 'New Manufacturing Facility Inauguration', content: 'CnC opens new state-of-the-art manufacturing facility in Guwahati' },
+                { day: '10', month: 'Dec', title: 'Partnership with Leading Brands', content: 'New partnerships with LG, Blue Star, and other major brands announced' },
+                { day: '05', month: 'Dec', title: 'CSR Initiative Launch', content: 'New Corporate Social Responsibility programs for community development' }
+            ];
+            const latestUpdatesHTML = latestUpdates.map(u => `<div class="quick-link-card"><i class="${u.icon}" aria-hidden="true"></i><div class="update-content"><h4>${u.title}</h4><p>${u.description}</p></div></div>`).join('');
+            const announcementsHTML = announcements.map(a => `<div class="announcement-card"><div class="announcement-date"><span class="day">${a.day}</span><span class="month">${a.month}</span></div><div class="announcement-content"><h3>${a.title}</h3><p>${a.content}</p></div></div>`).join('');
             contentBody = `
             <div class="content-header">
                 <h1>${item.title}</h1>
@@ -1789,39 +1785,13 @@ class CNCFoundationApp {
             </div>
             <div class="content-body">
                 <div class="default-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <section class="quick-links-section" aria-labelledby="quick-links-title" style="margin-top: 2rem;">
+                        <h2 id="quick-links-title">Latest Updates</h2>
+                        <div class="quick-links-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4);">${latestUpdatesHTML}</div>
+                    </section>
                     <section class="announcements-section" aria-labelledby="announcements-title" style="margin-top: 2rem;">
-                        <div class="announcements-grid">
-                            <div class="announcement-card">
-                                <div class="announcement-date">
-                                    <span class="day">15</span>
-                                    <span class="month">Dec</span>
-                                </div>
-                                <div class="announcement-content">
-                                    <h3>New Manufacturing Facility Inauguration</h3>
-                                    <p>CnC opens new state-of-the-art manufacturing facility in Guwahati.</p>
-                                </div>
-                            </div>
-                            <div class="announcement-card">
-                                <div class="announcement-date">
-                                    <span class="day">10</span>
-                                    <span class="month">Dec</span>
-                                </div>
-                                <div class="announcement-content">
-                                    <h3>Partnership with Leading Brands</h3>
-                                    <p>New partnerships with LG, Blue Star, and other major brands announced.</p>
-                                </div>
-                            </div>
-                            <div class="announcement-card">
-                                <div class="announcement-date">
-                                    <span class="day">05</span>
-                                    <span class="month">Dec</span>
-                                </div>
-                                <div class="announcement-content">
-                                    <h3>CSR Initiative Launch</h3>
-                                    <p>New Corporate Social Responsibility programs for community development.</p>
-                                </div>
-                            </div>
-                        </div>
+                        <h2 id="announcements-title">Latest Announcements</h2>
+                        <div class="announcements-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4);">${announcementsHTML}</div>
                     </section>
                 </div>
             </div>

@@ -24,8 +24,10 @@
     <link rel="stylesheet" href="../../styles/main.css">
     <link rel="stylesheet" href="../../styles/feedback-popup.css">
     <link rel="stylesheet" href="../../styles/visual-effects.css">
+    <link rel="stylesheet" href="../../admin/styles/request-form.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="product-catalog.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="../../Assets/unnamed.jpg">
@@ -104,9 +106,14 @@
                         <div class="page-header">
                             <h1>Product Catalog</h1>
                             <p class="page-description">Comprehensive listing of all products sold by CnC</p>
-                            <div class="sync-status" id="sync-status">
-                                <i class="fas fa-sync-alt"></i>
-                                <span>Syncing with Google Sheets...</span>
+                            <div class="page-header-actions">
+                                <button class="raise-request-btn" onclick="requestForm.openModal()">
+                                    <i class="fas fa-file-alt"></i> Raise Request
+                                </button>
+                                <div class="sync-status" id="sync-status">
+                                    <i class="fas fa-sync-alt"></i>
+                                    <span>Syncing with Google Sheets...</span>
+                                </div>
                             </div>
                         </div>
                         
@@ -235,6 +242,7 @@
     <script src="../../scripts/main.js"></script>
     <script src="../../scripts/visual-effects.js"></script>
     <script src="../../scripts/feedback-popup.js"></script>
+    <script src="../../admin/scripts/request-form.js"></script>
     <script src="product-catalog.js"></script>
 
     <script>

@@ -41,9 +41,12 @@
     <link rel="preload" href="../../lib/menu.js" as="script">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../../styles/main.css">`n    <link rel="stylesheet" href="../styles/feedback-popup.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link rel="stylesheet" href="../../styles/feedback-popup.css">
     <link rel="stylesheet" href="../../styles/visual-effects.css">
+    <link rel="stylesheet" href="../../admin/styles/request-form.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="../../Assets/unnamed.jpg">
@@ -115,8 +118,32 @@
         <div class="service-overview">
             <div class="hero-banner">
                 <div class="hero-content">
-                    <h2><i class="fas fa-star"></i> SERVICES</h2>
                     <p>Professional services services provided by CnC. We offer comprehensive solutions tailored to your specific needs with guaranteed quality and timely delivery.</p>
+                    <!-- Services Dropdown - at top of hero, right after intro text -->
+                    <section class="services-dropdown-section services-dropdown-in-hero" aria-labelledby="services-dropdown-label">
+                        <label id="services-dropdown-label" for="services-select"><i class="fas fa-cog"></i> Select a Service</label>
+                        <div class="services-dropdown-wrapper">
+                            <select id="services-select" class="services-select" aria-label="Select a service to view details">
+                                <option value="">-- Choose a service --</option>
+                                <option value="home-maintenance.html">Home Maintenance</option>
+                                <option value="vehicle-services.html">Vehicle Services</option>
+                                <option value="manpower-services.html">Manpower Services</option>
+                                <option value="event-organizing.html">Event Organizing</option>
+                                <option value="catering-services.html">Catering Services</option>
+                                <option value="photography.html">Photography</option>
+                                <option value="videography.html">Videography</option>
+                                <option value="web-development.html">Web Development</option>
+                                <option value="graphic-design.html">Graphic Design</option>
+                                <option value="email-marketing.html">Email Marketing</option>
+                                <option value="paid-advertizing.html">Paid Advertizing</option>
+                                <option value="online-apply-services.html">Online Apply Services</option>
+                            </select>
+                            <i class="fas fa-chevron-down services-dropdown-arrow" aria-hidden="true"></i>
+                        </div>
+                    </section>
+                    <button class="raise-request-btn" onclick="requestForm.openModal()">
+                        <i class="fas fa-file-alt"></i> Raise Request
+                    </button>
                 </div>
             </div>
             
@@ -197,6 +224,7 @@
     <script src="../../scripts/main.js"></script>
     <script src="../../scripts/visual-effects.js"></script>
     <script src="../../scripts/feedback-popup.js"></script>
+    <script src="../../admin/scripts/request-form.js"></script>
 
     <script>
     // Logo fallback script
@@ -211,6 +239,17 @@
                 }
             });
         });
+
+        // Services dropdown - navigate to selected service page
+        const servicesSelect = document.getElementById('services-select');
+        if (servicesSelect) {
+            servicesSelect.addEventListener('change', function() {
+                const value = this.value;
+                if (value) {
+                    window.location.href = value;
+                }
+            });
+        }
     });
     </script>
 </body>

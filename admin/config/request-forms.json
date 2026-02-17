@@ -396,6 +396,39 @@
           "placeholder": "How can we help you?"
         }
       ]
+    },
+    "business-tie-ups": {
+      "title": "Business Tie-up",
+      "fields": [
+        {
+          "name": "company_name",
+          "label": "Company/Organization Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Your company or organization name"
+        },
+        {
+          "name": "partnership_type",
+          "label": "Type of Partnership Interest",
+          "type": "select",
+          "required": true,
+          "options": ["Authorized Reseller", "Distribution Partnership", "Manufacturing Collaboration", "Service Partnership", "Supply Chain", "Other"]
+        },
+        {
+          "name": "partnership_description",
+          "label": "Partnership Proposal",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe your partnership proposal"
+        },
+        {
+          "name": "timeline",
+          "label": "Preferred Timeline",
+          "type": "select",
+          "required": true,
+          "options": ["ASAP", "Within 1 month", "1-3 months", "Flexible"]
+        }
+      ]
     }
   },
   "generalRequirements": {

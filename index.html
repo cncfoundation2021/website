@@ -98,8 +98,8 @@
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Authorized Reseller",
-              "description": "Authorized reseller for LG, Blue Star, Luminous, Acer, and other major brands"
+              "name": "Authorised Seller",
+              "description": "Authorised seller for LG, Blue Star, Luminous, Acer, and other major brands"
             }
           },
           {
@@ -160,7 +160,9 @@
             <aside class="left-sidebar" id="left-sidebar" aria-label="Our Offerings">
                 <nav class="sidebar-navigation" role="navigation" aria-label="Our Offerings">
                     <div class="nav-section">
-                        <h2>Our Offerings <i class="fas fa-chevron-down" aria-hidden="true"></i></h2>
+                        <h2 class="sidebar-offerings-header">
+                            <span class="sidebar-offerings-arrow-text">Our Offerings</span>
+                        </h2>
                         <ul class="nav-list" id="left-pane-nav" role="list">
                             <!-- Dynamically populated from sitemap.json -->
                         </ul>
@@ -170,6 +172,10 @@
 
             <!-- Main Content Area -->
             <main class="main-content" id="main-content">
+                <!-- Company Profile Header Row - inline with Our Offerings, above top nav -->
+                <div class="company-profile-header-row" id="company-profile-header-row" aria-label="Company profile">
+                    <!-- Dynamically populated -->
+                </div>
                 <!-- Top Navigation -->
                 <nav class="top-navigation" role="navigation" aria-label="Main navigation">
                     <div class="nav-container">
@@ -209,13 +215,6 @@
                             <div class="services-grid" id="services-grid">
                                 <!-- Dynamically populated -->
                             </div>
-                            <!-- Home Maintenance details target -->
-                            <div id="home-maintenance" class="content-section" style="margin-top: 1.5rem;">
-                                <div class="service-card">
-                                    <h3>Home Maintenance Services</h3>
-                                    <p>End-to-end home care including plumbing, construction/repairs, electrical fixes, lawn & garden cleaning, pest control, painting, and more. Available on-call with reliable, vetted technicians.</p>
-                                </div>
-                            </div>
                         </section>
 
                         <!-- Featured Products -->
@@ -234,22 +233,6 @@
                                 <div class="featured-products-error" id="featured-products-error" style="display: none;">
                                     <i class="fas fa-exclamation-triangle"></i> Unable to load products. Please try again later.
                                 </div>
-                            </div>
-                        </section>
-
-                        <!-- Latest Updates -->
-                        <section class="quick-links-section" aria-labelledby="quick-links-title">
-                            <h2 id="quick-links-title">Latest Updates</h2>
-                            <div class="quick-links-grid" id="quick-links-grid">
-                                <!-- Dynamically populated -->
-                            </div>
-                        </section>
-
-                        <!-- Announcements -->
-                        <section class="announcements-section" aria-labelledby="announcements-title">
-                            <h2 id="announcements-title">Latest Announcements</h2>
-                            <div class="announcements-grid" id="announcements-grid">
-                                <!-- Dynamically populated -->
                             </div>
                         </section>
 

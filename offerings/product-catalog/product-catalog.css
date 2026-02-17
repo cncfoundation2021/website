@@ -205,6 +205,14 @@
     position: relative;
 }
 
+.page-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
 .product-table-wrapper {
     overflow-x: auto;
     overflow-y: auto;

@@ -6,9 +6,23 @@
 class RequestForm {
     constructor() {
         this.formConfig = null;
+        this.sitemap = null;
         this.currentOffering = null;
         this.modal = null;
         this.init();
+    }
+
+    getSitemapPath() {
+        const path = window.location.pathname;
+        const pathParts = path.split('/').filter(p => p);
+        if (pathParts[0] === 'offerings' && pathParts.length >= 2) {
+            const depth = pathParts.length - 1;
+            return '../'.repeat(Math.min(depth, 3)) + 'config/sitemap.json';
+        }
+        if (pathParts.length >= 1) {
+            return '../config/sitemap.json';
+        }
+        return 'config/sitemap.json';
     }
 
     async init() {
@@ -16,6 +30,18 @@ class RequestForm {
             // Load form configuration
             const response = await fetch('/admin/config/offering-forms.json');
             this.formConfig = await response.json();
+            
+            // Load sitemap for Service/Product dropdown (from left pane / Our Offerings)
+            try {
+                const sitemapPath = this.getSitemapPath();
+                const sitemapRes = await fetch(sitemapPath);
+                if (sitemapRes.ok) {
+                    const sitemapData = await sitemapRes.json();
+                    this.sitemap = sitemapData.sitemap?.topNav || [];
+                }
+            } catch (e) {
+                console.warn('Could not load sitemap for Service/Product dropdown:', e);
+            }
             
             // Detect current offering from URL
             this.detectOffering();
@@ -39,14 +65,49 @@ class RequestForm {
         const path = window.location.pathname;
         const pathParts = path.split('/').filter(p => p);
         
-        // Extract offering category and name
+        // Info pages with request form (e.g. Business Tie-ups)
+        if (pathParts[0] === 'info' && pathParts[1] === 'business-tie-ups') {
+            this.currentOffering = {
+                category: 'business-tie-ups',
+                name: 'business-tie-ups',
+                fullPath: path
+            };
+            return;
+        }
+        
+        // Extract offering category and name from offerings path
         if (pathParts.length >= 2 && pathParts[0] === 'offerings') {
+            let name = pathParts[2] || pathParts[1];
+            // Normalize: index.html or index -> treat as category-level (user will select from dropdown)
+            if (name && (name === 'index' || name === 'index.html')) {
+                name = '';
+            }
             this.currentOffering = {
                 category: pathParts[1],
-                name: pathParts[2] || pathParts[1],
+                name: name,
                 fullPath: path
             };
         }
+    }
+
+    getCategoryChildren(categorySlug) {
+        if (!this.sitemap || !Array.isArray(this.sitemap)) return [];
+        const category = this.sitemap.find(item => item.slug === categorySlug);
+        return category?.children || [];
+    }
+
+    /**
+     * Get display name for offering - uses sitemap title when available for consistency
+     * with left pane / Our Offerings. Same display format used for both Services index
+     * and dedicated service pages.
+     */
+    getOfferingDisplayName(slug, categorySlug) {
+        if (slug && categorySlug && this.sitemap) {
+            const children = this.getCategoryChildren(categorySlug);
+            const child = children.find(c => c.slug === slug);
+            if (child) return child.title;
+        }
+        return this.formatOfferingName(slug || '');
     }
 
     createModal() {
@@ -94,8 +155,10 @@ class RequestForm {
         const heroBanner = document.querySelector('.hero-banner');
         const contentBody = document.querySelector('.content-body');
         const serviceOverview = document.querySelector('.service-overview');
+        const defaultSection = document.querySelector('.default-section');
+        const contentSection = document.querySelector('.content-section');
         
-        let targetElement = heroBanner || contentBody || serviceOverview;
+        let targetElement = heroBanner || contentBody || serviceOverview || defaultSection || contentSection;
         
         if (!targetElement) {
             console.warn('Could not find suitable location for request button');
@@ -239,6 +302,30 @@ class RequestForm {
     generateOfferingSection() {
         const categoryConfig = this.formConfig[this.currentOffering.category] || this.formConfig.default;
         const title = categoryConfig ? categoryConfig.title : this.currentOffering.category;
+        const children = this.getCategoryChildren(this.currentOffering.category);
+        
+        let serviceProductField;
+        if (children.length > 0) {
+            // Use dropdown with all services/products from sitemap (left pane Our Offerings)
+            const currentSlug = (this.currentOffering.name || '').replace(/\.html$/, '');
+            const options = children.map(child => {
+                const selected = child.slug === currentSlug ? ' selected' : '';
+                return `<option value="${child.slug}"${selected}>${child.title}</option>`;
+            }).join('');
+            serviceProductField = `
+                <select name="offering_service" id="offering_service" required>
+                    <option value="">Select Service/Product</option>
+                    ${options}
+                </select>
+                <span class="error-message" id="offering_service_error"></span>
+            `;
+        } else {
+            // No children - show readonly category name
+            const displayName = this.currentOffering.name 
+                ? this.formatOfferingName(this.currentOffering.name) 
+                : this.formatOfferingName(this.currentOffering.category);
+            serviceProductField = `<input type="text" value="${displayName}" readonly class="readonly-field">`;
+        }
         
         return `
             <div class="form-section offering-section">
@@ -248,8 +335,8 @@ class RequestForm {
                     <input type="text" value="${title}" readonly class="readonly-field">
                 </div>
                 <div class="form-group">
-                    <label>Service/Product</label>
-                    <input type="text" value="${this.formatOfferingName(this.currentOffering.name)}" readonly class="readonly-field">
+                    <label>Service/Product <span class="required-mark">*</span></label>
+                    ${serviceProductField}
                 </div>
             </div>
         `;
@@ -455,9 +542,13 @@ class RequestForm {
         const form = document.getElementById('serviceRequestForm');
         const formData = new FormData(form);
         
+        // Use selected service/product from dropdown if available, else current page's offering
+        const offeringService = formData.get('offering_service');
+        const offeringName = offeringService || this.currentOffering.name || this.currentOffering.category;
+        
         const data = {
             offering_category: this.currentOffering.category,
-            offering_name: this.currentOffering.name,
+            offering_name: offeringName,
             customer_name: formData.get('customer_name'),
             customer_email: formData.get('customer_email'),
             customer_phone: formData.get('customer_phone'),
@@ -518,13 +609,21 @@ class RequestForm {
             emailjs.init('C93hFxxbGd9Ruotnl');
             console.log('EmailJS initialized');
             
+            // Use same template and display format for ALL submissions - whether from Services index
+            // or dedicated service page (e.g. home-maintenance). getOfferingDisplayName ensures
+            // consistent labels matching left pane Our Offerings.
+            const offeringDisplayName = this.getOfferingDisplayName(
+                data.offering_name,
+                data.offering_category
+            );
+            
             // Format request details for email (dynamic form content)
             const formDetailsFormatted = Object.entries(data.request_details)
                 .filter(([key]) => key !== 'page_url')
                 .map(([key, value]) => `${this.formatFieldName(key)}: ${value}`)
                 .join('\n');
             
-            // Prepare template parameters for admin notification
+            // Prepare template parameters for admin notification (same template for all pages)
             const adminParams = {
                 email: 'cncfoundation2021@gmail.com',
                 to_name: 'CNC Foundation',
@@ -534,7 +633,7 @@ class RequestForm {
                 customer_phone: data.customer_phone,
                 customer_address: data.customer_address,
                 offering_category: this.formatOfferingName(data.offering_category),
-                offering_name: this.formatOfferingName(data.offering_name),
+                offering_name: offeringDisplayName,
                 form_details: formDetailsFormatted,
                 page_url: data.page_url || 'N/A',
                 submitted_at: new Date(data.submitted_at).toLocaleString('en-IN')
@@ -542,7 +641,7 @@ class RequestForm {
             
             console.log('Sending admin email with params:', adminParams);
             
-            // Send email to admin
+            // Send email to admin - same template (template_k68ksse) for Services index and dedicated pages
             const adminResponse = await emailjs.send(
                 'service_ywrm5zc',
                 'template_k68ksse',
@@ -551,13 +650,13 @@ class RequestForm {
             
             console.log('Admin email sent successfully:', adminResponse);
             
-            // Prepare template parameters for customer confirmation
+            // Prepare template parameters for customer confirmation (same template for all pages)
             const customerParams = {
                 customer_email: data.customer_email,
                 customer_name: data.customer_name,
                 customer_phone: data.customer_phone,
                 offering_category: this.formatOfferingName(data.offering_category),
-                offering_name: this.formatOfferingName(data.offering_name),
+                offering_name: offeringDisplayName,
                 form_details: formDetailsFormatted,
                 submitted_at: new Date(data.submitted_at).toLocaleString('en-IN'),
                 support_email: 'cncfoundation2021@gmail.com',
@@ -587,6 +686,10 @@ class RequestForm {
     }
 
     openWhatsApp(data, requestId) {
+        const offeringDisplayName = this.getOfferingDisplayName(
+            data.offering_name,
+            data.offering_category
+        );
         const message = `
 *New Service Request - CNC Assam*
 
@@ -600,7 +703,7 @@ Address: ${data.customer_address}
 
 *Request For:*
 Category: ${this.formatOfferingName(data.offering_category)}
-Service/Product: ${this.formatOfferingName(data.offering_name)}
+Service/Product: ${offeringDisplayName}
 
 *Details:*
 ${Object.entries(data.request_details).map(([key, value]) => `${this.formatFieldName(key)}: ${value}`).join('\n')}

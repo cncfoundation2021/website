@@ -737,6 +737,70 @@
     ]
   },
 
+  "business-tie-ups": {
+    "title": "Business Tie-up Request",
+    "description": "Express your interest in a business partnership with CnC",
+    "sections": [
+      {
+        "title": "Partnership Details",
+        "fields": [
+          {
+            "name": "company_name",
+            "label": "Company/Organization Name",
+            "type": "text",
+            "required": true,
+            "placeholder": "Your company or organization name"
+          },
+          {
+            "name": "partnership_type",
+            "label": "Type of Partnership Interest",
+            "type": "select",
+            "required": true,
+            "options": [
+              "Authorized Reseller",
+              "Distribution Partnership",
+              "Manufacturing Collaboration",
+              "Service Partnership",
+              "Supply Chain",
+              "Other"
+            ]
+          },
+          {
+            "name": "partnership_description",
+            "label": "Partnership Proposal",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Describe your partnership proposal and what you are looking for"
+          },
+          {
+            "name": "timeline",
+            "label": "Preferred Timeline",
+            "type": "select",
+            "required": true,
+            "options": [
+              "ASAP",
+              "Within 1 month",
+              "1-3 months",
+              "Flexible"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Additional Information",
+        "fields": [
+          {
+            "name": "special_requirements",
+            "label": "Additional Details",
+            "type": "textarea",
+            "required": false,
+            "placeholder": "Any specific requirements or additional information"
+          }
+        ]
+      }
+    ]
+  },
+
   "default": {
     "title": "Service Request",
     "description": "Submit your request for our services",

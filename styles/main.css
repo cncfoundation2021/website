@@ -410,6 +410,31 @@ p {
     border-bottom: 2px solid var(--primary);
 }
 
+/* Our Offerings - block arrow pointing down (same style as Company profile) */
+.sidebar-offerings-header {
+    width: 100%;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(16, 185, 129, 0.3));
+    border: 1px solid rgba(14, 165, 233, 0.6);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 24px), 50% 100%, 0 calc(100% - 24px));
+    -webkit-clip-path: polygon(0 0, 100% 0, 100% calc(100% - 24px), 50% 100%, 0 calc(100% - 24px));
+    padding: 0.30rem 1rem 0.5rem 1rem;
+    min-height: 48px;
+    margin-bottom: var(--space-4);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    border-bottom: none;
+}
+
+.sidebar-offerings-arrow-text {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
 .nav-list {
     list-style: none;
     padding: 0;
@@ -739,6 +764,92 @@ p {
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     margin-right: var(--space-2);
     white-space: nowrap;
+}
+
+.nav-fixed-items:empty {
+    display: none;
+}
+
+/* Company profile section - header like Our Offerings + buttons */
+.nav-profile-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+}
+
+.nav-profile-header {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--primary-foreground);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding-right: var(--space-2);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    margin-right: var(--space-2);
+}
+
+.nav-profile-header i {
+    font-size: var(--font-size-sm);
+    color: var(--primary);
+}
+
+/* Company profile header row - above top nav, inline with Our Offerings */
+.company-profile-header-row {
+    margin-top: calc(-1 * (var(--space-8) - var(--space-6)));
+    margin-bottom: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.company-profile-header-row .nav-profile-group {
+    flex-wrap: wrap;
+}
+
+.company-profile-header-row .nav-profile-header {
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    padding-right: var(--space-3);
+    margin-right: var(--space-3);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 180px;
+}
+
+.company-profile-header-row .nav-profile-header i {
+    margin-left: auto;
+}
+
+/* Block arrow with text inside - gradient, bold uppercase */
+.nav-profile-header-block-arrow {
+    position: relative;
+    min-width: 200px;
+    padding: var(--space-4) var(--space-5) var(--space-4) var(--space-4);
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.25), rgba(14, 165, 233, 0.4) 70%, rgba(14, 165, 233, 0.65));
+    border: 1px solid rgba(14, 165, 233, 0.6);
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 50%, calc(100% - 24px) 100%, 0 100%);
+    -webkit-clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 50%, calc(100% - 24px) 100%, 0 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-profile-header-block-arrow .nav-profile-arrow-text {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.company-profile-header-row .nav-profile-header-block-arrow {
+    border-right: none;
+}
+
+.company-profile-header-row .nav-item {
+    margin-right: var(--space-1);
 }
 
 /* Highlighted navigation items (About Us and Vision Mission) */
@@ -2212,6 +2323,105 @@ a:hover {
     color: var(--text-muted);
     line-height: 1.7;
     font-size: var(--font-size-base);
+}
+
+/* Services Dropdown (services index page) */
+.services-dropdown-section {
+    margin: 4rem 0;
+    padding: 2rem 3rem;
+    background: linear-gradient(135deg, rgba(13, 19, 32, 0.9), rgba(14, 165, 233, 0.1));
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.services-dropdown-section label {
+    display: block;
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.services-dropdown-section label i {
+    margin-right: var(--space-3);
+}
+
+.services-dropdown-wrapper {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.services-select {
+    width: 100%;
+    padding: 1rem 3rem 1rem 1.25rem;
+    font-size: 1rem;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.services-select:hover,
+.services-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+    outline: none;
+}
+
+.services-select option {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.services-dropdown-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* Services dropdown inside hero - centered and highlighted */
+.services-dropdown-in-hero {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    background: rgba(14, 165, 233, 0.15);
+    border: 2px solid rgba(14, 165, 233, 0.5);
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(14, 165, 233, 0.25);
+}
+
+.services-dropdown-in-hero label {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.services-dropdown-in-hero .services-dropdown-wrapper {
+    margin: 0.75rem auto 0;
+}
+
+.services-dropdown-in-hero .services-select {
+    background: rgba(13, 19, 32, 0.9);
+    border: 2px solid rgba(14, 165, 233, 0.6);
+    color: var(--primary-foreground);
+    font-weight: 500;
+}
+
+.services-dropdown-in-hero .services-select:hover,
+.services-dropdown-in-hero .services-select:focus {
+    border-color: var(--primary);
+    background: rgba(13, 19, 32, 0.95);
+    box-shadow: 0 0 16px rgba(14, 165, 233, 0.4);
+}
+
+.services-dropdown-in-hero .services-dropdown-arrow {
+    color: var(--primary);
 }
 
 /* Product Showcase */

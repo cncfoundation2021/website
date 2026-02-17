@@ -37,6 +37,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/feedback-popup.css">
+    <link rel="stylesheet" href="../admin/styles/request-form.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="../Assets/unnamed.jpg">
@@ -105,6 +107,11 @@
         <div class="default-section">
             <h2>BUSINESS TIE UPS</h2>
             <p>Discover our strategic partnerships and business collaborations across Northeast India.</p>
+            <div class="request-button-container" style="text-align: center; margin: 2rem 0;">
+                <button type="button" class="raise-request-btn" onclick="requestForm.openModal()">
+                    <i class="fas fa-paper-plane"></i> Raise Request
+                </button>
+            </div>
             <div class="coming-soon">
                 <h3>More Details Coming Soon</h3>
                 <p>We're compiling information about our business partnerships. Check back soon for our collaboration details.</p>
@@ -141,8 +148,9 @@
 
     <script src="../lib/menu.js"></script>
     <script src="../scripts/main.js"></script>
-    <script src="../../scripts/visual-effects.js"></script>
+    <script src="../scripts/visual-effects.js"></script>
     <script src="../scripts/feedback-popup.js"></script>
+    <script src="../admin/scripts/request-form.js"></script>
 
     <script>
     // Logo fallback script

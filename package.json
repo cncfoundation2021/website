@@ -20,6 +20,7 @@
     "bcryptjs": "^2.4.3",
     "googleapis": "^128.0.0",
     "jszip": "^3.10.1",
+    "vercel": "^50.11.0",
     "xml2js": "^0.6.2"
   },
   "keywords": [
